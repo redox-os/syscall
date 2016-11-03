@@ -15,6 +15,7 @@ pub trait Scheme {
             SYS_WRITE => self.write(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }),
             SYS_LSEEK => self.seek(packet.b, packet.c, packet.d),
             SYS_FEVENT => self.fevent(packet.b, packet.c),
+            SYS_FMAP => self.fmap(packet.b, packet.c, packet.d),
             SYS_FPATH => self.fpath(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
             SYS_FSTAT => self.fstat(packet.b, unsafe { &mut *(packet.c as *mut Stat) }),
             SYS_FSYNC => self.fsync(packet.b),
@@ -74,6 +75,11 @@ pub trait Scheme {
     }
 
     #[allow(unused_variables)]
+    fn fmap(&self, id: usize, offset: usize, size: usize) -> Result<usize> {
+        Err(Error::new(EBADF))
+    }
+
+    #[allow(unused_variables)]
     fn fpath(&self, id: usize, buf: &mut [u8]) -> Result<usize> {
         Err(Error::new(EBADF))
     }
@@ -112,6 +118,7 @@ pub trait SchemeMut {
             SYS_WRITE => self.write(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }),
             SYS_LSEEK => self.seek(packet.b, packet.c, packet.d),
             SYS_FEVENT => self.fevent(packet.b, packet.c),
+            SYS_FMAP => self.fmap(packet.b, packet.c, packet.d),
             SYS_FPATH => self.fpath(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
             SYS_FSTAT => self.fstat(packet.b, unsafe { &mut *(packet.c as *mut Stat) }),
             SYS_FSYNC => self.fsync(packet.b),
@@ -166,6 +173,11 @@ pub trait SchemeMut {
 
     #[allow(unused_variables)]
     fn fevent(&mut self, id: usize, flags: usize) -> Result<usize> {
+        Err(Error::new(EBADF))
+    }
+
+    #[allow(unused_variables)]
+    fn fmap(&mut self, id: usize, offset: usize, size: usize) -> Result<usize> {
         Err(Error::new(EBADF))
     }
 
