@@ -37,161 +37,197 @@ pub fn chdir(path: &str) -> Result<usize> {
     unsafe { syscall2(SYS_CHDIR, path.as_ptr() as usize, path.len()) }
 }
 
+/// Produce a fork of the current process, or a new process thread
 pub unsafe fn clone(flags: usize) -> Result<usize> {
     syscall1_clobber(SYS_CLONE, flags)
 }
 
+/// Close a file
 pub fn close(fd: usize) -> Result<usize> {
     unsafe { syscall1(SYS_CLOSE, fd) }
 }
 
+/// Get the current system time
 pub fn clock_gettime(clock: usize, tp: &mut TimeSpec) -> Result<usize> {
     unsafe { syscall2(SYS_CLOCK_GETTIME, clock, tp as *mut TimeSpec as usize) }
 }
 
+/// Copy and transform a file descriptor
 pub fn dup(fd: usize, buf: &[u8]) -> Result<usize> {
     unsafe { syscall3(SYS_DUP, fd, buf.as_ptr() as usize, buf.len()) }
 }
 
+/// Replace the current process with a new executable
 pub fn execve(path: &str, args: &[[usize; 2]]) -> Result<usize> {
     unsafe { syscall4(SYS_EXECVE, path.as_ptr() as usize, path.len(), args.as_ptr() as usize, args.len()) }
 }
 
+/// Exit the current process
 pub fn exit(status: usize) -> Result<usize> {
     unsafe { syscall1(SYS_EXIT, status) }
 }
 
+/// Register a file for event-based I/O
 pub fn fevent(fd: usize, flags: usize) -> Result<usize> {
     unsafe { syscall2(SYS_FEVENT, fd, flags) }
 }
 
+/// Map a file into memory
 pub unsafe fn fmap(fd: usize, offset: usize, size: usize) -> Result<usize> {
     syscall3(SYS_FMAP, fd, offset, size)
 }
 
+/// Unmap a memory-mapped file
 pub unsafe fn funmap(addr: usize) -> Result<usize> {
     syscall1(SYS_FUNMAP, addr)
 }
 
+/// Retrieve the canonical path of a file
 pub fn fpath(fd: usize, buf: &mut [u8]) -> Result<usize> {
     unsafe { syscall3(SYS_FPATH, fd, buf.as_mut_ptr() as usize, buf.len()) }
 }
 
+/// Get metadata about a file
 pub fn fstat(fd: usize, stat: &mut Stat) -> Result<usize> {
     unsafe { syscall3(SYS_FSTAT, fd, stat as *mut Stat as usize, mem::size_of::<Stat>()) }
 }
 
+/// Sync a file descriptor to its underlying medium
 pub fn fsync(fd: usize) -> Result<usize> {
     unsafe { syscall1(SYS_FSYNC, fd) }
 }
 
+/// Truncate or extend a file to a specified length
 pub fn ftruncate(fd: usize, len: usize) -> Result<usize> {
     unsafe { syscall2(SYS_FTRUNCATE, fd, len) }
 }
 
+/// Fast userspace mutex - TODO: Document
 pub unsafe fn futex(addr: *mut i32, op: usize, val: i32, val2: usize, addr2: *mut i32) -> Result<usize> {
     syscall5(SYS_FUTEX, addr as usize, op, (val as isize) as usize, val2, addr2 as usize)
 }
 
+/// Get the current working directory
 pub fn getcwd(buf: &mut [u8]) -> Result<usize> {
     unsafe { syscall2(SYS_GETCWD, buf.as_mut_ptr() as usize, buf.len()) }
 }
 
+/// Get the effective group ID
 pub fn getegid() -> Result<usize> {
     unsafe { syscall0(SYS_GETEGID) }
 }
 
+/// Get the effective user ID
 pub fn geteuid() -> Result<usize> {
     unsafe { syscall0(SYS_GETEUID) }
 }
 
+/// Get the current group ID
 pub fn getgid() -> Result<usize> {
     unsafe { syscall0(SYS_GETGID) }
 }
 
+/// Get the current process ID
 pub fn getpid() -> Result<usize> {
     unsafe { syscall0(SYS_GETPID) }
 }
 
+/// Get the current user ID
 pub fn getuid() -> Result<usize> {
     unsafe { syscall0(SYS_GETUID) }
 }
 
+/// Set the I/O privilege level
 pub unsafe fn iopl(level: usize) -> Result<usize> {
     syscall1(SYS_IOPL, level)
 }
 
+/// Send a signal `sig` to the process identified by `pid`
 pub fn kill(pid: usize, sig: usize) -> Result<usize> {
     unsafe { syscall2(SYS_KILL, pid, sig) }
 }
 
+/// Create a link to a file
 pub unsafe fn link(old: *const u8, new: *const u8) -> Result<usize> {
     syscall2(SYS_LINK, old as usize, new as usize)
 }
 
+/// Seek to `offset` bytes in a file descriptor
 pub fn lseek(fd: usize, offset: isize, whence: usize) -> Result<usize> {
     unsafe { syscall3(SYS_LSEEK, fd, offset as usize, whence) }
 }
 
+/// Make a directory, with permissions `mode`
 pub fn mkdir(path: &str, mode: u16) -> Result<usize> {
     unsafe { syscall3(SYS_MKDIR, path.as_ptr() as usize, path.len(), mode as usize) }
 }
 
+/// Sleep for the time specified in `req`
 pub fn nanosleep(req: &TimeSpec, rem: &mut TimeSpec) -> Result<usize> {
     unsafe { syscall2(SYS_NANOSLEEP, req as *const TimeSpec as usize, rem as *mut TimeSpec as usize) }
 }
 
+/// Open a file
 pub fn open(path: &str, flags: usize) -> Result<usize> {
     unsafe { syscall3(SYS_OPEN, path.as_ptr() as usize, path.len(), flags) }
 }
 
+/// Allocate pages, linearly in physical memory
 pub unsafe fn physalloc(size: usize) -> Result<usize> {
     syscall1(SYS_PHYSALLOC, size)
 }
 
+/// Free physically allocated pages
 pub unsafe fn physfree(physical_address: usize, size: usize) -> Result<usize> {
     syscall2(SYS_PHYSFREE, physical_address, size)
 }
 
+/// Map physical memory to virtual memory
 pub unsafe fn physmap(physical_address: usize, size: usize, flags: usize) -> Result<usize> {
     syscall3(SYS_PHYSMAP, physical_address, size, flags)
 }
 
+/// Unmap previously mapped physical memory
 pub unsafe fn physunmap(virtual_address: usize) -> Result<usize> {
     syscall1(SYS_PHYSUNMAP, virtual_address)
 }
 
+/// Create a pair of file descriptors referencing the read and write ends of a pipe
 pub fn pipe2(fds: &mut [usize; 2], flags: usize) -> Result<usize> {
     unsafe { syscall2(SYS_PIPE2, fds.as_ptr() as usize, flags) }
 }
 
+/// Read from a file descriptor into a buffer
 pub fn read(fd: usize, buf: &mut [u8]) -> Result<usize> {
     unsafe { syscall3(SYS_READ, fd, buf.as_mut_ptr() as usize, buf.len()) }
 }
 
+/// Remove a directory
 pub fn rmdir(path: &str) -> Result<usize> {
     unsafe { syscall2(SYS_RMDIR, path.as_ptr() as usize, path.len()) }
 }
 
+/// Set the current process group ID
 pub fn setgid(gid: usize) -> Result<usize> {
     unsafe { syscall1(SYS_SETGID, gid) }
 }
 
+/// Set the current process user ID
 pub fn setuid(uid: usize) -> Result<usize> {
     unsafe { syscall1(SYS_SETUID, uid) }
 }
 
+/// Remove a file
 pub fn unlink(path: &str) -> Result<usize> {
     unsafe { syscall2(SYS_UNLINK, path.as_ptr() as usize, path.len()) }
 }
 
+/// Convert a virtual address to a physical one
 pub unsafe fn virttophys(virtual_address: usize) -> Result<usize> {
     syscall1(SYS_VIRTTOPHYS, virtual_address)
 }
 
 /// Check if a child process has exited or received a signal
-///
-/// The kernel
 pub fn waitpid(pid: usize, status: &mut usize, options: usize) -> Result<usize> {
     unsafe { syscall3(SYS_WAITPID, pid, status as *mut usize as usize, options) }
 }
