@@ -14,6 +14,7 @@ pub trait Scheme {
             SYS_READ => self.read(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
             SYS_WRITE => self.write(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }),
             SYS_LSEEK => self.seek(packet.b, packet.c, packet.d),
+            SYS_FCNTL => self.fcntl(packet.b, packet.c, packet.d),
             SYS_FEVENT => self.fevent(packet.b, packet.c),
             SYS_FMAP => self.fmap(packet.b, packet.c, packet.d),
             SYS_FPATH => self.fpath(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
@@ -70,6 +71,11 @@ pub trait Scheme {
     }
 
     #[allow(unused_variables)]
+    fn fcntl(&self, id: usize, cmd: usize, arg: usize) -> Result<usize> {
+        Err(Error::new(EBADF))
+    }
+
+    #[allow(unused_variables)]
     fn fevent(&self, id: usize, flags: usize) -> Result<usize> {
         Err(Error::new(EBADF))
     }
@@ -117,6 +123,7 @@ pub trait SchemeMut {
             SYS_READ => self.read(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
             SYS_WRITE => self.write(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }),
             SYS_LSEEK => self.seek(packet.b, packet.c, packet.d),
+            SYS_FCNTL => self.fcntl(packet.b, packet.c, packet.d),
             SYS_FEVENT => self.fevent(packet.b, packet.c),
             SYS_FMAP => self.fmap(packet.b, packet.c, packet.d),
             SYS_FPATH => self.fpath(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
@@ -168,6 +175,11 @@ pub trait SchemeMut {
 
     #[allow(unused_variables)]
     fn seek(&mut self, id: usize, pos: usize, whence: usize) -> Result<usize> {
+        Err(Error::new(EBADF))
+    }
+
+    #[allow(unused_variables)]
+    fn fcntl(&mut self, id: usize, cmd: usize, arg: usize) -> Result<usize> {
         Err(Error::new(EBADF))
     }
 

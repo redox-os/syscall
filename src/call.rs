@@ -68,6 +68,11 @@ pub fn exit(status: usize) -> Result<usize> {
 }
 
 /// Register a file for event-based I/O
+pub fn fcntl(fd: usize, cmd: usize, arg: usize) -> Result<usize> {
+    unsafe { syscall3(SYS_FCNTL, fd, cmd, arg) }
+}
+
+/// Register a file for event-based I/O
 pub fn fevent(fd: usize, flags: usize) -> Result<usize> {
     unsafe { syscall2(SYS_FEVENT, fd, flags) }
 }

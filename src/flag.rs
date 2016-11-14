@@ -19,6 +19,9 @@ pub const EVENT_NONE: usize = 0;
 pub const EVENT_READ: usize = 1;
 pub const EVENT_WRITE: usize = 2;
 
+pub const F_GETFL: usize = 1;
+pub const F_SETFL: usize = 2;
+
 pub const FUTEX_WAIT: usize = 0;
 pub const FUTEX_WAKE: usize = 1;
 pub const FUTEX_REQUEUE: usize = 2;
