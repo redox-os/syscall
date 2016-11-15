@@ -37,6 +37,10 @@ pub fn chdir(path: &str) -> Result<usize> {
     unsafe { syscall2(SYS_CHDIR, path.as_ptr() as usize, path.len()) }
 }
 
+pub fn chmod(path: &str, mode: usize) -> Result<usize> {
+    unsafe { syscall3(SYS_CHMOD, path.as_ptr() as usize, path.len(), mode) }
+}
+
 /// Produce a fork of the current process, or a new process thread
 pub unsafe fn clone(flags: usize) -> Result<usize> {
     syscall1_clobber(SYS_CLONE, flags)
