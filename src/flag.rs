@@ -21,6 +21,12 @@ pub const EVENT_WRITE: usize = 2;
 
 pub const F_GETFL: usize = 1;
 pub const F_SETFL: usize = 2;
+pub const F_GETMODE: usize = 3;
+pub const F_SETMODE: usize = 4;
+pub const F_GETUID: usize = 5;
+pub const F_SETUID: usize = 6;
+pub const F_GETGID: usize = 7;
+pub const F_SETGID: usize = 8;
 
 pub const FUTEX_WAIT: usize = 0;
 pub const FUTEX_WAKE: usize = 1;
