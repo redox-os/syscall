@@ -216,14 +216,14 @@ pub fn rmdir(path: &str) -> Result<usize> {
     unsafe { syscall2(SYS_RMDIR, path.as_ptr() as usize, path.len()) }
 }
 
-/// Set the current process group ID
-pub fn setgid(gid: usize) -> Result<usize> {
-    unsafe { syscall1(SYS_SETGID, gid) }
+/// Set the current process group IDs
+pub fn setregid(rgid: usize, egid: usize) -> Result<usize> {
+    unsafe { syscall2(SYS_SETREGID, rgid, egid) }
 }
 
-/// Set the current process user ID
-pub fn setuid(uid: usize) -> Result<usize> {
-    unsafe { syscall1(SYS_SETUID, uid) }
+/// Set the current process user IDs
+pub fn setreuid(ruid: usize, euid: usize) -> Result<usize> {
+    unsafe { syscall2(SYS_SETREUID, ruid, euid) }
 }
 
 /// Create and set a new scheme namespace
