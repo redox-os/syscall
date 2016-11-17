@@ -2,7 +2,6 @@ pub const CLONE_VM: usize = 0x100;
 pub const CLONE_FS: usize = 0x200;
 pub const CLONE_FILES: usize = 0x400;
 pub const CLONE_VFORK: usize = 0x4000;
-pub const CLONE_NEWNS: usize = 0x8000;
 
 pub const CLOCK_REALTIME: usize = 1;
 pub const CLOCK_MONOTONIC: usize = 4;

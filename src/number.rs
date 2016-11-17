@@ -55,5 +55,6 @@ pub const SYS_VIRTTOPHYS: usize=949;
 pub const SYS_PIPE2: usize =    331;
 pub const SYS_SETGID: usize =   214;
 pub const SYS_SETUID: usize =   213;
+pub const SYS_SETNS: usize =    310;
 pub const SYS_WAITPID: usize =  7;
 pub const SYS_YIELD: usize =    158;

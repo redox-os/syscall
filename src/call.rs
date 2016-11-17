@@ -226,6 +226,11 @@ pub fn setuid(uid: usize) -> Result<usize> {
     unsafe { syscall1(SYS_SETUID, uid) }
 }
 
+/// Create and set a new scheme namespace
+pub fn setns(schemes: &[[usize; 2]]) -> Result<usize> {
+    unsafe { syscall2(SYS_SETNS, schemes.as_ptr() as usize, schemes.len()) }
+}
+
 /// Remove a file
 pub fn unlink(path: &str) -> Result<usize> {
     unsafe { syscall2(SYS_UNLINK, path.as_ptr() as usize, path.len()) }
