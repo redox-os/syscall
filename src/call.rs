@@ -1,5 +1,5 @@
 use super::arch::*;
-use super::data::{Stat, TimeSpec};
+use super::data::{Stat, StatVfs, TimeSpec};
 use super::error::Result;
 use super::number::*;
 
@@ -99,6 +99,11 @@ pub fn fpath(fd: usize, buf: &mut [u8]) -> Result<usize> {
 /// Get metadata about a file
 pub fn fstat(fd: usize, stat: &mut Stat) -> Result<usize> {
     unsafe { syscall3(SYS_FSTAT, fd, stat as *mut Stat as usize, mem::size_of::<Stat>()) }
+}
+
+/// Get metadata about a filesystem
+pub fn fstatvfs(fd: usize, stat: &mut StatVfs) -> Result<usize> {
+    unsafe { syscall3(SYS_FSTATVFS, fd, stat as *mut StatVfs as usize, mem::size_of::<StatVfs>()) }
 }
 
 /// Sync a file descriptor to its underlying medium
