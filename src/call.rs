@@ -181,11 +181,6 @@ pub fn lseek(fd: usize, offset: isize, whence: usize) -> Result<usize> {
     unsafe { syscall3(SYS_LSEEK, fd, offset as usize, whence) }
 }
 
-/// Make a directory, with permissions `mode`
-pub fn mkdir(path: &str, mode: u16) -> Result<usize> {
-    unsafe { syscall3(SYS_MKDIR, path.as_ptr() as usize, path.len(), mode as usize) }
-}
-
 /// Make a new scheme namespace
 pub fn mkns(schemes: &[[usize; 2]]) -> Result<usize> {
     unsafe { syscall2(SYS_MKNS, schemes.as_ptr() as usize, schemes.len()) }

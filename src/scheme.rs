@@ -6,7 +6,6 @@ pub trait Scheme {
     fn handle(&self, packet: &mut Packet) {
         packet.a = Error::mux(match packet.a {
             SYS_OPEN => self.open(unsafe { slice::from_raw_parts(packet.b as *const u8, packet.c) }, packet.d, packet.uid, packet.gid),
-            SYS_MKDIR => self.mkdir(unsafe { slice::from_raw_parts(packet.b as *const u8, packet.c) }, packet.d as u16, packet.uid, packet.gid),
             SYS_CHMOD => self.chmod(unsafe { slice::from_raw_parts(packet.b as *const u8, packet.c) }, packet.d as u16, packet.uid, packet.gid),
             SYS_RMDIR => self.rmdir(unsafe { slice::from_raw_parts(packet.b as *const u8, packet.c) }, packet.uid, packet.gid),
             SYS_UNLINK => self.unlink(unsafe { slice::from_raw_parts(packet.b as *const u8, packet.c) }, packet.uid, packet.gid),
@@ -33,11 +32,6 @@ pub trait Scheme {
 
     #[allow(unused_variables)]
     fn open(&self, path: &[u8], flags: usize, uid: u32, gid: u32) -> Result<usize> {
-        Err(Error::new(ENOENT))
-    }
-
-    #[allow(unused_variables)]
-    fn mkdir(&self, path: &[u8], mode: u16, uid: u32, gid: u32) -> Result<usize> {
         Err(Error::new(ENOENT))
     }
 
@@ -127,7 +121,6 @@ pub trait SchemeMut {
     fn handle(&mut self, packet: &mut Packet) {
         packet.a = Error::mux(match packet.a {
             SYS_OPEN => self.open(unsafe { slice::from_raw_parts(packet.b as *const u8, packet.c) }, packet.d, packet.uid, packet.gid),
-            SYS_MKDIR => self.mkdir(unsafe { slice::from_raw_parts(packet.b as *const u8, packet.c) }, packet.d as u16, packet.uid, packet.gid),
             SYS_CHMOD => self.chmod(unsafe { slice::from_raw_parts(packet.b as *const u8, packet.c) }, packet.d as u16, packet.uid, packet.gid),
             SYS_RMDIR => self.rmdir(unsafe { slice::from_raw_parts(packet.b as *const u8, packet.c) }, packet.uid, packet.gid),
             SYS_UNLINK => self.unlink(unsafe { slice::from_raw_parts(packet.b as *const u8, packet.c) }, packet.uid, packet.gid),
@@ -153,11 +146,6 @@ pub trait SchemeMut {
     /* Scheme operations */
     #[allow(unused_variables)]
     fn open(&mut self, path: &[u8], flags: usize, uid: u32, gid: u32) -> Result<usize> {
-        Err(Error::new(ENOENT))
-    }
-
-    #[allow(unused_variables)]
-    fn mkdir(&mut self, path: &[u8], mode: u16, uid: u32, gid: u32) -> Result<usize> {
         Err(Error::new(ENOENT))
     }
 

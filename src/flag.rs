@@ -41,6 +41,7 @@ pub const O_CLOEXEC: usize =    0x0100_0000;
 pub const O_CREAT: usize =      0x0200_0000;
 pub const O_TRUNC: usize =      0x0400_0000;
 pub const O_EXCL: usize =       0x0800_0000;
+pub const O_DIRECTORY: usize =  0x1000_0000;
 pub const O_ACCMODE: usize =    O_RDONLY | O_WRONLY | O_RDWR;
 
 pub const SEEK_SET: usize = 0;
