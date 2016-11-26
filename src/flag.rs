@@ -28,9 +28,9 @@ pub const MODE_PERM: u16 = 0x0FFF;
 pub const MODE_SETUID: u16 = 0o4000;
 pub const MODE_SETGID: u16 = 0o2000;
 
-pub const O_RDONLY: usize =     0x0000_0000;
-pub const O_WRONLY: usize =     0x0001_0000;
-pub const O_RDWR: usize =       0x0002_0000;
+pub const O_RDONLY: usize =     0x0001_0000;
+pub const O_WRONLY: usize =     0x0002_0000;
+pub const O_RDWR: usize =       0x0003_0000;
 pub const O_NONBLOCK: usize =   0x0004_0000;
 pub const O_APPEND: usize =     0x0008_0000;
 pub const O_SHLOCK: usize =     0x0010_0000;
@@ -42,6 +42,7 @@ pub const O_CREAT: usize =      0x0200_0000;
 pub const O_TRUNC: usize =      0x0400_0000;
 pub const O_EXCL: usize =       0x0800_0000;
 pub const O_DIRECTORY: usize =  0x1000_0000;
+pub const O_STAT: usize =       0x2000_0000;
 pub const O_ACCMODE: usize =    O_RDONLY | O_WRONLY | O_RDWR;
 
 pub const SEEK_SET: usize = 0;
