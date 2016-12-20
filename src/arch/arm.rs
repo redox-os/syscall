@@ -5,7 +5,7 @@ pub unsafe fn syscall0(mut a: usize) -> Result<usize> {
         : "={r0}"(a)
         : "{r7}"(a)
         : "memory"
-        : "intel", "volatile");
+        : "volatile");
 
     Error::demux(a)
 }
@@ -15,7 +15,7 @@ pub unsafe fn syscall1(mut a: usize, b: usize) -> Result<usize> {
         : "={r0}"(a)
         : "{r7}"(a), "{r0}"(b)
         : "memory"
-        : "intel", "volatile");
+        : "volatile");
 
     Error::demux(a)
 }
@@ -26,7 +26,7 @@ pub unsafe fn syscall1_clobber(mut a: usize, b: usize) -> Result<usize> {
         : "={r0}"(a)
         : "{r7}"(a), "{r0}"(b)
         : "memory", "r0", "r1", "r2", "r3", "r4"
-        : "intel", "volatile");
+        : "volatile");
 
     Error::demux(a)
 }
@@ -36,7 +36,7 @@ pub unsafe fn syscall2(mut a: usize, b: usize, c: usize) -> Result<usize> {
         : "={r0}"(a)
         : "{r7}"(a), "{r0}"(b), "{r1}"(c)
         : "memory"
-        : "intel", "volatile");
+        : "volatile");
 
     Error::demux(a)
 }
@@ -46,7 +46,7 @@ pub unsafe fn syscall3(mut a: usize, b: usize, c: usize, d: usize) -> Result<usi
         : "={r0}"(a)
         : "{r7}"(a), "{r0}"(b), "{r1}"(c), "{r2}"(d)
         : "memory"
-        : "intel", "volatile");
+        : "volatile");
 
     Error::demux(a)
 }
@@ -56,7 +56,7 @@ pub unsafe fn syscall4(mut a: usize, b: usize, c: usize, d: usize, e: usize) -> 
         : "={r0}"(a)
         : "{r7}"(a), "{r0}"(b), "{r1}"(c), "{r2}"(d), "{r3}"(e)
         : "memory"
-        : "intel", "volatile");
+        : "volatile");
 
     Error::demux(a)
 }
@@ -66,7 +66,7 @@ pub unsafe fn syscall5(mut a: usize, b: usize, c: usize, d: usize, e: usize, f: 
         : "={r0}"(a)
         : "{r7}"(a), "{r0}"(b), "{r1}"(c), "{r2}"(d), "{r3}"(e), "{r4}"(f)
         : "memory"
-        : "intel", "volatile");
+        : "volatile");
 
     Error::demux(a)
 }
