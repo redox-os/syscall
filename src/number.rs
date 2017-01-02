@@ -1,5 +1,14 @@
+//! Constants used to define and invoke syscalls.
+
+// Implementation notes: values < 500 are reserved for standard Unix syscalls.
+// Redox-specific syscalls should use values >= 500.
+
+// --- Flags
+
 pub const SYS_CLASS: usize =    0xF000_0000;
+/// Flag: This syscall takes a path as argument.
 pub const SYS_CLASS_PATH: usize=0x1000_0000;
+/// Flag: This syscall takes a file descriptor as argument.
 pub const SYS_CLASS_FILE: usize=0x2000_0000;
 
 pub const SYS_ARG: usize =      0x0F00_0000;
@@ -8,17 +17,35 @@ pub const SYS_ARG_MSLICE: usize=0x0200_0000;
 pub const SYS_ARG_PATH: usize = 0x0300_0000;
 
 pub const SYS_RET: usize =      0x00F0_0000;
+/// Flag: This syscall returns a file descriptor.
 pub const SYS_RET_FILE: usize = 0x0010_0000;
+
+/// --- Syscalls
 
 pub const SYS_LINK: usize =     SYS_CLASS_PATH | SYS_ARG_PATH | 9;
 pub const SYS_OPEN: usize =     SYS_CLASS_PATH | SYS_RET_FILE | 5;
 pub const SYS_CHMOD: usize =    SYS_CLASS_PATH | 15;
 pub const SYS_RMDIR: usize =    SYS_CLASS_PATH | 84;
 pub const SYS_UNLINK: usize =   SYS_CLASS_PATH | 10;
+/// Syscall: Bind a file descriptor exposed by a process to a local file descriptor.
+///
+/// The file descriptor must already have been exposed through a call to `SYS_DUP_EXPORT`..
+///
+/// Prototype: `sys_dup_from(pid, key: [u8]) -> fd`
+pub const SYS_DUP_FROM: usize = SYS_CLASS_PATH | 501;
 
 pub const SYS_CLOSE: usize =    SYS_CLASS_FILE | 6;
 pub const SYS_DUP: usize =      SYS_CLASS_FILE | SYS_RET_FILE | 41;
 pub const SYS_DUP2: usize =      SYS_CLASS_FILE | SYS_RET_FILE | 63;
+/// Syscall: Expose a file descriptor to a process.
+///
+/// Once this syscall has been executed, the recipient process may use
+/// syscall `SYS_DUP_FROM` to bind the exposed file descriptor to a
+/// (new) local file descriptor. The scheme itself receives
+/// call `dup()` with a hint of `HINT_DUP_EXPORT`.
+///
+/// Prototype: `sys_dup_export(pid, fd, key: [u8])`
+pub const SYS_DUP_EXPORT: usize =   SYS_CLASS_FILE | 502;
 pub const SYS_READ: usize =     SYS_CLASS_FILE | SYS_ARG_MSLICE | 3;
 pub const SYS_WRITE: usize =    SYS_CLASS_FILE | SYS_ARG_SLICE | 4;
 pub const SYS_LSEEK: usize =    SYS_CLASS_FILE | 19;
@@ -62,3 +89,17 @@ pub const SYS_SETRENS: usize =  952;
 pub const SYS_SETREUID: usize = 203;
 pub const SYS_WAITPID: usize =  7;
 pub const SYS_YIELD: usize =    158;
+
+// --- Hints passed to `dup`.
+
+/// Hint: The duplication took place because of a call to `exec`.
+pub const HINT_DUP_EXEC: &'static [u8] = b"exec";
+
+/// Hint: The duplication took place because of a call to `clone`.
+pub const HINT_DUP_CLONE: &'static [u8] = b"clone";
+
+/// Hint: The duplication took place because of a call to `listen`.
+pub const HINT_DUP_LISTEN: &'static [u8] = b"listen";
+
+/// Hint: The duplication took place because of a call to `dup_export`.
+pub const HINT_DUP_EXPORT: &'static [u8] = b"export";

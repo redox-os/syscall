@@ -35,7 +35,8 @@ pub struct Packet {
     pub a: usize,
     pub b: usize,
     pub c: usize,
-    pub d: usize
+    pub d: usize,
+    pub e: usize,
 }
 
 impl Deref for Packet {
