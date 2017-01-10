@@ -1,5 +1,5 @@
-use std::{mem, ptr};
-use std::ops::{Deref, DerefMut};
+use core::{mem, ptr};
+use core::ops::{Deref, DerefMut};
 
 use Result;
 

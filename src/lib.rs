@@ -1,7 +1,11 @@
+#![deny(warnings)]
 #![feature(asm)]
+#![feature(collections)]
 #![feature(const_fn)]
 #![feature(core_intrinsics)]
 #![no_std]
+
+extern crate collections;
 
 pub use self::arch::*;
 pub use self::call::*;

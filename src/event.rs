@@ -1,20 +1,20 @@
-use std::collections::BTreeMap;
-use std::fs::File;
-use std::io::{Read, Error, Result};
-use std::os::unix::io::RawFd;
+use collections::{BTreeMap, Vec};
+use collections::boxed::Box;
+
+use ::Result;
 
 pub struct EventQueue<R> {
     /// The file to read events from
-    file: File,
+    file: usize,
     /// A map of registered file descriptors to their handler callbacks
-    callbacks: BTreeMap<RawFd, Box<FnMut(usize) -> Result<Option<R>>>>
+    callbacks: BTreeMap<usize, Box<FnMut(usize) -> Result<Option<R>>>>
 }
 
 impl<R> EventQueue<R> {
     /// Create a new event queue
     pub fn new() -> Result<EventQueue<R>> {
         Ok(EventQueue {
-            file: File::open("event:")?,
+            file: ::open("event:", ::O_RDONLY)?,
             callbacks: BTreeMap::new()
         })
     }
@@ -28,8 +28,8 @@ impl<R> EventQueue<R> {
     /// or Ok(Some(R)) to break the event loop and return the value.
     /// Err can be used to allow the callback to return an I/O error, and break the
     /// event loop
-    pub fn add<F: FnMut(usize) -> Result<Option<R>> + 'static>(&mut self, fd: RawFd, callback: F) -> Result<()> {
-        ::fevent(fd, ::EVENT_READ).map_err(|x| Error::from_raw_os_error(x.errno))?;
+    pub fn add<F: FnMut(usize) -> Result<Option<R>> + 'static>(&mut self, fd: usize, callback: F) -> Result<()> {
+        ::fevent(fd, ::EVENT_READ)?;
 
         self.callbacks.insert(fd, Box::new(callback));
 
@@ -37,9 +37,9 @@ impl<R> EventQueue<R> {
     }
 
     /// Remove a file from the event queue, returning its callback if found
-    pub fn remove(&mut self, fd: RawFd) -> Result<Option<Box<FnMut(usize) -> Result<Option<R>>>>> {
+    pub fn remove(&mut self, fd: usize) -> Result<Option<Box<FnMut(usize) -> Result<Option<R>>>>> {
         if let Some(callback) = self.callbacks.remove(&fd) {
-            ::fevent(fd, 0).map_err(|x| Error::from_raw_os_error(x.errno))?;
+            ::fevent(fd, 0)?;
 
             Ok(Some(callback))
         } else {
@@ -48,7 +48,7 @@ impl<R> EventQueue<R> {
     }
 
     /// Send an event to a descriptor callback
-    pub fn trigger(&mut self, fd: RawFd, count: usize) -> Result<Option<R>> {
+    pub fn trigger(&mut self, fd: usize, count: usize) -> Result<Option<R>> {
         if let Some(callback) = self.callbacks.get_mut(&fd) {
             callback(count)
         } else {
@@ -71,7 +71,7 @@ impl<R> EventQueue<R> {
     pub fn run(&mut self) -> Result<R> {
         loop {
             let mut event = ::Event::default();
-            if self.file.read(&mut event)? > 0 {
+            if ::read(self.file, &mut event)? > 0 {
                 if let Some(ret) = self.trigger(event.id, event.data)? {
                     return Ok(ret);
                 }
