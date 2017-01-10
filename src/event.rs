@@ -1,5 +1,3 @@
-extern crate syscall;
-
 use std::collections::BTreeMap;
 use std::fs::File;
 use std::io::{Read, Error, Result};
@@ -31,7 +29,7 @@ impl<R> EventQueue<R> {
     /// Err can be used to allow the callback to return an I/O error, and break the
     /// event loop
     pub fn add<F: FnMut(usize) -> Result<Option<R>> + 'static>(&mut self, fd: RawFd, callback: F) -> Result<()> {
-        syscall::fevent(fd, syscall::EVENT_READ).map_err(|x| Error::from_raw_os_error(x.errno))?;
+        ::fevent(fd, ::EVENT_READ).map_err(|x| Error::from_raw_os_error(x.errno))?;
 
         self.callbacks.insert(fd, Box::new(callback));
 
@@ -41,7 +39,7 @@ impl<R> EventQueue<R> {
     /// Remove a file from the event queue, returning its callback if found
     pub fn remove(&mut self, fd: RawFd) -> Result<Option<Box<FnMut(usize) -> Result<Option<R>>>>> {
         if let Some(callback) = self.callbacks.remove(&fd) {
-            syscall::fevent(fd, 0).map_err(|x| Error::from_raw_os_error(x.errno))?;
+            ::fevent(fd, 0).map_err(|x| Error::from_raw_os_error(x.errno))?;
 
             Ok(Some(callback))
         } else {
@@ -72,7 +70,7 @@ impl<R> EventQueue<R> {
     /// Process the event queue until a callback returns Some(R)
     pub fn run(&mut self) -> Result<R> {
         loop {
-            let mut event = syscall::Event::default();
+            let mut event = ::Event::default();
             if self.file.read(&mut event)? > 0 {
                 if let Some(ret) = self.trigger(event.id, event.data)? {
                     return Ok(ret);
