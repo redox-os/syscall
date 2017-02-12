@@ -35,7 +35,8 @@ pub struct Packet {
     pub a: usize,
     pub b: usize,
     pub c: usize,
-    pub d: usize
+    pub d: usize,
+    pub e: usize,
 }
 
 impl Deref for Packet {
@@ -141,6 +142,35 @@ impl DerefMut for TimeSpec {
         unsafe {
             slice::from_raw_parts_mut(self as *mut TimeSpec as *mut u8,
                                       mem::size_of::<TimeSpec>()) as &mut [u8]
+        }
+    }
+}
+
+#[derive(Copy, Clone, Debug, Default)]
+#[repr(packed)]
+pub struct SocketEndpoint {
+    // Reserve enough space for IPv6 address.
+    // It's kind of a waste for IPv4 though.
+    pub address: [u8; 16],
+    pub address_len: u8,
+    pub port: u16,
+}
+
+impl Deref for SocketEndpoint {
+    type Target = [u8];
+    fn deref(&self) -> &[u8] {
+        unsafe {
+            slice::from_raw_parts(self as *const SocketEndpoint as *const u8,
+                                  mem::size_of::<SocketEndpoint>()) as &[u8]
+        }
+    }
+}
+
+impl DerefMut for SocketEndpoint {
+    fn deref_mut(&mut self) -> &mut [u8] {
+        unsafe {
+            slice::from_raw_parts_mut(self as *mut SocketEndpoint as *mut u8,
+                                      mem::size_of::<SocketEndpoint>()) as &mut [u8]
         }
     }
 }
