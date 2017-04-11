@@ -23,6 +23,8 @@ pub trait Scheme {
             SYS_FSYNC => self.fsync(packet.b),
             SYS_FTRUNCATE => self.ftruncate(packet.b, packet.c),
             SYS_CLOSE => self.close(packet.b),
+            SYS_SOCKRECV => self.sockrecv(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }, unsafe { &mut *(packet.e as *mut SocketEndpoint) }),
+            SYS_SOCKSEND => self.socksend(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }, unsafe { &*(packet.e as *const SocketEndpoint) }),
 
             _ => Err(Error::new(ENOSYS))
         });
@@ -115,6 +117,17 @@ pub trait Scheme {
     fn close(&self, id: usize) -> Result<usize> {
         Err(Error::new(EBADF))
     }
+
+    #[allow(unused_variables)]
+    fn sockrecv(&self, id: usize, buf: &mut[u8], endpoint: &mut SocketEndpoint) -> Result<usize> {
+        Err(Error::new(EBADF))
+    }
+
+    #[allow(unused_variables)]
+    fn socksend(&self, id: usize, buf: &[u8], endpoint: &SocketEndpoint) -> Result<usize> {
+        Err(Error::new(EBADF))
+    }
+
 }
 
 pub trait SchemeMut {
@@ -138,6 +151,8 @@ pub trait SchemeMut {
             SYS_FSYNC => self.fsync(packet.b),
             SYS_FTRUNCATE => self.ftruncate(packet.b, packet.c),
             SYS_CLOSE => self.close(packet.b),
+            SYS_SOCKRECV => self.sockrecv(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }, unsafe { &mut *(packet.e as *mut SocketEndpoint ) }),
+            SYS_SOCKSEND => self.socksend(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }, unsafe { &*(packet.e as *const SocketEndpoint ) }),
 
             _ => Err(Error::new(ENOSYS))
         });
@@ -229,4 +244,15 @@ pub trait SchemeMut {
     fn close(&mut self, id: usize) -> Result<usize> {
         Err(Error::new(EBADF))
     }
+
+    #[allow(unused_variables)]
+    fn sockrecv(&mut self, id: usize, buf: &mut [u8], endpoint: &mut SocketEndpoint) -> Result<usize> {
+        Err(Error::new(EBADF))
+    }
+
+    #[allow(unused_variables)]
+    fn socksend(&mut self, id: usize, buf: &[u8], endpoint: &SocketEndpoint) -> Result<usize> {
+        Err(Error::new(EBADF))
+    }
+
 }
