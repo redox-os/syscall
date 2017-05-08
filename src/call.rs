@@ -33,12 +33,12 @@ pub unsafe fn brk(addr: usize) -> Result<usize> {
 /// * `EIO` - an I/O error occured
 /// * `ENOENT` - `path` does not exit
 /// * `ENOTDIR` - `path` is not a directory
-pub fn chdir(path: &str) -> Result<usize> {
-    unsafe { syscall2(SYS_CHDIR, path.as_ptr() as usize, path.len()) }
+pub fn chdir<T: AsRef<[u8]>>(path: T) -> Result<usize> {
+    unsafe { syscall2(SYS_CHDIR, path.as_ref().as_ptr() as usize, path.as_ref().len()) }
 }
 
-pub fn chmod(path: &str, mode: usize) -> Result<usize> {
-    unsafe { syscall3(SYS_CHMOD, path.as_ptr() as usize, path.len(), mode) }
+pub fn chmod<T: AsRef<[u8]>>(path: T, mode: usize) -> Result<usize> {
+    unsafe { syscall3(SYS_CHMOD, path.as_ref().as_ptr() as usize, path.as_ref().len(), mode) }
 }
 
 /// Produce a fork of the current process, or a new process thread
@@ -67,8 +67,8 @@ pub fn dup2(fd: usize, newfd: usize, buf: &[u8]) -> Result<usize> {
 }
 
 /// Replace the current process with a new executable
-pub fn execve(path: &str, args: &[[usize; 2]]) -> Result<usize> {
-    unsafe { syscall4(SYS_EXECVE, path.as_ptr() as usize, path.len(), args.as_ptr() as usize, args.len()) }
+pub fn execve<T: AsRef<[u8]>>(path: T, args: &[[usize; 2]]) -> Result<usize> {
+    unsafe { syscall4(SYS_EXECVE, path.as_ref().as_ptr() as usize, path.as_ref().len(), args.as_ptr() as usize, args.len()) }
 }
 
 /// Exit the current process
@@ -197,8 +197,8 @@ pub fn nanosleep(req: &TimeSpec, rem: &mut TimeSpec) -> Result<usize> {
 }
 
 /// Open a file
-pub fn open(path: &str, flags: usize) -> Result<usize> {
-    unsafe { syscall3(SYS_OPEN, path.as_ptr() as usize, path.len(), flags) }
+pub fn open<T: AsRef<[u8]>>(path: T, flags: usize) -> Result<usize> {
+    unsafe { syscall3(SYS_OPEN, path.as_ref().as_ptr() as usize, path.as_ref().len(), flags) }
 }
 
 /// Allocate pages, linearly in physical memory
@@ -232,8 +232,8 @@ pub fn read(fd: usize, buf: &mut [u8]) -> Result<usize> {
 }
 
 /// Remove a directory
-pub fn rmdir(path: &str) -> Result<usize> {
-    unsafe { syscall2(SYS_RMDIR, path.as_ptr() as usize, path.len()) }
+pub fn rmdir<T: AsRef<[u8]>>(path: T) -> Result<usize> {
+    unsafe { syscall2(SYS_RMDIR, path.as_ref().as_ptr() as usize, path.as_ref().len()) }
 }
 
 /// Set the current process group IDs
@@ -252,8 +252,8 @@ pub fn setreuid(ruid: usize, euid: usize) -> Result<usize> {
 }
 
 /// Remove a file
-pub fn unlink(path: &str) -> Result<usize> {
-    unsafe { syscall2(SYS_UNLINK, path.as_ptr() as usize, path.len()) }
+pub fn unlink<T: AsRef<[u8]>>(path: T) -> Result<usize> {
+    unsafe { syscall2(SYS_UNLINK, path.as_ref().as_ptr() as usize, path.as_ref().len()) }
 }
 
 /// Convert a virtual address to a physical one
