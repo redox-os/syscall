@@ -26,7 +26,7 @@ impl DerefMut for Event {
 }
 
 #[derive(Copy, Clone, Debug, Default)]
-#[repr(packed)]
+#[repr(C)]
 pub struct Packet {
     pub id: u64,
     pub pid: usize,
@@ -56,7 +56,7 @@ impl DerefMut for Packet {
 }
 
 #[derive(Copy, Clone, Debug, Default)]
-#[repr(packed)]
+#[repr(C)]
 pub struct Stat {
     pub st_dev: u64,
     pub st_ino: u64,
@@ -93,7 +93,7 @@ impl DerefMut for Stat {
 }
 
 #[derive(Copy, Clone, Debug, Default)]
-#[repr(packed)]
+#[repr(C)]
 pub struct StatVfs {
     pub f_bsize: u32,
     pub f_blocks: u64,
@@ -120,7 +120,7 @@ impl DerefMut for StatVfs {
 }
 
 #[derive(Copy, Clone, Debug, Default)]
-#[repr(packed)]
+#[repr(C)]
 pub struct TimeSpec {
     pub tv_sec: i64,
     pub tv_nsec: i32,
