@@ -161,6 +161,11 @@ pub fn getpid() -> Result<usize> {
     unsafe { syscall0(SYS_GETPID) }
 }
 
+/// Get the parent process ID
+pub fn getppid() -> Result<usize> {
+    unsafe { syscall0(SYS_GETPPID) }
+}
+
 /// Get the current user ID
 pub fn getuid() -> Result<usize> {
     unsafe { syscall0(SYS_GETUID) }
