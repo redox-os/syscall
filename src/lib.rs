@@ -2,7 +2,11 @@
 #![feature(asm)]
 #![feature(const_fn)]
 #![feature(core_intrinsics)]
+#![feature(attr_literals)]
 #![no_std]
+
+#[macro_use]
+extern crate redox_syscall_derive;
 
 pub use self::arch::*;
 pub use self::call::*;
@@ -12,6 +16,7 @@ pub use self::flag::*;
 pub use self::io::*;
 pub use self::number::*;
 pub use self::scheme::*;
+pub use self::syscall::*;
 
 #[cfg(target_arch = "arm")]
 #[path="arch/arm.rs"]
@@ -45,3 +50,5 @@ pub mod number;
 
 /// A trait useful for scheme handlers
 pub mod scheme;
+
+mod syscall;

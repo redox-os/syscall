@@ -1,0 +1,10 @@
+[package]
+name = "redox_syscall_derive"
+version = "0.1.0"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = "0.11"
+quote = "0.3"

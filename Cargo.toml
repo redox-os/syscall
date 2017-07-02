@@ -9,3 +9,6 @@ documentation = "https://docs.rs/redox_syscall"
 
 [lib]
 name = "syscall"
+
+[dependencies]
+redox_syscall_derive = { path = "syscall-derive" }
