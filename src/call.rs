@@ -256,6 +256,11 @@ pub fn setreuid(ruid: usize, euid: usize) -> Result<usize> {
     unsafe { syscall2(SYS_SETREUID, ruid, euid) }
 }
 
+/// Set up a signal handler
+pub fn signal(sig: usize, handler: extern fn(usize)) -> Result<usize> {
+    unsafe { syscall2(SYS_SIGNAL, sig, handler as usize) }
+}
+
 /// Remove a file
 pub fn unlink<T: AsRef<[u8]>>(path: T) -> Result<usize> {
     unsafe { syscall2(SYS_UNLINK, path.as_ref().as_ptr() as usize, path.as_ref().len()) }

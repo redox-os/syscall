@@ -1,6 +1,7 @@
 pub const CLONE_VM: usize = 0x100;
 pub const CLONE_FS: usize = 0x200;
 pub const CLONE_FILES: usize = 0x400;
+pub const CLONE_SIGHAND: usize = 0x800;
 pub const CLONE_VFORK: usize = 0x4000;
 
 pub const CLOCK_REALTIME: usize = 1;
@@ -83,5 +84,8 @@ pub const SIGWINCH: usize = 28;
 pub const SIGIO: usize =    29;
 pub const SIGPWR: usize =   30;
 pub const SIGSYS: usize =   31;
+
+pub const SIG_DFL: usize = 0;
+pub const SIG_IGN: usize = 1;
 
 pub const WNOHANG: usize = 1;

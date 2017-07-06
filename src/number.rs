@@ -61,5 +61,6 @@ pub const SYS_PIPE2: usize =    331;
 pub const SYS_SETREGID: usize = 204;
 pub const SYS_SETRENS: usize =  952;
 pub const SYS_SETREUID: usize = 203;
+pub const SYS_SIGNAL: usize =   48;
 pub const SYS_WAITPID: usize =  7;
 pub const SYS_YIELD: usize =    158;
