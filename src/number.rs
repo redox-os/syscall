@@ -31,6 +31,7 @@ pub const SYS_FSTAT: usize =    SYS_CLASS_FILE | SYS_ARG_MSLICE | 28;
 pub const SYS_FSTATVFS: usize = SYS_CLASS_FILE | SYS_ARG_MSLICE | 100;
 pub const SYS_FSYNC: usize =    SYS_CLASS_FILE | 118;
 pub const SYS_FTRUNCATE: usize =SYS_CLASS_FILE | 93;
+pub const SYS_FUTIMENS: usize = SYS_CLASS_FILE | SYS_ARG_SLICE | 320;
 
 pub const SYS_BRK: usize =      45;
 pub const SYS_CHDIR: usize =    12;
