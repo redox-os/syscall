@@ -58,7 +58,7 @@ impl DerefMut for Packet {
 #[derive(Copy, Clone, Debug)]
 #[repr(C)]
 pub struct SigAction {
-    pub sa_handler: extern "C" fn(isize),
+    pub sa_handler: extern "C" fn(usize),
     pub sa_mask: [u64; 2],
     pub sa_flags: usize,
     pub sa_restorer: extern "C" fn(),
