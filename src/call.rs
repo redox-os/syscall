@@ -1,5 +1,5 @@
 use super::arch::*;
-use super::data::{Stat, StatVfs, TimeSpec};
+use super::data::{SigAction, Stat, StatVfs, TimeSpec};
 use super::error::Result;
 use super::number::*;
 
@@ -262,8 +262,8 @@ pub fn setreuid(ruid: usize, euid: usize) -> Result<usize> {
 }
 
 /// Set up a signal handler
-pub fn signal(sig: usize, handler: extern fn(usize)) -> Result<usize> {
-    unsafe { syscall2(SYS_SIGNAL, sig, handler as usize) }
+pub fn sigaction(sig: usize, act: &SigAction, oldact: &mut SigAction) -> Result<usize> {
+    unsafe { syscall3(SYS_SIGACTION, sig, act as *const SigAction as usize, oldact as *mut SigAction as usize) }
 }
 
 /// Remove a file
