@@ -61,7 +61,6 @@ pub struct SigAction {
     pub sa_handler: extern "C" fn(usize),
     pub sa_mask: [u64; 2],
     pub sa_flags: usize,
-    pub sa_restorer: extern "C" fn(),
 }
 
 impl Default for SigAction {
@@ -70,7 +69,6 @@ impl Default for SigAction {
             sa_handler: unsafe { mem::transmute(0usize) },
             sa_mask: [0; 2],
             sa_flags: 0,
-            sa_restorer: unsafe { mem::transmute(0usize) },
         }
     }
 }

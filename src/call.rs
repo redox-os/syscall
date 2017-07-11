@@ -5,6 +5,12 @@ use super::number::*;
 
 use core::mem;
 
+// Signal restorer
+extern "C" fn restorer() -> ! {
+    sigreturn().unwrap();
+    unreachable!();
+}
+
 /// Set the end of the process's heap
 ///
 /// When `addr` is `0`, this function will return the current break.
@@ -263,7 +269,12 @@ pub fn setreuid(ruid: usize, euid: usize) -> Result<usize> {
 
 /// Set up a signal handler
 pub fn sigaction(sig: usize, act: &SigAction, oldact: &mut SigAction) -> Result<usize> {
-    unsafe { syscall3(SYS_SIGACTION, sig, act as *const SigAction as usize, oldact as *mut SigAction as usize) }
+    unsafe { syscall4(SYS_SIGACTION, sig, act as *const SigAction as usize, oldact as *mut SigAction as usize, restorer as usize) }
+}
+
+// Return from signal handler
+pub fn sigreturn() -> Result<usize> {
+    unsafe { syscall0(SYS_SIGRETURN) }
 }
 
 /// Remove a file
