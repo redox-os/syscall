@@ -3,7 +3,7 @@ use super::data::{SigAction, Stat, StatVfs, TimeSpec};
 use super::error::Result;
 use super::number::*;
 
-use core::mem;
+use core::{mem, ptr};
 
 // Signal restorer
 extern "C" fn restorer() -> ! {
@@ -268,8 +268,11 @@ pub fn setreuid(ruid: usize, euid: usize) -> Result<usize> {
 }
 
 /// Set up a signal handler
-pub fn sigaction(sig: usize, act: &SigAction, oldact: &mut SigAction) -> Result<usize> {
-    unsafe { syscall4(SYS_SIGACTION, sig, act as *const SigAction as usize, oldact as *mut SigAction as usize, restorer as usize) }
+pub fn sigaction(sig: usize, act: Option<&SigAction>, oldact: Option<&mut SigAction>) -> Result<usize> {
+    unsafe { syscall4(SYS_SIGACTION, sig,
+                      act.map(|x| x as *const _).unwrap_or_else(ptr::null) as usize,
+                      oldact.map(|x| x as *mut _).unwrap_or_else(ptr::null_mut) as usize,
+                      restorer as usize) }
 }
 
 // Return from signal handler
