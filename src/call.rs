@@ -172,6 +172,11 @@ pub fn getpid() -> Result<usize> {
     unsafe { syscall0(SYS_GETPID) }
 }
 
+/// Get the process group ID
+pub fn getpgid(pid: usize) -> Result<usize> {
+    unsafe { syscall1(SYS_GETPGID, pid) }
+}
+
 /// Get the parent process ID
 pub fn getppid() -> Result<usize> {
     unsafe { syscall0(SYS_GETPPID) }
@@ -250,6 +255,11 @@ pub fn read(fd: usize, buf: &mut [u8]) -> Result<usize> {
 /// Remove a directory
 pub fn rmdir<T: AsRef<[u8]>>(path: T) -> Result<usize> {
     unsafe { syscall2(SYS_RMDIR, path.as_ref().as_ptr() as usize, path.as_ref().len()) }
+}
+
+/// Set the process group ID
+pub fn setpgid(pid: usize, pgid: usize) -> Result<usize> {
+    unsafe { syscall2(SYS_SETPGID, pid, pgid) }
 }
 
 /// Set the current process group IDs
