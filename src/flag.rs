@@ -11,6 +11,7 @@ pub const EVENT_NONE: usize = 0;
 pub const EVENT_READ: usize = 1;
 pub const EVENT_WRITE: usize = 2;
 
+pub const F_DUPFD: usize = 0;
 pub const F_GETFD: usize = 1;
 pub const F_SETFD: usize = 2;
 pub const F_GETFL: usize = 3;
