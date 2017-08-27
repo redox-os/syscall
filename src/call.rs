@@ -36,7 +36,7 @@ pub unsafe fn brk(addr: usize) -> Result<usize> {
 ///
 /// * `EACCES` - permission is denied for one of the components of `path`, or `path`
 /// * `EFAULT` - `path` does not point to the process's addressible memory
-/// * `EIO` - an I/O error occured
+/// * `EIO` - an I/O error occurred
 /// * `ENOENT` - `path` does not exit
 /// * `ENOTDIR` - `path` is not a directory
 pub fn chdir<T: AsRef<[u8]>>(path: T) -> Result<usize> {
@@ -74,7 +74,8 @@ pub fn dup2(fd: usize, newfd: usize, buf: &[u8]) -> Result<usize> {
 
 /// Replace the current process with a new executable
 pub fn execve<T: AsRef<[u8]>>(path: T, args: &[[usize; 2]]) -> Result<usize> {
-    unsafe { syscall4(SYS_EXECVE, path.as_ref().as_ptr() as usize, path.as_ref().len(), args.as_ptr() as usize, args.len()) }
+    unsafe { syscall4(SYS_EXECVE, path.as_ref().as_ptr() as usize,
+                      path.as_ref().len(), args.as_ptr() as usize, args.len()) }
 }
 
 /// Exit the current process
@@ -132,8 +133,9 @@ pub fn futimens(fd: usize, times: &[TimeSpec]) -> Result<usize> {
     unsafe { syscall3(SYS_FUTIMENS, fd, times.as_ptr() as usize, times.len() * mem::size_of::<TimeSpec>()) }
 }
 
-/// Fast userspace mutex - TODO: Document
-pub unsafe fn futex(addr: *mut i32, op: usize, val: i32, val2: usize, addr2: *mut i32) -> Result<usize> {
+/// Fast userspace mutex
+pub unsafe fn futex(addr: *mut i32, op: usize, val: i32, val2: usize, addr2: *mut i32)
+                    -> Result<usize> {
     syscall5(SYS_FUTEX, addr as usize, op, (val as isize) as usize, val2, addr2 as usize)
 }
 
@@ -214,7 +216,8 @@ pub fn mkns(schemes: &[[usize; 2]]) -> Result<usize> {
 
 /// Sleep for the time specified in `req`
 pub fn nanosleep(req: &TimeSpec, rem: &mut TimeSpec) -> Result<usize> {
-    unsafe { syscall2(SYS_NANOSLEEP, req as *const TimeSpec as usize, rem as *mut TimeSpec as usize) }
+    unsafe { syscall2(SYS_NANOSLEEP, req as *const TimeSpec as usize,
+                                     rem as *mut TimeSpec as usize) }
 }
 
 /// Open a file
@@ -316,7 +319,7 @@ pub fn waitpid(pid: usize, status: &mut usize, options: usize) -> Result<usize> 
 /// * `EAGAIN` - the file descriptor was opened with `O_NONBLOCK` and writing would block
 /// * `EBADF` - the file descriptor is not valid or is not open for writing
 /// * `EFAULT` - `buf` does not point to the process's addressible memory
-/// * `EIO` - an I/O error occured
+/// * `EIO` - an I/O error occurred
 /// * `ENOSPC` - the device containing the file descriptor has no room for data
 /// * `EPIPE` - the file descriptor refers to a pipe or socket whose reading end is closed
 pub fn write(fd: usize, buf: &[u8]) -> Result<usize> {
