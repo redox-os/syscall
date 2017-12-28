@@ -29,6 +29,7 @@ pub const SYS_FEVENT: usize =   SYS_CLASS_FILE | 927;
 pub const SYS_FMAP: usize =     SYS_CLASS_FILE | 90;
 pub const SYS_FUNMAP: usize =   SYS_CLASS_FILE | 91;
 pub const SYS_FPATH: usize =    SYS_CLASS_FILE | SYS_ARG_MSLICE | 928;
+pub const SYS_FRENAME: usize =  SYS_CLASS_FILE | SYS_ARG_PATH | 38;
 pub const SYS_FSTAT: usize =    SYS_CLASS_FILE | SYS_ARG_MSLICE | 28;
 pub const SYS_FSTATVFS: usize = SYS_CLASS_FILE | SYS_ARG_MSLICE | 100;
 pub const SYS_FSYNC: usize =    SYS_CLASS_FILE | 118;

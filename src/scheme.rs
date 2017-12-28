@@ -20,6 +20,7 @@ pub trait Scheme {
             SYS_FEVENT => self.fevent(packet.b, packet.c),
             SYS_FMAP => self.fmap(packet.b, packet.c, packet.d),
             SYS_FPATH => self.fpath(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
+            SYS_FRENAME => self.frename(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }, packet.uid, packet.gid),
             SYS_FSTAT => if packet.d >= mem::size_of::<Stat>() {
                 self.fstat(packet.b, unsafe { &mut *(packet.c as *mut Stat) })
             } else {
@@ -116,6 +117,11 @@ pub trait Scheme {
     }
 
     #[allow(unused_variables)]
+    fn frename(&self, id: usize, path: &[u8], uid: u32, gid: u32) -> Result<usize> {
+        Err(Error::new(EBADF))
+    }
+
+    #[allow(unused_variables)]
     fn fstat(&self, id: usize, stat: &mut Stat) -> Result<usize> {
         Err(Error::new(EBADF))
     }
@@ -164,6 +170,7 @@ pub trait SchemeMut {
             SYS_FEVENT => self.fevent(packet.b, packet.c),
             SYS_FMAP => self.fmap(packet.b, packet.c, packet.d),
             SYS_FPATH => self.fpath(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
+            SYS_FRENAME => self.frename(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }, packet.uid, packet.gid),
             SYS_FSTAT => if packet.d >= mem::size_of::<Stat>() {
                 self.fstat(packet.b, unsafe { &mut *(packet.c as *mut Stat) })
             } else {
@@ -255,6 +262,11 @@ pub trait SchemeMut {
 
     #[allow(unused_variables)]
     fn fpath(&mut self, id: usize, buf: &mut [u8]) -> Result<usize> {
+        Err(Error::new(EBADF))
+    }
+
+    #[allow(unused_variables)]
+    fn frename(&mut self, id: usize, path: &[u8], uid: u32, gid: u32) -> Result<usize> {
         Err(Error::new(EBADF))
     }
 
