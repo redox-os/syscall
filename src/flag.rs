@@ -103,5 +103,6 @@ pub const SA_RESTART: usize =   0x10000000;
 pub const SA_NODEFER: usize =   0x40000000;
 pub const SA_RESETHAND: usize = 0x80000000;
 
-pub const WNOHANG: usize = 1;
-pub const WUNTRACED: usize = 2;
+pub const WNOHANG: usize =    0x01;
+pub const WUNTRACED: usize =  0x02;
+pub const WCONTINUED: usize = 0x08;
