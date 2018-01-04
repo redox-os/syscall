@@ -104,3 +104,4 @@ pub const SA_NODEFER: usize =   0x40000000;
 pub const SA_RESETHAND: usize = 0x80000000;
 
 pub const WNOHANG: usize = 1;
+pub const WUNTRACED: usize = 2;
