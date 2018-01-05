@@ -373,5 +373,5 @@ pub fn wifcontinued(status: usize) -> bool {
 /// True if STATUS indicates termination by a signal.
 #[inline(always)]
 pub fn wifsignaled(status: usize) -> bool {
-    ((status & 0x7f) + 1) >> 1 > 0
+    ((status & 0x7f) + 1) as i8 >= 2
 }
