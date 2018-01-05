@@ -370,7 +370,7 @@ pub fn wifstopped(status: usize) -> bool {
 pub fn wifcontinued(status: usize) -> bool {
     status == 0xffff
 }
-/// Nonzero if STATUS indicates termination by a signal.
+/// True if STATUS indicates termination by a signal.
 #[inline(always)]
 pub fn wifsignaled(status: usize) -> bool {
     ((status & 0x7f) + 1) >> 1 > 0
