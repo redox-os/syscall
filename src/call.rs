@@ -349,3 +349,29 @@ pub fn write(fd: usize, buf: &[u8]) -> Result<usize> {
 pub fn sched_yield() -> Result<usize> {
     unsafe { syscall0(SYS_YIELD) }
 }
+
+/// If wifsignaled(status), the terminating signal.
+#[inline(always)]
+pub fn wtermsig(status: usize) -> usize {
+    status & 0x7f
+}
+/// True if status indicates normal termination.
+#[inline(always)]
+pub fn wifexited(status: usize) -> bool {
+    wtermsig(status) == 0
+}
+/// True if status indicates the child is stopped.
+#[inline(always)]
+pub fn wifstopped(status: usize) -> bool {
+    (status & 0xff) == 0x7f
+}
+/// True if status indicates the child continued after a stop.
+#[inline(always)]
+pub fn wifcontinued(status: usize) -> bool {
+    status == 0xffff
+}
+/// Nonzero if STATUS indicates termination by a signal.
+#[inline(always)]
+pub fn wifsignaled(status: usize) -> bool {
+    ((status & 0x7f) + 1) >> 1 > 0
+}
