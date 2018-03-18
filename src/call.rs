@@ -232,9 +232,9 @@ pub fn mkns(schemes: &[[usize; 2]]) -> Result<usize> {
 }
 
 /// Sleep for the time specified in `req`
-pub fn nanosleep(req: &TimeSpec, rem: &mut TimeSpec) -> Result<usize> {
+pub fn nanosleep(req: &TimeSpec, rem: Option<&mut TimeSpec>) -> Result<usize> {
     unsafe { syscall2(SYS_NANOSLEEP, req as *const TimeSpec as usize,
-                                     rem as *mut TimeSpec as usize) }
+                      rem.map(|x| x as *mut _).unwrap_or_else(ptr::null_mut) as usize) }
 }
 
 /// Open a file
