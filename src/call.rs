@@ -100,11 +100,6 @@ pub fn fcntl(fd: usize, cmd: usize, arg: usize) -> Result<usize> {
     unsafe { syscall3(SYS_FCNTL, fd, cmd, arg) }
 }
 
-/// Register a file for event-based I/O
-pub fn fevent(fd: usize, flags: usize) -> Result<usize> {
-    unsafe { syscall2(SYS_FEVENT, fd, flags) }
-}
-
 /// Map a file into memory
 pub unsafe fn fmap(fd: usize, offset: usize, size: usize) -> Result<usize> {
     syscall3(SYS_FMAP, fd, offset, size)
