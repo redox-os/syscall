@@ -26,132 +26,132 @@ pub trait SchemeBlock {
             SYS_FSTAT => if packet.d >= mem::size_of::<Stat>() {
                 self.fstat(packet.b, unsafe { &mut *(packet.c as *mut Stat) })
             } else {
-                Some(Err(Error::new(EFAULT)))
+                Err(Error::new(EFAULT))
             },
             SYS_FSTATVFS => if packet.d >= mem::size_of::<StatVfs>() {
                 self.fstatvfs(packet.b, unsafe { &mut *(packet.c as *mut StatVfs) })
             } else {
-                Some(Err(Error::new(EFAULT)))
+                Err(Error::new(EFAULT))
             },
             SYS_FSYNC => self.fsync(packet.b),
             SYS_FTRUNCATE => self.ftruncate(packet.b, packet.c),
             SYS_FUTIMENS => if packet.d >= mem::size_of::<TimeSpec>() {
                 self.futimens(packet.b, unsafe { slice::from_raw_parts(packet.c as *const TimeSpec, packet.d / mem::size_of::<TimeSpec>()) })
             } else {
-                Some(Err(Error::new(EFAULT)))
+                Err(Error::new(EFAULT))
             },
             SYS_CLOSE => self.close(packet.b),
-            _ => Some(Err(Error::new(ENOSYS)))
+            _ => Err(Error::new(ENOSYS))
         };
 
-        res.map(Error::mux)
+        res.transpose().map(Error::mux)
     }
 
     /* Scheme operations */
 
     #[allow(unused_variables)]
-    fn open(&self, path: &[u8], flags: usize, uid: u32, gid: u32) -> Option<Result<usize>> {
-        Some(Err(Error::new(ENOENT)))
+    fn open(&self, path: &[u8], flags: usize, uid: u32, gid: u32) -> Result<Option<usize>> {
+        Err(Error::new(ENOENT))
     }
 
     #[allow(unused_variables)]
-    fn chmod(&self, path: &[u8], mode: u16, uid: u32, gid: u32) -> Option<Result<usize>> {
-        Some(Err(Error::new(ENOENT)))
+    fn chmod(&self, path: &[u8], mode: u16, uid: u32, gid: u32) -> Result<Option<usize>> {
+        Err(Error::new(ENOENT))
     }
 
     #[allow(unused_variables)]
-    fn rmdir(&self, path: &[u8], uid: u32, gid: u32) -> Option<Result<usize>> {
-        Some(Err(Error::new(ENOENT)))
+    fn rmdir(&self, path: &[u8], uid: u32, gid: u32) -> Result<Option<usize>> {
+        Err(Error::new(ENOENT))
     }
 
     #[allow(unused_variables)]
-    fn unlink(&self, path: &[u8], uid: u32, gid: u32) -> Option<Result<usize>> {
-        Some(Err(Error::new(ENOENT)))
+    fn unlink(&self, path: &[u8], uid: u32, gid: u32) -> Result<Option<usize>> {
+        Err(Error::new(ENOENT))
     }
 
     /* Resource operations */
     #[allow(unused_variables)]
-    fn dup(&self, old_id: usize, buf: &[u8]) -> Option<Result<usize>> {
-        Some(Err(Error::new(EBADF)))
+    fn dup(&self, old_id: usize, buf: &[u8]) -> Result<Option<usize>> {
+        Err(Error::new(EBADF))
     }
 
     #[allow(unused_variables)]
-    fn read(&self, id: usize, buf: &mut [u8]) -> Option<Result<usize>> {
-        Some(Err(Error::new(EBADF)))
+    fn read(&self, id: usize, buf: &mut [u8]) -> Result<Option<usize>> {
+        Err(Error::new(EBADF))
     }
 
     #[allow(unused_variables)]
-    fn write(&self, id: usize, buf: &[u8]) -> Option<Result<usize>> {
-        Some(Err(Error::new(EBADF)))
+    fn write(&self, id: usize, buf: &[u8]) -> Result<Option<usize>> {
+        Err(Error::new(EBADF))
     }
 
     #[allow(unused_variables)]
-    fn seek(&self, id: usize, pos: usize, whence: usize) -> Option<Result<usize>> {
-        Some(Err(Error::new(EBADF)))
+    fn seek(&self, id: usize, pos: usize, whence: usize) -> Result<Option<usize>> {
+        Err(Error::new(EBADF))
     }
 
     #[allow(unused_variables)]
-    fn fchmod(&self, id: usize, mode: u16) -> Option<Result<usize>> {
-        Some(Err(Error::new(EBADF)))
+    fn fchmod(&self, id: usize, mode: u16) -> Result<Option<usize>> {
+        Err(Error::new(EBADF))
     }
 
     #[allow(unused_variables)]
-    fn fchown(&self, id: usize, uid: u32, gid: u32) -> Option<Result<usize>> {
-        Some(Err(Error::new(EBADF)))
+    fn fchown(&self, id: usize, uid: u32, gid: u32) -> Result<Option<usize>> {
+        Err(Error::new(EBADF))
     }
 
     #[allow(unused_variables)]
-    fn fcntl(&self, id: usize, cmd: usize, arg: usize) -> Option<Result<usize>> {
-        Some(Err(Error::new(EBADF)))
+    fn fcntl(&self, id: usize, cmd: usize, arg: usize) -> Result<Option<usize>> {
+        Err(Error::new(EBADF))
     }
 
     #[allow(unused_variables)]
-    fn fevent(&self, id: usize, flags: usize) -> Option<Result<usize>> {
-        Some(Err(Error::new(EBADF)))
+    fn fevent(&self, id: usize, flags: usize) -> Result<Option<usize>> {
+        Err(Error::new(EBADF))
     }
 
     #[allow(unused_variables)]
-    fn fmap(&self, id: usize, offset: usize, size: usize) -> Option<Result<usize>> {
-        Some(Err(Error::new(EBADF)))
+    fn fmap(&self, id: usize, offset: usize, size: usize) -> Result<Option<usize>> {
+        Err(Error::new(EBADF))
     }
 
     #[allow(unused_variables)]
-    fn fpath(&self, id: usize, buf: &mut [u8]) -> Option<Result<usize>> {
-        Some(Err(Error::new(EBADF)))
+    fn fpath(&self, id: usize, buf: &mut [u8]) -> Result<Option<usize>> {
+        Err(Error::new(EBADF))
     }
 
     #[allow(unused_variables)]
-    fn frename(&self, id: usize, path: &[u8], uid: u32, gid: u32) -> Option<Result<usize>> {
-        Some(Err(Error::new(EBADF)))
+    fn frename(&self, id: usize, path: &[u8], uid: u32, gid: u32) -> Result<Option<usize>> {
+        Err(Error::new(EBADF))
     }
 
     #[allow(unused_variables)]
-    fn fstat(&self, id: usize, stat: &mut Stat) -> Option<Result<usize>> {
-        Some(Err(Error::new(EBADF)))
+    fn fstat(&self, id: usize, stat: &mut Stat) -> Result<Option<usize>> {
+        Err(Error::new(EBADF))
     }
 
     #[allow(unused_variables)]
-    fn fstatvfs(&self, id: usize, stat: &mut StatVfs) -> Option<Result<usize>> {
-        Some(Err(Error::new(EBADF)))
+    fn fstatvfs(&self, id: usize, stat: &mut StatVfs) -> Result<Option<usize>> {
+        Err(Error::new(EBADF))
     }
 
     #[allow(unused_variables)]
-    fn fsync(&self, id: usize) -> Option<Result<usize>> {
-        Some(Err(Error::new(EBADF)))
+    fn fsync(&self, id: usize) -> Result<Option<usize>> {
+        Err(Error::new(EBADF))
     }
 
     #[allow(unused_variables)]
-    fn ftruncate(&self, id: usize, len: usize) -> Option<Result<usize>> {
-        Some(Err(Error::new(EBADF)))
+    fn ftruncate(&self, id: usize, len: usize) -> Result<Option<usize>> {
+        Err(Error::new(EBADF))
     }
 
     #[allow(unused_variables)]
-    fn futimens(&self, id: usize, times: &[TimeSpec]) -> Option<Result<usize>> {
-        Some(Err(Error::new(EBADF)))
+    fn futimens(&self, id: usize, times: &[TimeSpec]) -> Result<Option<usize>> {
+        Err(Error::new(EBADF))
     }
 
     #[allow(unused_variables)]
-    fn close(&self, id: usize) -> Option<Result<usize>> {
-        Some(Err(Error::new(EBADF)))
+    fn close(&self, id: usize) -> Result<Option<usize>> {
+        Err(Error::new(EBADF))
     }
 }

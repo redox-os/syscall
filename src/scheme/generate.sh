@@ -10,9 +10,8 @@ sed 's/trait Scheme/trait SchemeMut/' scheme.rs \
 echo "Generating SchemeBlock from Scheme"
 sed 's/trait Scheme/trait SchemeBlock/' scheme.rs \
 | sed 's/fn handle(\&self, packet: \&mut Packet)/fn handle(\&self, packet: \&Packet) -> Option<usize>/' \
-| sed 's/packet.a = Error::mux(res);/res.map(Error::mux)/' \
-| sed 's/Result<usize>/Option<Result<usize>>/g' \
-| sed 's/Err(Error::new(\(.*\)))/Some(Err(Error::new(\1)))/g' \
+| sed 's/packet.a = Error::mux(res);/res.transpose().map(Error::mux)/' \
+| sed 's/Result<usize>/Result<Option<usize>>/g' \
 > scheme_block.rs
 
 echo "Generating SchemeBlockMut from SchemeBlock"
