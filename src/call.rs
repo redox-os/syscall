@@ -202,6 +202,11 @@ pub fn getuid() -> Result<usize> {
 }
 
 /// Set the I/O privilege level
+///
+/// # Errors
+///
+/// * `EPERM` - `uid != 0`
+/// * `EINVAL` - `level > 3`
 pub unsafe fn iopl(level: usize) -> Result<usize> {
     syscall1(SYS_IOPL, level)
 }
@@ -238,21 +243,39 @@ pub fn open<T: AsRef<[u8]>>(path: T, flags: usize) -> Result<usize> {
 }
 
 /// Allocate pages, linearly in physical memory
+///
+/// # Errors
+///
+/// * `EPERM` - `uid != 0`
+/// * `ENOMEM` - the system has run out of available memory
 pub unsafe fn physalloc(size: usize) -> Result<usize> {
     syscall1(SYS_PHYSALLOC, size)
 }
 
 /// Free physically allocated pages
+///
+/// # Errors
+///
+/// * `EPERM` - `uid != 0`
 pub unsafe fn physfree(physical_address: usize, size: usize) -> Result<usize> {
     syscall2(SYS_PHYSFREE, physical_address, size)
 }
 
 /// Map physical memory to virtual memory
+///
+/// # Errors
+///
+/// * `EPERM` - `uid != 0`
 pub unsafe fn physmap(physical_address: usize, size: usize, flags: usize) -> Result<usize> {
     syscall3(SYS_PHYSMAP, physical_address, size, flags)
 }
 
 /// Unmap previously mapped physical memory
+///
+/// # Errors
+///
+/// * `EPERM` - `uid != 0`
+/// * `EFAULT` - `virtual_address` has not been mapped
 pub unsafe fn physunmap(virtual_address: usize) -> Result<usize> {
     syscall1(SYS_PHYSUNMAP, virtual_address)
 }
@@ -311,6 +334,10 @@ pub fn unlink<T: AsRef<[u8]>>(path: T) -> Result<usize> {
 }
 
 /// Convert a virtual address to a physical one
+///
+/// # Errors
+///
+/// * `EPERM` - `uid != 0`
 pub unsafe fn virttophys(virtual_address: usize) -> Result<usize> {
     syscall1(SYS_VIRTTOPHYS, virtual_address)
 }
