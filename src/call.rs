@@ -72,12 +72,6 @@ pub fn dup2(fd: usize, newfd: usize, buf: &[u8]) -> Result<usize> {
     unsafe { syscall4(SYS_DUP2, fd, newfd, buf.as_ptr() as usize, buf.len()) }
 }
 
-/// Replace the current process with a new executable
-pub fn execve<T: AsRef<[u8]>>(path: T, args: &[[usize; 2]]) -> Result<usize> {
-    unsafe { syscall4(SYS_EXECVE, path.as_ref().as_ptr() as usize,
-                      path.as_ref().len(), args.as_ptr() as usize, args.len()) }
-}
-
 /// Exit the current process
 pub fn exit(status: usize) -> Result<usize> {
     unsafe { syscall1(SYS_EXIT, status) }
@@ -98,6 +92,11 @@ pub fn fchown(fd: usize, uid: u32, gid: u32) -> Result<usize> {
 /// Change file descriptor flags
 pub fn fcntl(fd: usize, cmd: usize, arg: usize) -> Result<usize> {
     unsafe { syscall3(SYS_FCNTL, fd, cmd, arg) }
+}
+
+/// Replace the current process with a new executable
+pub fn fexec(fd: usize, args: &[[usize; 2]], vars: &[[usize; 2]]) -> Result<usize> {
+    unsafe { syscall5(SYS_FEXEC, fd, args.as_ptr() as usize, args.len(), vars.as_ptr() as usize, vars.len()) }
 }
 
 /// Map a file into memory
