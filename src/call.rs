@@ -328,8 +328,8 @@ pub fn sigreturn() -> Result<usize> {
 }
 
 /// Set the file mode creation mask
-pub unsafe fn umask(mask: usize) -> Result<usize> {
-    syscall1(SYS_UMASK, mask)
+pub fn umask(mask: usize) -> Result<usize> {
+    unsafe { syscall1(SYS_UMASK, mask) }
 }
 
 /// Remove a file
