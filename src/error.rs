@@ -74,6 +74,7 @@ impl Error {
     /// assert_eq!("Operation not permitted", Error::new(EPERM).text());
     /// ```
     pub fn text(&self) -> &'static str {
+        #[allow(deprecated)]
         STR_ERROR.get(self.errno as usize).map(|&x| x).expect("SHOULD NOT HAPPEN (bad errno)")
     }
 }
@@ -495,7 +496,9 @@ const MAX_ERRNO: i32 = ENOTRECOVERABLE;
 const MAX_OK_VALUE: usize = -(MAX_ERRNO + 1) as usize;
 
 /// Error texts
-static STR_ERROR: [&'static str; MAX_ERRNO as usize+1] = ["SHOULD NOT BE USED",
+#[deprecated(note = "use error_str function")]
+pub static STR_ERROR: [&'static str; MAX_ERRNO as usize+1] = [
+    "Success",
     "Operation not permitted",
     "No such file or directory",
     "No such process",
@@ -627,6 +630,26 @@ static STR_ERROR: [&'static str; MAX_ERRNO as usize+1] = ["SHOULD NOT BE USED",
     "Key was rejected by service",
     "Owner died",
     "State not recoverable"];
+
+<<<<<<< HEAD
+=======
+/// Returns a text description associated with an `errorno`.
+/// More robust than `Errrpr::text()`: won't panic if the
+/// `errno` is not correct.
+/// ```
+/// use syscall::*;
+/// assert_eq!("Success", error_str(0));
+/// assert_eq!("State not recoverable", error_str(ENOTRECOVERABLE));
+/// assert_eq!("Unknown error", error_str(-1));
+/// assert_eq!("Unknown error", error_str(132));
+/// ```
+pub fn error_str(errno: i32) -> &'static str {
+    #[allow(deprecated)]
+    STR_ERROR
+        .get(errno as usize)
+        .map_or("Unknown error", |err| *err)
+}
+
 
 #[cfg(test)]
 mod tests {
