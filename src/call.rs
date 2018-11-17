@@ -327,6 +327,11 @@ pub fn sigreturn() -> Result<usize> {
     unsafe { syscall0(SYS_SIGRETURN) }
 }
 
+/// Set the file mode creation mask
+pub unsafe fn umask(mask: usize) -> Result<usize> {
+    syscall1(SYS_UMASK, mask)
+}
+
 /// Remove a file
 pub fn unlink<T: AsRef<[u8]>>(path: T) -> Result<usize> {
     unsafe { syscall2(SYS_UNLINK, path.as_ref().as_ptr() as usize, path.as_ref().len()) }
