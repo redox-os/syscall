@@ -1,13 +1,11 @@
-use core::{fmt, result};
+use core::fmt;
+use core::result;
 
 /// An error returned by the kernel,  identified by an `errno`.
 #[derive(Eq, PartialEq)]
 pub struct Error {
     pub errno: i32,
 }
-
-/// A `Result` specialization for results in the kernel.
-pub type Result<T> = result::Result<T, Error>;
 
 impl Error {
     /// Creates a new `Error`.
@@ -20,52 +18,6 @@ impl Error {
         }
         Error { errno: errno }
     }
-
-    /// Error multiplexer: encodes a `Result` into an `usize`. Returns `n` if
-    /// result is `Ok(n)`, else `-error.errno` if result is `Err(error)`:
-    ///
-    /// ```
-    /// use syscall::*;
-    /// assert_eq!(5 as usize,  Error::mux(Ok(5)));
-    /// assert_eq!(0 as usize,  Error::mux(Ok(0)));
-    /// assert_eq!(-132i32 as usize, Error::mux(Ok(-132i32 as usize)));
-    /// assert_eq!(-EIO as usize,  Error::mux(Err(Error::new(EIO))));
-    /// ```
-    ///
-    /// * `Ok`s are mapped to the numbers between `0` and
-    ///    `2^[bits] - 132` inclusive.
-    /// * `Err`s are mapped to the numbers between `2^[bits] - 131`
-    ///    and `2^[bits] - 1` inclusive.
-    ///
-    /// # Panics
-    /// Panics if `Ok` value is greater than `2^[bits] - 132`.
-    pub fn mux(result: Result<usize>) -> usize {
-        match result {
-            Ok(value) if value <= MAX_OK_VALUE => value,
-            Ok(_) => panic!("Huge Ok value can't be multiplexed."),
-            Err(error) => -error.errno as usize,
-        }
-    }
-
-    /// Error demultiplexer: decodes an `usize` into an `Result`. Returns
-    /// `Err(Error::new(-value))` if value (as i32) is in range 1..=131,
-    /// else `Ok(value)`.
-    ///
-    /// ```
-    /// use syscall::*;
-    /// assert_eq!(Ok(5),  Error::demux(5));
-    /// assert_eq!(Ok(0),  Error::demux(0));
-    /// assert_eq!(Err(Error::new(EIO)),  Error::demux(-EIO as usize));
-    /// ```
-    pub fn demux(value: usize) -> Result<usize> {
-        let errno = -(value as i32);
-        if errno >= 1 && errno <= MAX_ERRNO {
-            Err(Error::new(errno))
-        } else {
-            Ok(value)
-        }
-    }
-
 
     /// Returns a text representation of this error.
     ///
@@ -490,10 +442,7 @@ pub const ENOTRECOVERABLE: i32 = 131;
 const MIN_ERRNO: i32 = EPERM;
 
 /// Max error no
-const MAX_ERRNO: i32 = ENOTRECOVERABLE;
-
-/// Max ok value
-const MAX_OK_VALUE: usize = -(MAX_ERRNO + 1) as usize;
+pub const MAX_ERRNO: i32 = ENOTRECOVERABLE;
 
 /// Error texts
 #[deprecated(note = "use error_str function")]
@@ -669,11 +618,5 @@ mod tests {
     #[should_panic]
     fn big_errno() {
         let _ = Error::new(200);
-    }
-
-    #[test]
-    #[should_panic]
-    fn huge_value() {
-        let _ = Error::mux(Ok(-131i32 as usize));
     }
 }

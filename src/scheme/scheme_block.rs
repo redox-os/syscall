@@ -2,6 +2,7 @@ use core::{mem, slice};
 
 use data::*;
 use error::*;
+use result::{self, Result};
 use number::*;
 
 pub trait SchemeBlock {
@@ -44,7 +45,7 @@ pub trait SchemeBlock {
             _ => Err(Error::new(ENOSYS))
         };
 
-        res.transpose().map(Error::mux)
+        res.transpose().map(result::mux)
     }
 
     /* Scheme operations */
