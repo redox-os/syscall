@@ -1,5 +1,10 @@
 use core::fmt;
 use core::result;
+use super::result::{Result};
+
+/// duplicate of result::MAX_OK_VALUE.
+/// to remove with mux/demux.
+const MAX_OK_VALUE: usize = -(MAX_ERRNO + 1) as usize;
 
 /// An error returned by the kernel,  identified by an `errno`.
 #[derive(Eq, PartialEq)]
@@ -18,6 +23,28 @@ impl Error {
         }
         Error { errno: errno }
     }
+
+    /// Result multiplexer. Use `result::mux`.
+    #[deprecated(note = "use result::mux function")]
+    pub fn mux(result: Result<usize>) -> usize {
+        match result {
+            Ok(value) if value <= MAX_OK_VALUE => value,
+            Ok(_) => panic!("Huge Ok value can't be multiplexed."),
+            Err(error) => -error.errno as usize,
+        }
+    }
+
+    /// Result demultiplexer. Use `result::demux`
+    #[deprecated(note = "use result::demux function")]
+    pub fn demux(value: usize) -> Result<usize> {
+        let errno = -(value as i32);
+        if errno >= 1 && errno <= MAX_ERRNO {
+            Err(Error::new(errno))
+        } else {
+            Ok(value)
+        }
+    }
+
 
     /// Returns a text representation of this error.
     ///
