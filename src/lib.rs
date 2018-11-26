@@ -17,6 +17,10 @@ pub use self::scheme::*;
 #[path="arch/arm.rs"]
 mod arch;
 
+#[cfg(target_arch = "aarch64")]
+#[path="arch/aarch64.rs"]
+mod arch;
+
 #[cfg(target_arch = "x86")]
 #[path="arch/x86.rs"]
 mod arch;
