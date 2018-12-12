@@ -2,6 +2,7 @@ use core::ops::{Deref, DerefMut};
 use core::{mem, slice};
 
 #[derive(Copy, Clone, Debug, Default)]
+#[repr(C)]
 pub struct Event {
     pub id: usize,
     pub flags: usize,
