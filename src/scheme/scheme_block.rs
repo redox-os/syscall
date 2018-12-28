@@ -20,7 +20,11 @@ pub trait SchemeBlock {
             SYS_FCHOWN => self.fchown(packet.b, packet.c as u32, packet.d as u32),
             SYS_FCNTL => self.fcntl(packet.b, packet.c, packet.d),
             SYS_FEVENT => self.fevent(packet.b, packet.c),
-            SYS_FMAP => self.fmap(packet.b, packet.c, packet.d),
+            SYS_FMAP => if packet.d >= mem::size_of::<Map>() {
+                self.fmap(packet.b, unsafe { &*(packet.c as *const Map) })
+            } else {
+                Err(Error::new(EFAULT))
+            },
             SYS_FPATH => self.fpath(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
             SYS_FRENAME => self.frename(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }, packet.uid, packet.gid),
             SYS_FSTAT => if packet.d >= mem::size_of::<Stat>() {
@@ -111,7 +115,7 @@ pub trait SchemeBlock {
     }
 
     #[allow(unused_variables)]
-    fn fmap(&self, id: usize, offset: usize, size: usize) -> Result<Option<usize>> {
+    fn fmap(&self, id: usize, map: &Map) -> Result<Option<usize>> {
         Err(Error::new(EBADF))
     }
 

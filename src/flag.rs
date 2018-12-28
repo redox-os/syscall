@@ -22,8 +22,8 @@ pub const FUTEX_WAIT: usize = 0;
 pub const FUTEX_WAKE: usize = 1;
 pub const FUTEX_REQUEUE: usize = 2;
 
-pub const MAP_WRITE: usize = 1;
-pub const MAP_WRITE_COMBINE: usize = 2;
+pub const MAP_SHARED: usize = 0x0001;
+pub const MAP_PRIVATE: usize = 0x0002;
 
 pub const MODE_TYPE: u16 = 0xF000;
 pub const MODE_DIR: u16 = 0x4000;
@@ -54,6 +54,14 @@ pub const O_STAT: usize =       0x2000_0000;
 pub const O_SYMLINK: usize =    0x4000_0000;
 pub const O_NOFOLLOW: usize =   0x8000_0000;
 pub const O_ACCMODE: usize =    O_RDONLY | O_WRONLY | O_RDWR;
+
+pub const PHYSMAP_WRITE: usize = 1;
+pub const PHYSMAP_WRITE_COMBINE: usize = 2;
+
+pub const PROT_NONE: usize = 0x0000_0000;
+pub const PROT_EXEC: usize = 0x0001_0000;
+pub const PROT_WRITE: usize = 0x0002_0000;
+pub const PROT_READ: usize = 0x0004_0000;
 
 pub const SEEK_SET: usize = 0;
 pub const SEEK_CUR: usize = 1;

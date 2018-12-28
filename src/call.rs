@@ -1,5 +1,5 @@
 use super::arch::*;
-use super::data::{SigAction, Stat, StatVfs, TimeSpec};
+use super::data::{Map, SigAction, Stat, StatVfs, TimeSpec};
 use super::error::Result;
 use super::number::*;
 
@@ -100,8 +100,8 @@ pub fn fexec(fd: usize, args: &[[usize; 2]], vars: &[[usize; 2]]) -> Result<usiz
 }
 
 /// Map a file into memory
-pub unsafe fn fmap(fd: usize, offset: usize, size: usize) -> Result<usize> {
-    syscall3(SYS_FMAP, fd, offset, size)
+pub unsafe fn fmap(fd: usize, map: &Map) -> Result<usize> {
+    syscall3(SYS_FMAP, fd, map as *const Map as usize, mem::size_of::<Map>())
 }
 
 /// Unmap a memory-mapped file

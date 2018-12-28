@@ -28,6 +28,31 @@ impl DerefMut for Event {
 
 #[derive(Copy, Clone, Debug, Default)]
 #[repr(C)]
+pub struct Map {
+    pub offset: usize,
+    pub size: usize,
+    pub flags: usize,
+}
+
+impl Deref for Map {
+    type Target = [u8];
+    fn deref(&self) -> &[u8] {
+        unsafe {
+            slice::from_raw_parts(self as *const Map as *const u8, mem::size_of::<Map>()) as &[u8]
+        }
+    }
+}
+
+impl DerefMut for Map {
+    fn deref_mut(&mut self) -> &mut [u8] {
+        unsafe {
+            slice::from_raw_parts_mut(self as *mut Map as *mut u8, mem::size_of::<Map>()) as &mut [u8]
+        }
+    }
+}
+
+#[derive(Copy, Clone, Debug, Default)]
+#[repr(C)]
 pub struct Packet {
     pub id: u64,
     pub pid: usize,
