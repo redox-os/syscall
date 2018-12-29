@@ -28,6 +28,32 @@ impl DerefMut for Event {
 
 #[derive(Copy, Clone, Debug, Default)]
 #[repr(C)]
+pub struct ITimerSpec {
+    it_interval: TimeSpec,
+    it_value: TimeSpec,
+}
+
+impl Deref for ITimerSpec {
+    type Target = [u8];
+    fn deref(&self) -> &[u8] {
+        unsafe {
+            slice::from_raw_parts(self as *const ITimerSpec as *const u8,
+                                  mem::size_of::<ITimerSpec>()) as &[u8]
+        }
+    }
+}
+
+impl DerefMut for ITimerSpec {
+    fn deref_mut(&mut self) -> &mut [u8] {
+        unsafe {
+            slice::from_raw_parts_mut(self as *mut ITimerSpec as *mut u8,
+                                      mem::size_of::<ITimerSpec>()) as &mut [u8]
+        }
+    }
+}
+
+#[derive(Copy, Clone, Debug, Default)]
+#[repr(C)]
 pub struct Map {
     pub offset: usize,
     pub size: usize,
