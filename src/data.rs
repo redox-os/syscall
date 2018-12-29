@@ -29,8 +29,8 @@ impl DerefMut for Event {
 #[derive(Copy, Clone, Debug, Default)]
 #[repr(C)]
 pub struct ITimerSpec {
-    it_interval: TimeSpec,
-    it_value: TimeSpec,
+    pub it_interval: TimeSpec,
+    pub it_value: TimeSpec,
 }
 
 impl Deref for ITimerSpec {
