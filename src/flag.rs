@@ -102,6 +102,10 @@ pub const SIGSYS: usize =   31;
 pub const SIG_DFL: usize = 0;
 pub const SIG_IGN: usize = 1;
 
+pub const SIG_BLOCK: usize = 0;
+pub const SIG_UNBLOCK: usize = 1;
+pub const SIG_SETMASK: usize = 2;
+
 pub const SA_NOCLDSTOP: usize = 0x00000001;
 pub const SA_NOCLDWAIT: usize = 0x00000002;
 pub const SA_SIGINFO: usize =   0x00000004;

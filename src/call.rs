@@ -322,6 +322,11 @@ pub fn sigaction(sig: usize, act: Option<&SigAction>, oldact: Option<&mut SigAct
                       restorer as usize) }
 }
 
+/// Get and/or set signal masks
+pub fn sigprocmask(how: usize, set: &[u64; 2], oset: &mut [u64; 2]) -> Result<usize> {
+    unsafe { syscall3(SYS_SIGPROCMASK, how, set.as_ptr() as usize, oset.as_mut_ptr() as usize) }
+}
+
 // Return from signal handler
 pub fn sigreturn() -> Result<usize> {
     unsafe { syscall0(SYS_SIGRETURN) }
