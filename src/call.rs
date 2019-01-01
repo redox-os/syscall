@@ -230,6 +230,11 @@ pub fn mkns(schemes: &[[usize; 2]]) -> Result<usize> {
     unsafe { syscall2(SYS_MKNS, schemes.as_ptr() as usize, schemes.len()) }
 }
 
+/// Change mapping flags
+pub unsafe fn mprotect(addr: usize, size: usize, flags: usize) -> Result<usize> {
+    syscall3(SYS_MPROTECT, addr, size, flags)
+}
+
 /// Sleep for the time specified in `req`
 pub fn nanosleep(req: &TimeSpec, rem: &mut TimeSpec) -> Result<usize> {
     unsafe { syscall2(SYS_NANOSLEEP, req as *const TimeSpec as usize,

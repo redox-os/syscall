@@ -55,6 +55,7 @@ pub const SYS_GETPPID: usize =  64;
 pub const SYS_GETUID: usize =   199;
 pub const SYS_IOPL: usize =     110;
 pub const SYS_KILL: usize =     37;
+pub const SYS_MPROTECT: usize = 125;
 pub const SYS_MKNS: usize =     984;
 pub const SYS_NANOSLEEP: usize =162;
 pub const SYS_PHYSALLOC: usize =945;
