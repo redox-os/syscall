@@ -2,6 +2,7 @@ use core::{mem, slice};
 
 use data::*;
 use error::*;
+use result::{self, Result};
 use number::*;
 
 pub trait SchemeMut {
@@ -48,7 +49,7 @@ pub trait SchemeMut {
             _ => Err(Error::new(ENOSYS))
         };
 
-        packet.a = Error::mux(res);
+        packet.a = result::mux(res);
     }
 
     /* Scheme operations */

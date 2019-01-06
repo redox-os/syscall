@@ -1,6 +1,6 @@
 use super::arch::*;
 use super::data::{Map, SigAction, Stat, StatVfs, TimeSpec};
-use super::error::Result;
+use super::result::Result;
 use super::number::*;
 
 use core::{mem, ptr};
