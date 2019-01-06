@@ -496,7 +496,7 @@ const MAX_ERRNO: i32 = ENOTRECOVERABLE;
 const MAX_OK_VALUE: usize = -(MAX_ERRNO + 1) as usize;
 
 /// Error texts
-#[deprecated(note = "use error_str function")]
+#[deprecated(note = "use strerror function")]
 pub static STR_ERROR: [&'static str; MAX_ERRNO as usize+1] = [
     "Success",
     "Operation not permitted",
@@ -638,12 +638,12 @@ pub static STR_ERROR: [&'static str; MAX_ERRNO as usize+1] = [
 /// `errno` is not correct.
 /// ```
 /// use syscall::*;
-/// assert_eq!("Success", error_str(0));
-/// assert_eq!("State not recoverable", error_str(ENOTRECOVERABLE));
-/// assert_eq!("Unknown error", error_str(-1));
-/// assert_eq!("Unknown error", error_str(132));
+/// assert_eq!("Success", strerror(0));
+/// assert_eq!("State not recoverable", strerror(ENOTRECOVERABLE));
+/// assert_eq!("Unknown error", strerror(-1));
+/// assert_eq!("Unknown error", strerror(132));
 /// ```
-pub fn error_str(errno: i32) -> &'static str {
+pub fn strerror(errno: i32) -> &'static str {
     #[allow(deprecated)]
     STR_ERROR
         .get(errno as usize)
