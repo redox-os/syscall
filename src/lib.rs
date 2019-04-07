@@ -1,7 +1,5 @@
-#![deny(warnings)]
 #![feature(asm)]
 #![feature(const_fn)]
-#![feature(transpose_result)]
 #![no_std]
 
 pub use self::arch::*;
