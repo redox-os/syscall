@@ -25,6 +25,7 @@ pub trait SchemeBlockMut {
             } else {
                 Err(Error::new(EFAULT))
             },
+            SYS_FUNMAP => self.funmap(packet.b),
             SYS_FPATH => self.fpath(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
             SYS_FRENAME => self.frename(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }, packet.uid, packet.gid),
             SYS_FSTAT => if packet.d >= mem::size_of::<Stat>() {
@@ -116,6 +117,11 @@ pub trait SchemeBlockMut {
 
     #[allow(unused_variables)]
     fn fmap(&mut self, id: usize, map: &Map) -> Result<Option<usize>> {
+        Err(Error::new(EBADF))
+    }
+
+    #[allow(unused_variables)]
+    fn funmap(&mut self, address: usize) -> Result<Option<usize>> {
         Err(Error::new(EBADF))
     }
 
