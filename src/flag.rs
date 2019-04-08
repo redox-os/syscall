@@ -56,8 +56,9 @@ pub const O_SYMLINK: usize =    0x4000_0000;
 pub const O_NOFOLLOW: usize =   0x8000_0000;
 pub const O_ACCMODE: usize =    O_RDONLY | O_WRONLY | O_RDWR;
 
-pub const PHYSMAP_WRITE: usize = 1;
-pub const PHYSMAP_WRITE_COMBINE: usize = 2;
+pub const PHYSMAP_WRITE: usize = 0x0000_0001;
+pub const PHYSMAP_WRITE_COMBINE: usize = 0x0000_0002;
+pub const PHYSMAP_NO_CACHE: usize = 0x0000_0004;
 
 pub const PROT_NONE: usize = 0x0000_0000;
 pub const PROT_EXEC: usize = 0x0001_0000;
