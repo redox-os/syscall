@@ -217,3 +217,91 @@ impl DerefMut for TimeSpec {
         }
     }
 }
+
+#[derive(Copy, Clone, Debug, Default)]
+#[repr(C)]
+pub struct IntRegisters {
+    pub r15: usize,
+    pub r14: usize,
+    pub r13: usize,
+    pub r12: usize,
+    pub rbp: usize,
+    pub rbx: usize,
+    pub r11: usize,
+    pub r10: usize,
+    pub r9: usize,
+    pub r8: usize,
+    pub rax: usize,
+    pub rcx: usize,
+    pub rdx: usize,
+    pub rsi: usize,
+    pub rdi: usize,
+    // pub orig_rax: usize,
+    pub rip: usize,
+    pub cs: usize,
+    pub eflags: usize,
+    pub rsp: usize,
+    pub ss: usize,
+    pub fs_base: usize,
+    pub gs_base: usize,
+    pub ds: usize,
+    pub es: usize,
+    pub fs: usize,
+    pub gs: usize
+}
+
+impl Deref for IntRegisters {
+    type Target = [u8];
+    fn deref(&self) -> &[u8] {
+        unsafe {
+            slice::from_raw_parts(self as *const IntRegisters as *const u8, mem::size_of::<IntRegisters>()) as &[u8]
+        }
+    }
+}
+
+impl DerefMut for IntRegisters {
+    fn deref_mut(&mut self) -> &mut [u8] {
+        unsafe {
+            slice::from_raw_parts_mut(self as *mut IntRegisters as *mut u8, mem::size_of::<IntRegisters>()) as &mut [u8]
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
+#[repr(C)]
+pub struct FloatRegisters {
+    pub cwd: u16,
+    pub swd: u16,
+    pub ftw: u16,
+    pub fop: u16,
+    pub rip: u64,
+    pub rdp: u64,
+    pub mxcsr: u32,
+    pub mxcr_mask: u32,
+    pub st_space: [u32; 32],
+    pub xmm_space: [u32; 64]
+}
+
+impl Default for FloatRegisters {
+    fn default() -> Self {
+        // xmm_space is not Default until const generics
+        unsafe { mem::zeroed() }
+    }
+}
+
+impl Deref for FloatRegisters {
+    type Target = [u8];
+    fn deref(&self) -> &[u8] {
+        unsafe {
+            slice::from_raw_parts(self as *const FloatRegisters as *const u8, mem::size_of::<FloatRegisters>()) as &[u8]
+        }
+    }
+}
+
+impl DerefMut for FloatRegisters {
+    fn deref_mut(&mut self) -> &mut [u8] {
+        unsafe {
+            slice::from_raw_parts_mut(self as *mut FloatRegisters as *mut u8, mem::size_of::<FloatRegisters>()) as &mut [u8]
+        }
+    }
+}

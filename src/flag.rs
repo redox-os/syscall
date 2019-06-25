@@ -65,6 +65,12 @@ pub const PROT_EXEC: usize = 0x0001_0000;
 pub const PROT_WRITE: usize = 0x0002_0000;
 pub const PROT_READ: usize = 0x0004_0000;
 
+pub const PTRACE_CONT: u8 = 0b0000_0001;
+pub const PTRACE_SINGLESTEP: u8 = 0b0000_0010;
+pub const PTRACE_SYSCALL: u8 = 0b0000_0011;
+pub const PTRACE_OPERATIONMASK: u8 = 0b0000_1111;
+pub const PTRACE_SYSEMU: u8 = 0b0001_0000;
+
 pub const SEEK_SET: usize = 0;
 pub const SEEK_CUR: usize = 1;
 pub const SEEK_END: usize = 2;
