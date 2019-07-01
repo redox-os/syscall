@@ -220,6 +220,7 @@ impl DerefMut for TimeSpec {
 
 #[derive(Copy, Clone, Debug, Default)]
 #[repr(C)]
+#[cfg(target_arch = "x86_64")]
 pub struct IntRegisters {
     pub r15: usize,
     pub r14: usize,
@@ -269,6 +270,7 @@ impl DerefMut for IntRegisters {
 
 #[derive(Clone, Copy)]
 #[repr(C)]
+#[cfg(target_arch = "x86_64")]
 pub struct FloatRegisters {
     pub cwd: u16,
     pub swd: u16,
