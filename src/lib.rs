@@ -1,3 +1,4 @@
+#![cfg(target_os = "redox")]
 #![feature(asm)]
 #![feature(const_fn)]
 #![no_std]
