@@ -1,7 +1,10 @@
 #![cfg(target_os = "redox")]
 #![feature(asm)]
 #![feature(const_fn)]
-#![no_std]
+#![cfg_attr(not(test), no_std)]
+
+#[cfg(test)]
+extern crate core;
 
 pub use self::arch::*;
 pub use self::call::*;
@@ -48,3 +51,6 @@ pub mod number;
 
 /// A trait useful for scheme handlers
 pub mod scheme;
+
+#[cfg(test)]
+mod tests;

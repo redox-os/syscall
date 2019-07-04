@@ -43,6 +43,10 @@ pub fn chdir<T: AsRef<[u8]>>(path: T) -> Result<usize> {
     unsafe { syscall2(SYS_CHDIR, path.as_ref().as_ptr() as usize, path.as_ref().len()) }
 }
 
+#[deprecated(
+    since = "0.1.55",
+    note = "use fchmod instead"
+)]
 pub fn chmod<T: AsRef<[u8]>>(path: T, mode: usize) -> Result<usize> {
     unsafe { syscall3(SYS_CHMOD, path.as_ref().as_ptr() as usize, path.as_ref().len(), mode) }
 }

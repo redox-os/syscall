@@ -192,7 +192,7 @@ impl DerefMut for StatVfs {
     }
 }
 
-#[derive(Copy, Clone, Debug, Default)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[repr(C)]
 pub struct TimeSpec {
     pub tv_sec: i64,
