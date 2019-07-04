@@ -222,6 +222,8 @@ impl DerefMut for TimeSpec {
 #[repr(C)]
 #[cfg(target_arch = "x86_64")]
 pub struct IntRegisters {
+    // TODO: Some of these don't get set by Redox yet. Should they?
+
     pub r15: usize,
     pub r14: usize,
     pub r13: usize,
@@ -240,15 +242,15 @@ pub struct IntRegisters {
     // pub orig_rax: usize,
     pub rip: usize,
     pub cs: usize,
-    pub eflags: usize,
+    pub rflags: usize,
     pub rsp: usize,
     pub ss: usize,
-    pub fs_base: usize,
-    pub gs_base: usize,
-    pub ds: usize,
-    pub es: usize,
+    // pub fs_base: usize,
+    // pub gs_base: usize,
+    // pub ds: usize,
+    // pub es: usize,
     pub fs: usize,
-    pub gs: usize
+    // pub gs: usize
 }
 
 impl Deref for IntRegisters {
@@ -268,27 +270,21 @@ impl DerefMut for IntRegisters {
     }
 }
 
-#[derive(Clone, Copy)]
-#[repr(C)]
+#[derive(Clone, Copy, Debug, Default)]
+#[repr(packed)]
 #[cfg(target_arch = "x86_64")]
 pub struct FloatRegisters {
-    pub cwd: u16,
-    pub swd: u16,
-    pub ftw: u16,
+    pub fcw: u16,
+    pub fsw: u16,
+    pub ftw: u8,
+    pub _reserved: u8,
     pub fop: u16,
-    pub rip: u64,
-    pub rdp: u64,
+    pub fip: u64,
+    pub fdp: u64,
     pub mxcsr: u32,
-    pub mxcr_mask: u32,
-    pub st_space: [u32; 32],
-    pub xmm_space: [u32; 64]
-}
-
-impl Default for FloatRegisters {
-    fn default() -> Self {
-        // xmm_space is not Default until const generics
-        unsafe { mem::zeroed() }
-    }
+    pub mxcsr_mask: u32,
+    pub st_space: [u128; 8],
+    pub xmm_space: [u128; 16]
 }
 
 impl Deref for FloatRegisters {
