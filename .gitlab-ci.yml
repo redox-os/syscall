@@ -3,3 +3,7 @@ image: "redoxos/redoxer"
 build:
     script:
      - redoxer build
+
+test:
+    script:
+     - redoxer test
