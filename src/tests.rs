@@ -9,9 +9,26 @@ fn brk() {
 
 #[test]
 fn chdir() {
-    //TODO: Verify CWD
-    assert_eq!(dbg!(crate::chdir("file:/")), Ok(0));
-    assert_eq!(dbg!(crate::chdir("file:/root")), Ok(0));
+    use std::str;
+
+    let mut current_buf = [0; 4096];
+    let current_count = dbg!(crate::getcwd(&mut current_buf)).unwrap();
+    let current = dbg!(str::from_utf8(&current_buf[..current_count])).unwrap();
+
+    let new = "file:";
+    assert_eq!(dbg!(crate::chdir(dbg!(new))), Ok(0));
+    {
+        let mut buf = [0; 4096];
+        let count = dbg!(crate::getcwd(&mut buf)).unwrap();
+        assert_eq!(dbg!(str::from_utf8(&buf[..count])), Ok(new));
+    }
+
+    assert_eq!(dbg!(crate::chdir(current)), Ok(0));
+    {
+        let mut buf = [0; 4096];
+        let count = dbg!(crate::getcwd(&mut buf)).unwrap();
+        assert_eq!(dbg!(str::from_utf8(&buf[..count])), Ok(current));
+    }
 }
 
 //TODO: chmod
@@ -61,7 +78,7 @@ fn clock_gettime() {
 
 #[test]
 fn fexec() {
-    let name = "/bin/ls";
+    let name = "file:/bin/ls";
 
     let fd = dbg!(
         crate::open(name, crate::O_RDONLY | crate::O_CLOEXEC)
@@ -94,7 +111,7 @@ fn fmap() {
 
     let fd = dbg!(
         crate::open(
-            "/tmp/syscall-tests-fmap",
+            "file:/tmp/syscall-tests-fmap",
             crate::O_CREAT | crate::O_RDWR | crate::O_CLOEXEC
         )
     ).unwrap();
@@ -126,4 +143,155 @@ fn fmap() {
             crate::funmap(map.as_mut_ptr() as usize)
         ), Ok(0));
     }
+}
+
+// funmap: tested by fmap
+
+#[test]
+fn fpath() {
+    use std::str;
+
+    let path = "file:/tmp/syscall-tests-fpath";
+    let fd = dbg!(
+        crate::open(
+            dbg!(path),
+            crate::O_CREAT | crate::O_RDWR | crate::O_CLOEXEC
+        )
+    ).unwrap();
+
+    let mut buf = [0; 4096];
+    let count = dbg!(
+        crate::fpath(fd, &mut buf)
+    ).unwrap();
+
+    assert_eq!(dbg!(str::from_utf8(&buf[..count])), Ok(path));
+
+    assert_eq!(dbg!(crate::close(fd)), Ok(0));
+}
+
+//TODO: frename
+
+#[test]
+fn fstat() {
+    let path = "file:/tmp/syscall-tests-fstat";
+    let fd = dbg!(
+        crate::open(
+            dbg!(path),
+            crate::O_CREAT | crate::O_RDWR | crate::O_CLOEXEC
+        )
+    ).unwrap();
+
+    let mut stat = crate::Stat::default();
+    assert_eq!(dbg!(crate::fstat(fd, &mut stat)), Ok(0));
+    assert_ne!(dbg!(stat), crate::Stat::default());
+
+    assert_eq!(dbg!(crate::close(fd)), Ok(0));
+}
+
+#[test]
+fn fstatvfs() {
+    let path = "file:/tmp/syscall-tests-fstatvfs";
+    let fd = dbg!(
+        crate::open(
+            dbg!(path),
+            crate::O_CREAT | crate::O_RDWR | crate::O_CLOEXEC
+        )
+    ).unwrap();
+
+    let mut statvfs = crate::StatVfs::default();
+    assert_eq!(dbg!(crate::fstatvfs(fd, &mut statvfs)), Ok(0));
+    assert_ne!(dbg!(statvfs), crate::StatVfs::default());
+
+    assert_eq!(dbg!(crate::close(fd)), Ok(0));
+}
+
+//TODO: fsync
+
+//TODO: ftruncate
+
+//TODO: futimens
+
+//TODO: futex
+
+// getcwd tested by chdir
+
+#[test]
+fn getegid() {
+    assert_eq!(crate::getegid(), Ok(0));
+}
+
+#[test]
+fn getens() {
+    assert_eq!(crate::getens(), Ok(1));
+}
+
+#[test]
+fn geteuid() {
+    assert_eq!(crate::geteuid(), Ok(0));
+}
+
+#[test]
+fn getgid() {
+    assert_eq!(crate::getgid(), Ok(0));
+}
+
+#[test]
+fn getns() {
+    assert_eq!(crate::getns(), Ok(1));
+}
+
+//TODO: getpid
+
+//TODO: getpgid
+
+//TODO: getppid
+
+#[test]
+fn getuid() {
+    assert_eq!(crate::getuid(), Ok(0));
+}
+
+//TODO: iopl
+
+//TODO: kill
+
+//TODO: link (probably will not work)
+
+#[test]
+fn lseek() {
+    let path = "file:/tmp/syscall-tests-lseek";
+    let fd = dbg!(
+        crate::open(
+            dbg!(path),
+            crate::O_CREAT | crate::O_RDWR | crate::O_CLOEXEC
+        )
+    ).unwrap();
+
+    {
+        let mut buf = [0; 256];
+        for i in 0..buf.len() {
+            buf[i] = i as u8;
+        }
+        assert_eq!(dbg!(crate::write(fd, &buf)), Ok(buf.len()));
+
+        assert_eq!(dbg!(crate::lseek(fd, 0, crate::SEEK_CUR)), Ok(buf.len()));
+        assert_eq!(dbg!(crate::lseek(fd, 0, crate::SEEK_SET)), Ok(0));
+        assert_eq!(dbg!(crate::lseek(fd, 0, crate::SEEK_END)), Ok(buf.len()));
+        assert_eq!(dbg!(crate::lseek(fd, 0, crate::SEEK_SET)), Ok(0));
+    }
+
+    {
+        let mut buf = [0; 256];
+        assert_eq!(dbg!(crate::read(fd, &mut buf)), Ok(buf.len()));
+        for i in 0..buf.len() {
+            assert_eq!(buf[i], i as u8);
+        }
+
+        assert_eq!(dbg!(crate::lseek(fd, 0, crate::SEEK_CUR)), Ok(buf.len()));
+        assert_eq!(dbg!(crate::lseek(fd, 0, crate::SEEK_SET)), Ok(0));
+        assert_eq!(dbg!(crate::lseek(fd, 0, crate::SEEK_END)), Ok(buf.len()));
+        assert_eq!(dbg!(crate::lseek(fd, 0, crate::SEEK_SET)), Ok(0));
+    }
+
+    assert_eq!(dbg!(crate::close(fd)), Ok(0));
 }

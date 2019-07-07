@@ -125,7 +125,7 @@ impl Default for SigAction {
     }
 }
 
-#[derive(Copy, Clone, Debug, Default)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[repr(C)]
 pub struct Stat {
     pub st_dev: u64,
@@ -164,7 +164,7 @@ impl DerefMut for Stat {
     }
 }
 
-#[derive(Copy, Clone, Debug, Default)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[repr(C)]
 pub struct StatVfs {
     pub f_bsize: u32,
