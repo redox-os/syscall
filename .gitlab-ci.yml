@@ -16,12 +16,6 @@ build:redox:
     stage: build
     script: redoxer build --verbose
 
-test:linux:
-    stage: test
-    dependencies:
-        - build:linux
-    script: cargo +nightly test --verbose
-
 test:redox:
     stage: test
     dependencies:
