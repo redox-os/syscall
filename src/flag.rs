@@ -72,6 +72,8 @@ pub const PTRACE_WAIT: u8 = 0b0000_0100;
 pub const PTRACE_OPERATIONMASK: u8 = 0b0000_1111;
 pub const PTRACE_SYSEMU: u8 = 0b0001_0000;
 
+pub const PTRACE_EVENT_CLONE: u16 = 0;
+
 pub const SEEK_SET: usize = 0;
 pub const SEEK_CUR: usize = 1;
 pub const SEEK_END: usize = 2;
