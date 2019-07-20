@@ -107,22 +107,21 @@ impl DerefMut for Packet {
     }
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[repr(C)]
 pub struct SigAction {
-    pub sa_handler: extern "C" fn(usize),
+    pub sa_handler: Option<extern "C" fn(usize)>,
     pub sa_mask: [u64; 2],
     pub sa_flags: usize,
 }
 
-impl Default for SigAction {
-    fn default() -> Self {
-        Self {
-            sa_handler: unsafe { mem::transmute(0usize) },
-            sa_mask: [0; 2],
-            sa_flags: 0,
-        }
-    }
+#[allow(dead_code)]
+unsafe fn _assert_size_of_function_is_sane() {
+    // Transmuting will complain *at compile time* if sizes differ.
+    // Rust forbids a fn-pointer from being 0 so to allow SIG_DFL to
+    // exist, we use Option<extern "C" fn(usize)> which will mean 0
+    // becomes None
+    let _ = mem::transmute::<Option<extern "C" fn(usize)>, usize>(None);
 }
 
 #[derive(Copy, Clone, Debug, Default, PartialEq)]

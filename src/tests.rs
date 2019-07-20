@@ -409,3 +409,62 @@ fn unlink() {
 fn sched_yield() {
     assert_eq!(dbg!(crate::sched_yield()), Ok(0));
 }
+
+#[test]
+fn sigaction() {
+    use std::{
+        mem,
+        sync::atomic::{AtomicBool, Ordering}
+    };
+
+    let child = unsafe { dbg!(crate::clone(0)).unwrap() };
+
+    if child == 0 {
+        static SA_HANDLER_WAS_RAN: AtomicBool = AtomicBool::new(false);
+
+        let pid = dbg!(crate::getpid()).unwrap();
+
+        extern "C" fn hello_im_a_signal_handler(signal: usize) {
+            assert_eq!(dbg!(signal), crate::SIGUSR1);
+            SA_HANDLER_WAS_RAN.store(true, Ordering::SeqCst);
+        }
+
+        let my_signal_handler = crate::SigAction {
+            sa_handler: Some(hello_im_a_signal_handler),
+            ..Default::default()
+        };
+        dbg!(crate::sigaction(crate::SIGUSR1, Some(&my_signal_handler), None)).unwrap();
+
+        dbg!(crate::kill(pid, crate::SIGUSR1)).unwrap(); // calls handler
+
+        let mut old_signal_handler = crate::SigAction::default();
+        dbg!(crate::sigaction(
+            crate::SIGUSR1,
+            Some(&crate::SigAction {
+                sa_handler: unsafe { mem::transmute::<usize, Option<extern "C" fn(usize)>>(crate::SIG_IGN) },
+                ..Default::default()
+            }),
+            Some(&mut old_signal_handler)
+        )).unwrap();
+        assert_eq!(my_signal_handler, old_signal_handler);
+
+        dbg!(crate::kill(pid, crate::SIGUSR1)).unwrap(); // does nothing
+
+        dbg!(crate::sigaction(
+            crate::SIGUSR1,
+            Some(&crate::SigAction {
+                sa_handler: unsafe { mem::transmute::<usize, Option<extern "C" fn(usize)>>(crate::SIG_DFL) },
+                ..Default::default()
+            }),
+            Some(&mut old_signal_handler)
+        )).unwrap();
+
+        dbg!(crate::kill(pid, crate::SIGUSR1)).unwrap(); // actually exits
+    } else {
+        let mut status = 0;
+        dbg!(crate::waitpid(child, &mut status, 0)).unwrap();
+
+        assert!(crate::wifsignaled(status));
+        assert_eq!(crate::wtermsig(status), crate::SIGUSR1);
+    }
+}
