@@ -145,7 +145,7 @@ fn fmap() {
     }
 }
 
-// funmap: tested by fmap
+// funmap tested by fmap
 
 #[test]
 fn fpath() {
@@ -294,4 +294,118 @@ fn lseek() {
     }
 
     assert_eq!(dbg!(crate::close(fd)), Ok(0));
+}
+
+//TODO: mkns
+
+//TODO: mprotect
+
+#[test]
+fn nanosleep() {
+    let req = crate::TimeSpec {
+        tv_sec: 0,
+        tv_nsec: 0,
+    };
+    let mut rem = crate::TimeSpec::default();
+    assert_eq!(crate::nanosleep(&req, &mut rem), Ok(0));
+    assert_eq!(rem, crate::TimeSpec::default());
+}
+
+//TODO: open
+
+//TODO: physalloc
+
+//TODO: physfree
+
+//TODO: physmap
+
+//TODO: physunmap
+
+#[test]
+fn pipe2() {
+    let mut fds = [0, 0];
+    assert_eq!(dbg!(crate::pipe2(&mut fds, crate::O_CLOEXEC)), Ok(0));
+    assert_ne!(dbg!(fds), [0, 0]);
+
+    {
+        let mut buf = [0; 256];
+        for i in 0..buf.len() {
+            buf[i] = i as u8;
+        }
+        assert_eq!(dbg!(crate::write(fds[1], &buf)), Ok(buf.len()));
+    }
+
+    {
+        let mut buf = [0; 256];
+        assert_eq!(dbg!(crate::read(fds[0], &mut buf)), Ok(buf.len()));
+        for i in 0..buf.len() {
+            assert_eq!(buf[i], i as u8);
+        }
+    }
+
+    assert_eq!(dbg!(crate::close(fds[0])), Ok(0));
+    assert_eq!(dbg!(crate::close(fds[1])), Ok(0));
+}
+
+//TODO: read
+
+#[test]
+fn rmdir() {
+    let path = "file:/tmp/syscall-tests-rmdir";
+    let fd = dbg!(
+        crate::open(
+            dbg!(path),
+            crate::O_CREAT | crate::O_DIRECTORY | crate::O_CLOEXEC
+        )
+    ).unwrap();
+
+    assert_eq!(dbg!(crate::close(fd)), Ok(0));
+
+    assert_eq!(dbg!(crate::rmdir(path)), Ok(0));
+}
+
+//TODO: setpgid
+
+//TODO: setregid
+
+//TODO: setrens
+
+//TODO: setreuid
+
+//TODO: sigaction
+
+//TODO: sigprocmask
+
+//TODO: sigreturn
+
+#[test]
+fn umask() {
+    let old = dbg!(crate::umask(0o244)).unwrap();
+    assert_eq!(dbg!(crate::umask(old)), Ok(0o244));
+}
+
+#[test]
+fn unlink() {
+    let path = "file:/tmp/syscall-tests-unlink";
+    let fd = dbg!(
+        crate::open(
+            dbg!(path),
+            crate::O_CREAT | crate::O_RDWR | crate::O_CLOEXEC
+        )
+    ).unwrap();
+
+    assert_eq!(dbg!(crate::close(fd)), Ok(0));
+
+    assert_eq!(dbg!(crate::unlink(path)), Ok(0));
+}
+
+//TODO: virttophys
+
+// waitpid tested by clone
+
+//TODO: write
+
+#[test]
+fn sched_yield() {
+    assert_eq!(dbg!(crate::sched_yield()), Ok(0));
 }
