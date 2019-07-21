@@ -305,21 +305,22 @@ impl DerefMut for FloatRegisters {
 
 #[derive(Clone, Copy)]
 #[repr(C)]
-pub union PtraceEventContent {
+pub union PtraceEventData {
     pub clone: usize,
+    pub signal: usize
 }
 
-impl Default for PtraceEventContent {
+impl Default for PtraceEventData {
     fn default() -> Self {
         Self {
-            clone: 0
+            clone: 0,
         }
     }
 }
 
-impl fmt::Debug for PtraceEventContent {
+impl fmt::Debug for PtraceEventData {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "PtraceEventContent(...)")
+        write!(f, "PtraceEventData(...)")
     }
 }
 
@@ -327,7 +328,7 @@ impl fmt::Debug for PtraceEventContent {
 #[repr(C)]
 pub struct PtraceEvent {
     pub tag: u16,
-    pub data: PtraceEventContent,
+    pub data: PtraceEventData,
 }
 
 impl Deref for PtraceEvent {
