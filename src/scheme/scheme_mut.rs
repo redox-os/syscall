@@ -1,8 +1,8 @@
 use core::{mem, slice};
 
-use data::*;
-use error::*;
-use number::*;
+use crate::data::*;
+use crate::error::*;
+use crate::number::*;
 
 pub trait SchemeMut {
     fn handle(&mut self, packet: &mut Packet) {
