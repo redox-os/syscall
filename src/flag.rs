@@ -60,22 +60,25 @@ pub const PHYSMAP_WRITE: usize = 0x0000_0001;
 pub const PHYSMAP_WRITE_COMBINE: usize = 0x0000_0002;
 pub const PHYSMAP_NO_CACHE: usize = 0x0000_0004;
 
+// The top 32 bits of PTRACE_* are reserved, for now
+
+pub const PTRACE_STOP_PRE_SYSCALL: u64 = 0x0000_0001;
+pub const PTRACE_STOP_POST_SYSCALL: u64 = 0x0000_0002;
+pub const PTRACE_STOP_SINGLESTEP: u64 = 0x0000_0004;
+pub const PTRACE_STOP_SIGNAL: u64 = 0x0000_0008;
+pub const PTRACE_STOP_MASK: u64 = 0x0000_00FF;
+
+pub const PTRACE_EVENT_CLONE: u64 = 0x0000_0100;
+pub const PTRACE_EVENT_MASK: u64 = 0x0000_0F00;
+
+pub const PTRACE_FLAG_SYSEMU: u64 = 0x0000_1000;
+pub const PTRACE_FLAG_WAIT: u64 = 0x0000_2000;
+pub const PTRACE_FLAG_MASK: u64 = 0x0000_F000;
+
 pub const PROT_NONE: usize = 0x0000_0000;
 pub const PROT_EXEC: usize = 0x0001_0000;
 pub const PROT_WRITE: usize = 0x0002_0000;
 pub const PROT_READ: usize = 0x0004_0000;
-
-pub const PTRACE_CONT: u8 = 0b0000_0001;
-pub const PTRACE_SINGLESTEP: u8 = 0b0000_0010;
-pub const PTRACE_SYSCALL: u8 = 0b0000_0011;
-pub const PTRACE_WAIT: u8 = 0b0000_0100;
-pub const PTRACE_SIGNAL: u8 = 0b0000_0101;
-
-pub const PTRACE_OPERATIONMASK: u8 = 0b0000_1111;
-pub const PTRACE_SYSEMU: u8 = 0b0001_0000;
-
-pub const PTRACE_EVENT_CLONE: u16 = 0;
-pub const PTRACE_EVENT_SIGNAL: u16 = 1;
 
 pub const SEEK_SET: usize = 0;
 pub const SEEK_CUR: usize = 1;
