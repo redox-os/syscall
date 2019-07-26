@@ -1,17 +1,58 @@
-pub const CLONE_VM: usize = 0x100;
-pub const CLONE_FS: usize = 0x200;
-pub const CLONE_FILES: usize = 0x400;
-pub const CLONE_SIGHAND: usize = 0x800;
-pub const CLONE_VFORK: usize = 0x4000;
-pub const CLONE_THREAD: usize = 0x10000;
-pub const CLONE_STACK: usize = 0x1000_0000;
+use bitflags::bitflags as inner_bitflags;
+
+macro_rules! bitflags {
+    (
+        $(#[$outer:meta])*
+        pub struct $BitFlags:ident: $T:ty {
+            $(
+                $(#[$inner:ident $($args:tt)*])*
+                const $Flag:ident = $value:expr;
+            )+
+        }
+    ) => {
+        // First, use the inner bitflags
+        inner_bitflags! {
+            #[derive(Default)]
+            $(#[$outer])*
+            pub struct $BitFlags: $T {
+                $(
+                    $(#[$inner $($args)*])*
+                    const $Flag = $value;
+                )+
+            }
+        }
+
+        // Secondly, re-export all inner constants
+        // (`pub use self::Struct::*` doesn't work)
+        $(
+            $(#[$inner $($args)*])*
+            pub const $Flag: $BitFlags = $BitFlags::$Flag;
+        )+
+    }
+}
+
+bitflags! {
+    pub struct CloneFlags: usize {
+        const CLONE_VM = 0x100;
+        const CLONE_FS = 0x200;
+        const CLONE_FILES = 0x400;
+        const CLONE_SIGHAND = 0x800;
+        const CLONE_VFORK = 0x4000;
+        const CLONE_THREAD = 0x10000;
+        const CLONE_STACK = 0x1000_0000;
+    }
+}
 
 pub const CLOCK_REALTIME: usize = 1;
 pub const CLOCK_MONOTONIC: usize = 4;
 
-pub const EVENT_NONE: usize = 0;
-pub const EVENT_READ: usize = 1;
-pub const EVENT_WRITE: usize = 2;
+bitflags! {
+    pub struct EventFlags: usize {
+        const EVENT_NONE = 0;
+        const EVENT_READ = 1;
+        const EVENT_WRITE = 2;
+    }
+}
 
 pub const F_DUPFD: usize = 0;
 pub const F_GETFD: usize = 1;
@@ -23,8 +64,12 @@ pub const FUTEX_WAIT: usize = 0;
 pub const FUTEX_WAKE: usize = 1;
 pub const FUTEX_REQUEUE: usize = 2;
 
-pub const MAP_SHARED: usize = 0x0001;
-pub const MAP_PRIVATE: usize = 0x0002;
+bitflags! {
+    pub struct MapFlags: usize {
+        const MAP_SHARED = 0x0001;
+        const MAP_PRIVATE = 0x0002;
+    }
+}
 
 pub const MODE_TYPE: u16 = 0xF000;
 pub const MODE_DIR: u16 = 0x4000;
@@ -56,29 +101,41 @@ pub const O_SYMLINK: usize =    0x4000_0000;
 pub const O_NOFOLLOW: usize =   0x8000_0000;
 pub const O_ACCMODE: usize =    O_RDONLY | O_WRONLY | O_RDWR;
 
-pub const PHYSMAP_WRITE: usize = 0x0000_0001;
-pub const PHYSMAP_WRITE_COMBINE: usize = 0x0000_0002;
-pub const PHYSMAP_NO_CACHE: usize = 0x0000_0004;
+bitflags! {
+    pub struct PhysmapFlags: usize {
+        const PHYSMAP_WRITE = 0x0000_0001;
+        const PHYSMAP_WRITE_COMBINE = 0x0000_0002;
+        const PHYSMAP_NO_CACHE = 0x0000_0004;
+    }
+}
 
 // The top 48 bits of PTRACE_* are reserved, for now
 
-pub const PTRACE_STOP_PRE_SYSCALL: u64 = 0x0000_0000_0000_0001;
-pub const PTRACE_STOP_POST_SYSCALL: u64 = 0x0000_0000_0000_0002;
-pub const PTRACE_STOP_SINGLESTEP: u64 = 0x0000_0000_0000_0004;
-pub const PTRACE_STOP_SIGNAL: u64 = 0x0000_0000_0000_0008;
-pub const PTRACE_STOP_MASK: u64 = 0x0000_0000_0000_00FF;
+bitflags! {
+    pub struct PtraceFlags: u64 {
+        const PTRACE_STOP_PRE_SYSCALL = 0x0000_0000_0000_0001;
+        const PTRACE_STOP_POST_SYSCALL = 0x0000_0000_0000_0002;
+        const PTRACE_STOP_SINGLESTEP = 0x0000_0000_0000_0004;
+        const PTRACE_STOP_SIGNAL = 0x0000_0000_0000_0008;
+        const PTRACE_STOP_MASK = 0x0000_0000_0000_00FF;
 
-pub const PTRACE_EVENT_CLONE: u64 = 0x0000_0000_0000_0100;
-pub const PTRACE_EVENT_MASK: u64 = 0x0000_0000_0000_0F00;
+        const PTRACE_EVENT_CLONE = 0x0000_0000_0000_0100;
+        const PTRACE_EVENT_MASK = 0x0000_0000_0000_0F00;
 
-pub const PTRACE_FLAG_SYSEMU: u64 = 0x0000_0000_0000_1000;
-pub const PTRACE_FLAG_WAIT: u64 = 0x0000_0000_0000_2000;
-pub const PTRACE_FLAG_MASK: u64 = 0x0000_0000_0000_F000;
+        const PTRACE_FLAG_SYSEMU = 0x0000_0000_0000_1000;
+        const PTRACE_FLAG_WAIT = 0x0000_0000_0000_2000;
+        const PTRACE_FLAG_MASK = 0x0000_0000_0000_F000;
+    }
+}
 
-pub const PROT_NONE: usize = 0x0000_0000;
-pub const PROT_EXEC: usize = 0x0001_0000;
-pub const PROT_WRITE: usize = 0x0002_0000;
-pub const PROT_READ: usize = 0x0004_0000;
+bitflags! {
+    pub struct ProtFlags: usize {
+        const PROT_NONE = 0x0000_0000;
+        const PROT_EXEC = 0x0001_0000;
+        const PROT_WRITE = 0x0002_0000;
+        const PROT_READ = 0x0004_0000;
+    }
+}
 
 pub const SEEK_SET: usize = 0;
 pub const SEEK_CUR: usize = 1;
@@ -123,18 +180,26 @@ pub const SIG_BLOCK: usize = 0;
 pub const SIG_UNBLOCK: usize = 1;
 pub const SIG_SETMASK: usize = 2;
 
-pub const SA_NOCLDSTOP: usize = 0x00000001;
-pub const SA_NOCLDWAIT: usize = 0x00000002;
-pub const SA_SIGINFO: usize =   0x00000004;
-pub const SA_RESTORER: usize =  0x04000000;
-pub const SA_ONSTACK: usize =   0x08000000;
-pub const SA_RESTART: usize =   0x10000000;
-pub const SA_NODEFER: usize =   0x40000000;
-pub const SA_RESETHAND: usize = 0x80000000;
+bitflags! {
+    pub struct SigActionFlags: usize {
+        const SA_NOCLDSTOP = 0x00000001;
+        const SA_NOCLDWAIT = 0x00000002;
+        const SA_SIGINFO =   0x00000004;
+        const SA_RESTORER =  0x04000000;
+        const SA_ONSTACK =   0x08000000;
+        const SA_RESTART =   0x10000000;
+        const SA_NODEFER =   0x40000000;
+        const SA_RESETHAND = 0x80000000;
+    }
+}
 
-pub const WNOHANG: usize =    0x01;
-pub const WUNTRACED: usize =  0x02;
-pub const WCONTINUED: usize = 0x08;
+bitflags! {
+    pub struct WaitFlags: usize {
+        const WNOHANG =    0x01;
+        const WUNTRACED =  0x02;
+        const WCONTINUED = 0x08;
+    }
+}
 
 /// True if status indicates the child is stopped.
 pub fn wifstopped(status: usize) -> bool {

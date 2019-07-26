@@ -1,6 +1,7 @@
 use super::arch::*;
 use super::data::{Map, SigAction, Stat, StatVfs, TimeSpec};
 use super::error::Result;
+use super::flag::*;
 use super::number::*;
 
 use core::{mem, ptr};
@@ -52,8 +53,8 @@ pub fn chmod<T: AsRef<[u8]>>(path: T, mode: usize) -> Result<usize> {
 }
 
 /// Produce a fork of the current process, or a new process thread
-pub unsafe fn clone(flags: usize) -> Result<usize> {
-    syscall1_clobber(SYS_CLONE, flags)
+pub unsafe fn clone(flags: CloneFlags) -> Result<usize> {
+    syscall1_clobber(SYS_CLONE, flags.bits())
 }
 
 /// Close a file
@@ -235,8 +236,8 @@ pub fn mkns(schemes: &[[usize; 2]]) -> Result<usize> {
 }
 
 /// Change mapping flags
-pub unsafe fn mprotect(addr: usize, size: usize, flags: usize) -> Result<usize> {
-    syscall3(SYS_MPROTECT, addr, size, flags)
+pub unsafe fn mprotect(addr: usize, size: usize, flags: MapFlags) -> Result<usize> {
+    syscall3(SYS_MPROTECT, addr, size, flags.bits())
 }
 
 /// Sleep for the time specified in `req`
@@ -274,8 +275,8 @@ pub unsafe fn physfree(physical_address: usize, size: usize) -> Result<usize> {
 /// # Errors
 ///
 /// * `EPERM` - `uid != 0`
-pub unsafe fn physmap(physical_address: usize, size: usize, flags: usize) -> Result<usize> {
-    syscall3(SYS_PHYSMAP, physical_address, size, flags)
+pub unsafe fn physmap(physical_address: usize, size: usize, flags: PhysmapFlags) -> Result<usize> {
+    syscall3(SYS_PHYSMAP, physical_address, size, flags.bits())
 }
 
 /// Unmap previously mapped physical memory
@@ -363,8 +364,8 @@ pub unsafe fn virttophys(virtual_address: usize) -> Result<usize> {
 }
 
 /// Check if a child process has exited or received a signal
-pub fn waitpid(pid: usize, status: &mut usize, options: usize) -> Result<usize> {
-    unsafe { syscall3(SYS_WAITPID, pid, status as *mut usize as usize, options) }
+pub fn waitpid(pid: usize, status: &mut usize, options: WaitFlags) -> Result<usize> {
+    unsafe { syscall3(SYS_WAITPID, pid, status as *mut usize as usize, options.bits()) }
 }
 
 /// Write a buffer to a file descriptor

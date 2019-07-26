@@ -10,3 +10,6 @@ edition = "2018"
 
 [lib]
 name = "syscall"
+
+[dependencies]
+bitflags = "1.1.0"

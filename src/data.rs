@@ -1,11 +1,12 @@
 use core::ops::{Deref, DerefMut};
 use core::{mem, slice};
+use crate::flag::{EventFlags, ProtFlags, PtraceFlags, SigActionFlags};
 
 #[derive(Copy, Clone, Debug, Default)]
 #[repr(C)]
 pub struct Event {
     pub id: usize,
-    pub flags: usize,
+    pub flags: EventFlags,
     pub data: usize
 }
 
@@ -57,7 +58,7 @@ impl DerefMut for ITimerSpec {
 pub struct Map {
     pub offset: usize,
     pub size: usize,
-    pub flags: usize,
+    pub flags: ProtFlags,
 }
 
 impl Deref for Map {
@@ -112,7 +113,7 @@ impl DerefMut for Packet {
 pub struct SigAction {
     pub sa_handler: Option<extern "C" fn(usize)>,
     pub sa_mask: [u64; 2],
-    pub sa_flags: usize,
+    pub sa_flags: SigActionFlags,
 }
 
 #[allow(dead_code)]
@@ -306,7 +307,7 @@ impl DerefMut for FloatRegisters {
 #[derive(Clone, Copy, Debug, Default)]
 #[repr(C)]
 pub struct PtraceEvent {
-    pub cause: u64,
+    pub cause: PtraceFlags,
     pub a: usize,
     pub b: usize,
     pub c: usize,

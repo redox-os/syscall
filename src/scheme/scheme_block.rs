@@ -2,6 +2,7 @@ use core::{mem, slice};
 
 use crate::data::*;
 use crate::error::*;
+use crate::flag::*;
 use crate::number::*;
 
 pub trait SchemeBlock {
@@ -19,7 +20,7 @@ pub trait SchemeBlock {
             SYS_FCHMOD => self.fchmod(packet.b, packet.c as u16),
             SYS_FCHOWN => self.fchown(packet.b, packet.c as u32, packet.d as u32),
             SYS_FCNTL => self.fcntl(packet.b, packet.c, packet.d),
-            SYS_FEVENT => self.fevent(packet.b, packet.c),
+            SYS_FEVENT => self.fevent(packet.b, EventFlags::from_bits_truncate(packet.c)).map(|f| f.map(|f| f.bits())),
             SYS_FMAP => if packet.d >= mem::size_of::<Map>() {
                 self.fmap(packet.b, unsafe { &*(packet.c as *const Map) })
             } else {
@@ -111,7 +112,7 @@ pub trait SchemeBlock {
     }
 
     #[allow(unused_variables)]
-    fn fevent(&self, id: usize, flags: usize) -> Result<Option<usize>> {
+    fn fevent(&self, id: usize, flags: EventFlags) -> Result<Option<EventFlags>> {
         Err(Error::new(EBADF))
     }
 
