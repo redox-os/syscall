@@ -1,6 +1,6 @@
 use core::ops::{Deref, DerefMut};
 use core::{mem, slice};
-use crate::flag::{EventFlags, ProtFlags, PtraceFlags, SigActionFlags};
+use crate::flag::{EventFlags, MapFlags, PtraceFlags, SigActionFlags};
 
 #[derive(Copy, Clone, Debug, Default)]
 #[repr(C)]
@@ -58,7 +58,7 @@ impl DerefMut for ITimerSpec {
 pub struct Map {
     pub offset: usize,
     pub size: usize,
-    pub flags: ProtFlags,
+    pub flags: MapFlags,
 }
 
 impl Deref for Map {

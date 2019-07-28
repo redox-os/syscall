@@ -66,6 +66,11 @@ pub const FUTEX_REQUEUE: usize = 2;
 
 bitflags! {
     pub struct MapFlags: usize {
+        const PROT_NONE = 0x0000_0000;
+        const PROT_EXEC = 0x0001_0000;
+        const PROT_WRITE = 0x0002_0000;
+        const PROT_READ = 0x0004_0000;
+
         const MAP_SHARED = 0x0001;
         const MAP_PRIVATE = 0x0002;
     }
@@ -125,15 +130,6 @@ bitflags! {
         const PTRACE_FLAG_SYSEMU = 0x0000_0000_0000_1000;
         const PTRACE_FLAG_WAIT = 0x0000_0000_0000_2000;
         const PTRACE_FLAG_MASK = 0x0000_0000_0000_F000;
-    }
-}
-
-bitflags! {
-    pub struct ProtFlags: usize {
-        const PROT_NONE = 0x0000_0000;
-        const PROT_EXEC = 0x0001_0000;
-        const PROT_WRITE = 0x0002_0000;
-        const PROT_READ = 0x0004_0000;
     }
 }
 
