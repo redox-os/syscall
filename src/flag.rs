@@ -1,4 +1,5 @@
 use bitflags::bitflags as inner_bitflags;
+use core::{mem, ops::Deref, slice};
 
 macro_rules! bitflags {
     (
@@ -130,6 +131,18 @@ bitflags! {
         const PTRACE_FLAG_SYSEMU = 0x0000_0000_0000_1000;
         const PTRACE_FLAG_WAIT = 0x0000_0000_0000_2000;
         const PTRACE_FLAG_MASK = 0x0000_0000_0000_F000;
+    }
+}
+impl Deref for PtraceFlags {
+    type Target = [u8];
+    fn deref(&self) -> &Self::Target {
+        // Same as to_ne_bytes but in-place
+        unsafe {
+            slice::from_raw_parts(
+                &self.bits as *const _ as *const u8,
+                mem::size_of::<u64>()
+            )
+        }
     }
 }
 
