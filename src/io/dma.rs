@@ -1,7 +1,7 @@
 use core::{mem, ptr};
 use core::ops::{Deref, DerefMut};
 
-use Result;
+use crate::Result;
 
 struct PhysBox {
     address: usize,
@@ -10,7 +10,7 @@ struct PhysBox {
 
 impl PhysBox {
     fn new(size: usize) -> Result<PhysBox> {
-        let address = unsafe { ::physalloc(size)? };
+        let address = unsafe { crate::physalloc(size)? };
         Ok(PhysBox {
             address: address,
             size: size
@@ -20,7 +20,7 @@ impl PhysBox {
 
 impl Drop for PhysBox {
     fn drop(&mut self) {
-        let _ = unsafe { ::physfree(self.address, self.size) };
+        let _ = unsafe { crate::physfree(self.address, self.size) };
     }
 }
 
@@ -32,7 +32,7 @@ pub struct Dma<T> {
 impl<T> Dma<T> {
     pub fn new(value: T) -> Result<Dma<T>> {
         let phys = PhysBox::new(mem::size_of::<T>())?;
-        let virt = unsafe { ::physmap(phys.address, phys.size, ::PHYSMAP_WRITE)? } as *mut T;
+        let virt = unsafe { crate::physmap(phys.address, phys.size, crate::PHYSMAP_WRITE)? } as *mut T;
         unsafe { ptr::write(virt, value); }
         Ok(Dma {
             phys: phys,
@@ -42,7 +42,7 @@ impl<T> Dma<T> {
 
     pub fn zeroed() -> Result<Dma<T>> {
         let phys = PhysBox::new(mem::size_of::<T>())?;
-        let virt = unsafe { ::physmap(phys.address, phys.size, ::PHYSMAP_WRITE)? } as *mut T;
+        let virt = unsafe { crate::physmap(phys.address, phys.size, crate::PHYSMAP_WRITE)? } as *mut T;
         unsafe { ptr::write_bytes(virt as *mut u8, 0, phys.size); }
         Ok(Dma {
             phys: phys,
@@ -71,6 +71,6 @@ impl<T> DerefMut for Dma<T> {
 impl<T> Drop for Dma<T> {
     fn drop(&mut self) {
         unsafe { drop(ptr::read(self.virt)); }
-        let _ = unsafe { ::physunmap(self.virt as usize) };
+        let _ = unsafe { crate::physunmap(self.virt as usize) };
     }
 }

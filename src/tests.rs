@@ -36,14 +36,14 @@ fn chdir() {
 #[test]
 fn clone() {
     let expected_status = 42;
-    let pid_res = unsafe { crate::clone(0) };
+    let pid_res = unsafe { crate::clone(crate::CloneFlags::empty()) };
     if pid_res == Ok(0) {
         crate::exit(expected_status).unwrap();
         panic!("failed to exit");
     } else {
         let pid = dbg!(pid_res).unwrap();
         let mut status = 0;
-        assert_eq!(dbg!(crate::waitpid(pid, &mut status, 0)), Ok(pid));
+        assert_eq!(dbg!(crate::waitpid(pid, &mut status, crate::WaitFlags::empty())), Ok(pid));
         assert_eq!(dbg!(crate::wifexited(status)), true);
         assert_eq!(dbg!(crate::wexitstatus(status)), expected_status);
     }
@@ -90,7 +90,7 @@ fn fexec() {
 
     let vars = &[];
 
-    let pid_res = unsafe { crate::clone(0) };
+    let pid_res = unsafe { crate::clone(crate::CloneFlags::empty()) };
     if pid_res == Ok(0) {
         crate::fexec(fd, args, vars).unwrap();
         panic!("failed to fexec");
@@ -99,7 +99,7 @@ fn fexec() {
 
         let pid = dbg!(pid_res).unwrap();
         let mut status = 0;
-        assert_eq!(dbg!(crate::waitpid(pid, &mut status, 0)), Ok(pid));
+        assert_eq!(dbg!(crate::waitpid(pid, &mut status, crate::WaitFlags::empty())), Ok(pid));
         assert_eq!(dbg!(crate::wifexited(status)), true);
         assert_eq!(dbg!(crate::wexitstatus(status)), 0);
     }
@@ -465,7 +465,7 @@ fn sigaction() {
         crate::kill(pid, crate::SIGUSR1).unwrap(); // actually exits
     } else {
         let mut status = 0;
-        dbg!(crate::waitpid(child, &mut status, 0)).unwrap();
+        dbg!(crate::waitpid(child, &mut status, crate::WaitFlags::empty())).unwrap();
 
         assert!(crate::wifsignaled(status));
         assert_eq!(crate::wtermsig(status), crate::SIGUSR1);

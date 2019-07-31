@@ -1,11 +1,12 @@
 use core::ops::{Deref, DerefMut};
-use core::{fmt, mem, slice};
+use core::{mem, slice};
+use crate::flag::{EventFlags, MapFlags, PtraceFlags, SigActionFlags};
 
 #[derive(Copy, Clone, Debug, Default)]
 #[repr(C)]
 pub struct Event {
     pub id: usize,
-    pub flags: usize,
+    pub flags: EventFlags,
     pub data: usize
 }
 
@@ -57,7 +58,7 @@ impl DerefMut for ITimerSpec {
 pub struct Map {
     pub offset: usize,
     pub size: usize,
-    pub flags: usize,
+    pub flags: MapFlags,
 }
 
 impl Deref for Map {
@@ -112,7 +113,7 @@ impl DerefMut for Packet {
 pub struct SigAction {
     pub sa_handler: Option<extern "C" fn(usize)>,
     pub sa_mask: [u64; 2],
-    pub sa_flags: usize,
+    pub sa_flags: SigActionFlags,
 }
 
 #[allow(dead_code)]
@@ -303,32 +304,16 @@ impl DerefMut for FloatRegisters {
     }
 }
 
-#[derive(Clone, Copy)]
-#[repr(C)]
-pub union PtraceEventData {
-    pub clone: usize,
-    pub signal: usize
-}
-
-impl Default for PtraceEventData {
-    fn default() -> Self {
-        Self {
-            clone: 0,
-        }
-    }
-}
-
-impl fmt::Debug for PtraceEventData {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "PtraceEventData(...)")
-    }
-}
-
 #[derive(Clone, Copy, Debug, Default)]
 #[repr(C)]
 pub struct PtraceEvent {
-    pub tag: u16,
-    pub data: PtraceEventData,
+    pub cause: PtraceFlags,
+    pub a: usize,
+    pub b: usize,
+    pub c: usize,
+    pub d: usize,
+    pub e: usize,
+    pub f: usize
 }
 
 impl Deref for PtraceEvent {
@@ -344,6 +329,21 @@ impl DerefMut for PtraceEvent {
     fn deref_mut(&mut self) -> &mut [u8] {
         unsafe {
             slice::from_raw_parts_mut(self as *mut PtraceEvent as *mut u8, mem::size_of::<PtraceEvent>())
+        }
+    }
+}
+
+#[macro_export]
+macro_rules! ptrace_event {
+    ($cause:expr $(, $a:expr $(, $b:expr $(, $c:expr)?)?)?) => {
+        PtraceEvent {
+            cause: $cause,
+            $(a: $a,
+              $(b: $b,
+                $(c: $c,)?
+              )?
+            )?
+            ..Default::default()
         }
     }
 }
