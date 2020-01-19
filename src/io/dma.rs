@@ -49,10 +49,13 @@ impl<T> Dma<T> {
             virt: virt
         })
     }
+}
+impl<T: ?Sized> Dma<T> {
     pub fn physical(&self) -> usize {
         self.phys.address
     }
 }
+
 impl<T> Dma<[T]> {
     /// Crates a new DMA buffer with a size only known at runtime.
     /// ## Safety
