@@ -24,7 +24,7 @@ impl Drop for PhysBox {
     }
 }
 
-pub struct Dma<T> {
+pub struct Dma<T: ?Sized> {
     phys: PhysBox,
     virt: *mut T
 }
@@ -49,28 +49,45 @@ impl<T> Dma<T> {
             virt: virt
         })
     }
-
     pub fn physical(&self) -> usize {
         self.phys.address
     }
 }
+impl<T> Dma<[T]> {
+    /// Crates a new DMA buffer with a size only known at runtime.
+    /// ## Safety
+    /// * `T` must be properly aligned.
+    /// * `T` must be valid as zeroed (i.e. no NonNull pointers).
+    pub unsafe fn zeroed_unsized(count: usize) -> Result<Self> {
+        let phys = PhysBox::new(mem::size_of::<T>() * count)?;
+        let virt_ptr = crate::physmap(phys.address, phys.size, crate::PHYSMAP_WRITE)? as *mut T;
+        ptr::write_bytes(virt_ptr, 0, count);
 
-impl<T> Deref for Dma<T> {
+        let virt = core::slice::from_raw_parts_mut(virt_ptr, count);
+
+        Ok(Dma {
+            phys,
+            virt,
+        })
+    }
+}
+
+impl<T: ?Sized> Deref for Dma<T> {
     type Target = T;
     fn deref(&self) -> &T {
         unsafe { &*self.virt }
     }
 }
 
-impl<T> DerefMut for Dma<T> {
+impl<T: ?Sized> DerefMut for Dma<T> {
     fn deref_mut(&mut self) -> &mut T {
         unsafe { &mut *self.virt }
     }
 }
 
-impl<T> Drop for Dma<T> {
+impl<T: ?Sized> Drop for Dma<T> {
     fn drop(&mut self) {
-        unsafe { drop(ptr::read(self.virt)); }
-        let _ = unsafe { crate::physunmap(self.virt as usize) };
+        unsafe { ptr::drop_in_place(self.virt) }
+        let _ = unsafe { crate::physunmap(self.virt as *mut u8 as usize) };
     }
 }
