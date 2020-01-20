@@ -1,6 +1,5 @@
 #![feature(asm)]
-#![feature(const_fn)]
-#![feature(maybe_uninit)] // remove when Redox updates their rust version
+#![feature(const_fn)] // see https://github.com/rust-lang/rfcs/pull/2632
 #![cfg_attr(not(test), no_std)]
 
 #[cfg(test)]

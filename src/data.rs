@@ -336,7 +336,7 @@ impl DerefMut for PtraceEvent {
 #[macro_export]
 macro_rules! ptrace_event {
     ($cause:expr $(, $a:expr $(, $b:expr $(, $c:expr)?)?)?) => {
-        PtraceEvent {
+        $crate::data::PtraceEvent {
             cause: $cause,
             $(a: $a,
               $(b: $b,
