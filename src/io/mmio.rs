@@ -11,9 +11,23 @@ pub struct Mmio<T> {
 
 impl<T> Mmio<T> {
     /// Create a new Mmio without initializing
+    #[deprecated = "unsound because it's possible to read even though it's uninitialized"]
     pub fn new() -> Self {
-        Mmio {
-            value: MaybeUninit::uninit()
+        unsafe { Self::uninit() }
+    }
+    pub unsafe fn zeroed() -> Self {
+        Self {
+            value: MaybeUninit::zeroed(),
+        }
+    }
+    pub unsafe fn uninit() -> Self {
+        Self {
+            value: MaybeUninit::uninit(),
+        }
+    }
+    pub const fn from(value: T) -> Self {
+        Self {
+            value: MaybeUninit::new(value),
         }
     }
 }
