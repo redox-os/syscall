@@ -131,7 +131,6 @@ bitflags! {
         const PTRACE_EVENT_MASK = 0x0000_0000_0000_0F00;
 
         const PTRACE_FLAG_IGNORE = 0x0000_0000_0000_1000;
-        const PTRACE_FLAG_WAIT = 0x0000_0000_0000_2000;
         const PTRACE_FLAG_MASK = 0x0000_0000_0000_F000;
     }
 }
