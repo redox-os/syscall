@@ -59,6 +59,7 @@ pub const SYS_MPROTECT: usize = 125;
 pub const SYS_MKNS: usize =     984;
 pub const SYS_NANOSLEEP: usize =162;
 pub const SYS_PHYSALLOC: usize =945;
+pub const SYS_PHYSALLOC3: usize=9453;
 pub const SYS_PHYSFREE: usize = 946;
 pub const SYS_PHYSMAP: usize =  947;
 pub const SYS_PHYSUNMAP: usize =948;
