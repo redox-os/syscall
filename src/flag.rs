@@ -174,6 +174,7 @@ impl PartialAllocStrategy {
         match raw {
             0x0001_0000 => Some(Self::Optimal),
             0x0002_0000 => Some(Self::GreatestRange),
+            0x0003_0000 => Some(Self::Greedy),
             _ => None,
         }
     }
