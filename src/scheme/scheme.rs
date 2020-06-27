@@ -16,7 +16,7 @@ pub trait Scheme {
             SYS_DUP => self.dup(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }),
             SYS_READ => self.read(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
             SYS_WRITE => self.write(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }),
-            SYS_LSEEK => self.seek(packet.b, packet.c, packet.d),
+            SYS_LSEEK => self.seek(packet.b, packet.c as isize, packet.d).map(|o| o as usize),
             SYS_FCHMOD => self.fchmod(packet.b, packet.c as u16),
             SYS_FCHOWN => self.fchown(packet.b, packet.c as u32, packet.d as u32),
             SYS_FCNTL => self.fcntl(packet.b, packet.c, packet.d),
@@ -92,7 +92,7 @@ pub trait Scheme {
     }
 
     #[allow(unused_variables)]
-    fn seek(&self, id: usize, pos: usize, whence: usize) -> Result<usize> {
+    fn seek(&self, id: usize, pos: isize, whence: usize) -> Result<isize> {
         Err(Error::new(EBADF))
     }
 
