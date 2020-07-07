@@ -200,12 +200,6 @@ bitflags! {
         const PTRACE_STOP_BREAKPOINT = 0x0000_0000_0000_0010;
         /// Stop just before exiting for good.
         const PTRACE_STOP_EXIT = 0x0000_0000_0000_0020;
-        /// Stop before running a program switched to using `fexec`.
-        const PTRACE_STOP_EXEC = 0x0000_0000_0000_0040;
-        /// Stop before a signal is handled in userspace. This will always
-        /// happen after a PTRACE_STOP_SIGNAL, if the `handler` argument wasn't
-        /// SIG_DFL or SIG_IGN. Send PTRACE_FLAG_IGNORE to not handle signal.
-        const PTRACE_STOP_SIGNAL_HANDLER = 0x0000_0000_0000_0080;
 
         const PTRACE_STOP_MASK = 0x0000_0000_0000_00FF;
 
