@@ -1,5 +1,5 @@
 use super::arch::*;
-use super::data::{Map, SigAction, Stat, StatVfs, TimeSpec};
+use super::data::{Map, Map2, SigAction, Stat, StatVfs, TimeSpec};
 use super::error::Result;
 use super::flag::*;
 use super::number::*;
@@ -104,9 +104,24 @@ pub fn fexec(fd: usize, args: &[[usize; 2]], vars: &[[usize; 2]]) -> Result<usiz
     unsafe { syscall5(SYS_FEXEC, fd, args.as_ptr() as usize, args.len(), vars.as_ptr() as usize, vars.len()) }
 }
 
-/// Map a file into memory
+/// Map a file into memory.
 pub unsafe fn fmap(fd: usize, map: &Map) -> Result<usize> {
     syscall3(SYS_FMAP, fd, map as *const Map as usize, mem::size_of::<Map>())
+}
+
+///
+/// Map a file into memory, but with the ability to set the address to map into, either as a hint
+/// or as a requirement of the map.
+///
+/// # Errors
+/// `EACCES` - the file descriptor was not open for reading
+/// `EBADF` - if the file descriptor was invalid
+/// `ENODEV` - mmapping was not supported
+/// `EINVAL` - invalid combination of flags
+/// `EEXIST` - if [`MapFlags::MAP_FIXED`] was set, and the address specified was already in use.
+///
+pub unsafe fn fmap2(fd: usize, map: &Map2) -> Result<usize> {
+    syscall3(SYS_FMAP2, fd, map as *const Map2 as usize, mem::size_of::<Map2>())
 }
 
 /// Unmap a memory-mapped file

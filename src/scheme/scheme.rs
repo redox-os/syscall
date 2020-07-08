@@ -26,6 +26,11 @@ pub trait Scheme {
             } else {
                 Err(Error::new(EFAULT))
             },
+            SYS_FMAP2 => if packet.d >= mem::size_of::<Map2>() {
+                self.fmap2(packet.b, unsafe { &*(packet.c as *const Map2) })
+            } else {
+                Err(Error::new(EFAULT))
+            },
             SYS_FUNMAP => self.funmap(packet.b),
             SYS_FPATH => self.fpath(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
             SYS_FRENAME => self.frename(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }, packet.uid, packet.gid),
@@ -118,6 +123,18 @@ pub trait Scheme {
 
     #[allow(unused_variables)]
     fn fmap(&self, id: usize, map: &Map) -> Result<usize> {
+        if map.flags.contains(MapFlags::MAP_FIXED) {
+            return Err(Error::new(EINVAL));
+        }
+        self.fmap2(id, &Map2 {
+            offset: map.offset,
+            size: map.size,
+            flags: map.flags,
+            address: 0,
+        })
+    }
+    #[allow(unused_variables)]
+    fn fmap2(&self, id: usize, map: &Map2) -> Result<usize> {
         Err(Error::new(EBADF))
     }
 
