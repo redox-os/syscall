@@ -16,7 +16,7 @@ pub trait SchemeBlock {
             SYS_DUP => self.dup(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }),
             SYS_READ => self.read(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
             SYS_WRITE => self.write(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }),
-            SYS_LSEEK => self.seek(packet.b, packet.c as isize, packet.d).map(|o| o as usize),
+            SYS_LSEEK => self.seek(packet.b, packet.c as isize, packet.d).map(|o| o.map(|o| o as usize)),
             SYS_FCHMOD => self.fchmod(packet.b, packet.c as u16),
             SYS_FCHOWN => self.fchown(packet.b, packet.c as u32, packet.d as u32),
             SYS_FCNTL => self.fcntl(packet.b, packet.c, packet.d),
@@ -123,19 +123,18 @@ pub trait SchemeBlock {
 
     #[allow(unused_variables)]
     fn fmap(&self, id: usize, map: &Map) -> Result<Option<usize>> {
-        if map.flags.contains(MapFlags::MAP_FIXED) {
-            return Err(Error::new(EINVAL));
-        }
-        self.fmap2(id, &Map2 {
-            offset: map.offset,
-            size: map.size,
-            flags: map.flags,
-            address: 0,
-        })
+        Err(Error::new(EBADF))
     }
     #[allow(unused_variables)]
     fn fmap2(&self, id: usize, map: &Map2) -> Result<Option<usize>> {
-        Err(Error::new(EBADF))
+        if map.flags.contains(MapFlags::MAP_FIXED) {
+            return Err(Error::new(EINVAL));
+        }
+        self.fmap(id, &Map {
+            offset: map.offset,
+            size: map.size,
+            flags: map.flags,
+        })
     }
 
     #[allow(unused_variables)]

@@ -123,19 +123,18 @@ pub trait SchemeMut {
 
     #[allow(unused_variables)]
     fn fmap(&mut self, id: usize, map: &Map) -> Result<usize> {
-        if map.flags.contains(MapFlags::MAP_FIXED) {
-            return Err(Error::new(EINVAL));
-        }
-        self.fmap2(id, &Map2 {
-            offset: map.offset,
-            size: map.size,
-            flags: map.flags,
-            address: 0,
-        })
+        Err(Error::new(EBADF))
     }
     #[allow(unused_variables)]
     fn fmap2(&mut self, id: usize, map: &Map2) -> Result<usize> {
-        Err(Error::new(EBADF))
+        if map.flags.contains(MapFlags::MAP_FIXED) {
+            return Err(Error::new(EINVAL));
+        }
+        self.fmap(id, &Map {
+            offset: map.offset,
+            size: map.size,
+            flags: map.flags,
+        })
     }
 
     #[allow(unused_variables)]
