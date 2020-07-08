@@ -77,6 +77,7 @@ bitflags! {
 
         /// Only accepted for mmap2(2).
         const MAP_FIXED = 0x0004;
+        const MAP_FIXED_NOREPLACE = 0x000C;
     }
 }
 
