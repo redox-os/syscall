@@ -74,6 +74,10 @@ bitflags! {
 
         const MAP_SHARED = 0x0001;
         const MAP_PRIVATE = 0x0002;
+
+        /// Only accepted for mmap2(2).
+        const MAP_FIXED = 0x0004;
+        const MAP_FIXED_NOREPLACE = 0x000C;
     }
 }
 

@@ -77,6 +77,40 @@ impl DerefMut for Map {
         }
     }
 }
+#[derive(Copy, Clone, Debug, Default)]
+#[repr(C)]
+pub struct Map2 {
+    /// The offset inside the file that is being mapped.
+    pub offset: usize,
+
+    /// The size of the memory map.
+    pub size: usize,
+
+    /// Contains both prot and map flags.
+    pub flags: MapFlags,
+
+    /// Functions as a hint to where in the virtual address space of the running process, to place
+    /// the memory map. If [`MapFlags::MAP_FIXED`] is set, then this address must be the address to
+    /// map to.
+    pub address: usize,
+}
+
+impl Deref for Map2 {
+    type Target = [u8];
+    fn deref(&self) -> &[u8] {
+        unsafe {
+            slice::from_raw_parts(self as *const Map2 as *const u8, mem::size_of::<Map2>())
+        }
+    }
+}
+
+impl DerefMut for Map2 {
+    fn deref_mut(&mut self) -> &mut [u8] {
+        unsafe {
+            slice::from_raw_parts_mut(self as *mut Map2 as *mut u8, mem::size_of::<Map2>())
+        }
+    }
+}
 
 #[derive(Copy, Clone, Debug, Default)]
 #[repr(C)]
