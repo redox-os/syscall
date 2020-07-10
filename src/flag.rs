@@ -291,6 +291,10 @@ bitflags! {
     }
 }
 
+// Auxiliery vector types
+pub const AT_NULL: usize = 0;
+pub const AT_ENTRY: usize = 9;
+
 bitflags! {
     pub struct WaitFlags: usize {
         const WNOHANG =    0x01;
