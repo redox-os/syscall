@@ -30,6 +30,7 @@ pub const SYS_FEXEC: usize =    SYS_CLASS_FILE | 11;
 pub const SYS_FMAP: usize =     SYS_CLASS_FILE | SYS_ARG_SLICE | 90;
 pub const SYS_FMAP2: usize =    SYS_CLASS_FILE | SYS_ARG_SLICE | 900;
 pub const SYS_FUNMAP: usize =   SYS_CLASS_FILE | 91;
+pub const SYS_FUNMAP2: usize =   SYS_CLASS_FILE | 92;
 pub const SYS_FPATH: usize =    SYS_CLASS_FILE | SYS_ARG_MSLICE | 928;
 pub const SYS_FRENAME: usize =  SYS_CLASS_FILE | SYS_ARG_PATH | 38;
 pub const SYS_FSTAT: usize =    SYS_CLASS_FILE | SYS_ARG_MSLICE | 28;

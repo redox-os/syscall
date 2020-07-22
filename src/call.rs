@@ -129,6 +129,11 @@ pub unsafe fn funmap(addr: usize) -> Result<usize> {
     syscall1(SYS_FUNMAP, addr)
 }
 
+/// Unmap whole (or partial) continous memory-mapped files
+pub unsafe fn funmap2(addr: usize, len: usize) -> Result<usize> {
+    syscall2(SYS_FUNMAP2, addr, len)
+}
+
 /// Retrieve the canonical path of a file
 pub fn fpath(fd: usize, buf: &mut [u8]) -> Result<usize> {
     unsafe { syscall3(SYS_FPATH, fd, buf.as_mut_ptr() as usize, buf.len()) }
