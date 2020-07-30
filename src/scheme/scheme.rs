@@ -32,6 +32,7 @@ pub trait Scheme {
                 Err(Error::new(EFAULT))
             },
             SYS_FUNMAP => self.funmap(packet.b),
+            SYS_FUNMAP2 => self.funmap2(packet.b, packet.c),
             SYS_FPATH => self.fpath(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
             SYS_FRENAME => self.frename(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }, packet.uid, packet.gid),
             SYS_FSTAT => if packet.d >= mem::size_of::<Stat>() {
@@ -139,7 +140,12 @@ pub trait Scheme {
 
     #[allow(unused_variables)]
     fn funmap(&self, address: usize) -> Result<usize> {
-        Err(Error::new(EBADF))
+        Ok(0)
+    }
+
+    #[allow(unused_variables)]
+    fn funmap2(&self, address: usize, length: usize) -> Result<usize> {
+        Ok(0)
     }
 
     #[allow(unused_variables)]
