@@ -54,7 +54,7 @@ pub fn chmod<T: AsRef<[u8]>>(path: T, mode: usize) -> Result<usize> {
 
 /// Produce a fork of the current process, or a new process thread
 pub unsafe fn clone(flags: CloneFlags) -> Result<usize> {
-    syscall1_clobber(SYS_CLONE, flags.bits())
+    syscall1(SYS_CLONE, flags.bits())
 }
 
 /// Close a file
