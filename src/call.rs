@@ -1,5 +1,5 @@
 use super::arch::*;
-use super::data::{Map, Map2, SigAction, Stat, StatVfs, TimeSpec};
+use super::data::{Map, SigAction, Stat, StatVfs, TimeSpec};
 use super::error::Result;
 use super::flag::*;
 use super::number::*;
@@ -104,12 +104,6 @@ pub fn fexec(fd: usize, args: &[[usize; 2]], vars: &[[usize; 2]]) -> Result<usiz
     unsafe { syscall5(SYS_FEXEC, fd, args.as_ptr() as usize, args.len(), vars.as_ptr() as usize, vars.len()) }
 }
 
-/// Map a file into memory.
-pub unsafe fn fmap(fd: usize, map: &Map) -> Result<usize> {
-    syscall3(SYS_FMAP, fd, map as *const Map as usize, mem::size_of::<Map>())
-}
-
-///
 /// Map a file into memory, but with the ability to set the address to map into, either as a hint
 /// or as a requirement of the map.
 ///
@@ -120,18 +114,13 @@ pub unsafe fn fmap(fd: usize, map: &Map) -> Result<usize> {
 /// `EINVAL` - invalid combination of flags
 /// `EEXIST` - if [`MapFlags::MAP_FIXED`] was set, and the address specified was already in use.
 ///
-pub unsafe fn fmap2(fd: usize, map: &Map2) -> Result<usize> {
-    syscall3(SYS_FMAP2, fd, map as *const Map2 as usize, mem::size_of::<Map2>())
-}
-
-/// Unmap a memory-mapped file
-pub unsafe fn funmap(addr: usize) -> Result<usize> {
-    syscall1(SYS_FUNMAP, addr)
+pub unsafe fn fmap(fd: usize, map: &Map) -> Result<usize> {
+    syscall3(SYS_FMAP, fd, map as *const Map as usize, mem::size_of::<Map>())
 }
 
 /// Unmap whole (or partial) continous memory-mapped files
-pub unsafe fn funmap2(addr: usize, len: usize) -> Result<usize> {
-    syscall2(SYS_FUNMAP2, addr, len)
+pub unsafe fn funmap(addr: usize, len: usize) -> Result<usize> {
+    syscall2(SYS_FUNMAP, addr, len)
 }
 
 /// Retrieve the canonical path of a file

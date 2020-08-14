@@ -55,31 +55,31 @@ impl DerefMut for ITimerSpec {
 
 #[derive(Copy, Clone, Debug, Default)]
 #[repr(C)]
-pub struct Map {
+pub struct OldMap {
     pub offset: usize,
     pub size: usize,
     pub flags: MapFlags,
 }
 
-impl Deref for Map {
+impl Deref for OldMap {
     type Target = [u8];
     fn deref(&self) -> &[u8] {
         unsafe {
-            slice::from_raw_parts(self as *const Map as *const u8, mem::size_of::<Map>())
+            slice::from_raw_parts(self as *const OldMap as *const u8, mem::size_of::<OldMap>())
         }
     }
 }
 
-impl DerefMut for Map {
+impl DerefMut for OldMap {
     fn deref_mut(&mut self) -> &mut [u8] {
         unsafe {
-            slice::from_raw_parts_mut(self as *mut Map as *mut u8, mem::size_of::<Map>())
+            slice::from_raw_parts_mut(self as *mut OldMap as *mut u8, mem::size_of::<OldMap>())
         }
     }
 }
 #[derive(Copy, Clone, Debug, Default)]
 #[repr(C)]
-pub struct Map2 {
+pub struct Map {
     /// The offset inside the file that is being mapped.
     pub offset: usize,
 
@@ -95,19 +95,19 @@ pub struct Map2 {
     pub address: usize,
 }
 
-impl Deref for Map2 {
+impl Deref for Map {
     type Target = [u8];
     fn deref(&self) -> &[u8] {
         unsafe {
-            slice::from_raw_parts(self as *const Map2 as *const u8, mem::size_of::<Map2>())
+            slice::from_raw_parts(self as *const Map as *const u8, mem::size_of::<Map>())
         }
     }
 }
 
-impl DerefMut for Map2 {
+impl DerefMut for Map {
     fn deref_mut(&mut self) -> &mut [u8] {
         unsafe {
-            slice::from_raw_parts_mut(self as *mut Map2 as *mut u8, mem::size_of::<Map2>())
+            slice::from_raw_parts_mut(self as *mut Map as *mut u8, mem::size_of::<Map>())
         }
     }
 }
