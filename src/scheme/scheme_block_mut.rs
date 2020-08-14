@@ -21,18 +21,18 @@ pub trait SchemeBlockMut {
             SYS_FCHOWN => self.fchown(packet.b, packet.c as u32, packet.d as u32),
             SYS_FCNTL => self.fcntl(packet.b, packet.c, packet.d),
             SYS_FEVENT => self.fevent(packet.b, EventFlags::from_bits_truncate(packet.c)).map(|f| f.map(|f| f.bits())),
+            SYS_FMAP_OLD => if packet.d >= mem::size_of::<OldMap>() {
+                self.fmap_old(packet.b, unsafe { &*(packet.c as *const OldMap) })
+            } else {
+                Err(Error::new(EFAULT))
+            },
             SYS_FMAP => if packet.d >= mem::size_of::<Map>() {
                 self.fmap(packet.b, unsafe { &*(packet.c as *const Map) })
             } else {
                 Err(Error::new(EFAULT))
             },
-            SYS_FMAP2 => if packet.d >= mem::size_of::<Map2>() {
-                self.fmap2(packet.b, unsafe { &*(packet.c as *const Map2) })
-            } else {
-                Err(Error::new(EFAULT))
-            },
-            SYS_FUNMAP => self.funmap(packet.b),
-            SYS_FUNMAP2 => self.funmap2(packet.b, packet.c),
+            SYS_FUNMAP_OLD => self.funmap_old(packet.b),
+            SYS_FUNMAP => self.funmap(packet.b, packet.c),
             SYS_FPATH => self.fpath(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
             SYS_FRENAME => self.frename(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }, packet.uid, packet.gid),
             SYS_FSTAT => if packet.d >= mem::size_of::<Stat>() {
@@ -123,15 +123,15 @@ pub trait SchemeBlockMut {
     }
 
     #[allow(unused_variables)]
-    fn fmap(&mut self, id: usize, map: &Map) -> Result<Option<usize>> {
+    fn fmap_old(&mut self, id: usize, map: &OldMap) -> Result<Option<usize>> {
         Err(Error::new(EBADF))
     }
     #[allow(unused_variables)]
-    fn fmap2(&mut self, id: usize, map: &Map2) -> Result<Option<usize>> {
+    fn fmap(&mut self, id: usize, map: &Map) -> Result<Option<usize>> {
         if map.flags.contains(MapFlags::MAP_FIXED) {
             return Err(Error::new(EINVAL));
         }
-        self.fmap(id, &Map {
+        self.fmap_old(id, &OldMap {
             offset: map.offset,
             size: map.size,
             flags: map.flags,
@@ -139,12 +139,12 @@ pub trait SchemeBlockMut {
     }
 
     #[allow(unused_variables)]
-    fn funmap(&mut self, address: usize) -> Result<Option<usize>> {
+    fn funmap_old(&mut self, address: usize) -> Result<Option<usize>> {
         Ok(Some(0))
     }
 
     #[allow(unused_variables)]
-    fn funmap2(&mut self, address: usize, length: usize) -> Result<Option<usize>> {
+    fn funmap(&mut self, address: usize, length: usize) -> Result<Option<usize>> {
         Ok(Some(0))
     }
 
