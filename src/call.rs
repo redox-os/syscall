@@ -12,20 +12,6 @@ extern "C" fn restorer() -> ! {
     unreachable!();
 }
 
-/// Set the end of the process's heap
-///
-/// When `addr` is `0`, this function will return the current break.
-///
-/// When `addr` is nonzero, this function will attempt to set the end of the process's
-/// heap to `addr` and return the new program break. The new program break should be
-/// checked by the allocator, it may not be exactly `addr`, as it may be aligned to a page
-/// boundary.
-///
-/// On error, `Err(ENOMEM)` will be returned indicating that no memory is available
-pub unsafe fn brk(addr: usize) -> Result<usize> {
-    syscall1(SYS_BRK, addr)
-}
-
 /// Change the process's working directory
 ///
 /// This function will attempt to set the process's working directory to `path`, which can be
