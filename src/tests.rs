@@ -1,13 +1,4 @@
 #[test]
-fn brk() {
-    unsafe {
-        let start = dbg!(crate::brk(0)).unwrap();
-        let end = start + 4 * 1024 * 1024;
-        assert_eq!(dbg!(crate::brk(end)), Ok(end));
-    }
-}
-
-#[test]
 fn chdir() {
     use std::str;
 
