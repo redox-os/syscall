@@ -15,23 +15,23 @@ pub use self::io::*;
 pub use self::number::*;
 pub use self::scheme::*;
 
-#[cfg(all(target_os = "redox", target_arch = "arm"))]
+#[cfg(all(any(target_os = "none", target_os = "redox"), target_arch = "arm"))]
 #[path="arch/arm.rs"]
 mod arch;
 
-#[cfg(all(target_os = "redox", target_arch = "aarch64"))]
+#[cfg(all(any(target_os = "none", target_os = "redox"), target_arch = "aarch64"))]
 #[path="arch/aarch64.rs"]
 mod arch;
 
-#[cfg(all(target_os = "redox", target_arch = "x86"))]
+#[cfg(all(any(target_os = "none", target_os = "redox"), target_arch = "x86"))]
 #[path="arch/x86.rs"]
 mod arch;
 
-#[cfg(all(target_os = "redox", target_arch = "x86_64"))]
+#[cfg(all(any(target_os = "none", target_os = "redox"), target_arch = "x86_64"))]
 #[path="arch/x86_64.rs"]
 mod arch;
 
-#[cfg(not(target_os = "redox"))]
+#[cfg(not(any(target_os = "none", target_os = "redox")))]
 #[path="arch/nonredox.rs"]
 mod arch;
 
