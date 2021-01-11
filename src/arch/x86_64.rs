@@ -1,3 +1,6 @@
+use core::{mem, slice};
+use core::ops::{Deref, DerefMut};
+
 use super::error::{Error, Result};
 
 macro_rules! syscall {
