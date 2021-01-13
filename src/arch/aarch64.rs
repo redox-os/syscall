@@ -1,3 +1,6 @@
+use core::{mem, slice};
+use core::ops::{Deref, DerefMut};
+
 use super::error::{Error, Result};
 
 pub unsafe fn syscall0(mut a: usize) -> Result<usize> {
@@ -59,4 +62,48 @@ pub unsafe fn syscall5(mut a: usize, b: usize, c: usize, d: usize, e: usize, f: 
           : "volatile");
 
     Error::demux(a)
+}
+
+//TODO
+#[derive(Copy, Clone, Debug, Default)]
+#[repr(C)]
+pub struct IntRegisters;
+
+impl Deref for IntRegisters {
+    type Target = [u8];
+    fn deref(&self) -> &[u8] {
+        unsafe {
+            slice::from_raw_parts(self as *const IntRegisters as *const u8, mem::size_of::<IntRegisters>())
+        }
+    }
+}
+
+impl DerefMut for IntRegisters {
+    fn deref_mut(&mut self) -> &mut [u8] {
+        unsafe {
+            slice::from_raw_parts_mut(self as *mut IntRegisters as *mut u8, mem::size_of::<IntRegisters>())
+        }
+    }
+}
+
+//TODO
+#[derive(Clone, Copy, Debug, Default)]
+#[repr(packed)]
+pub struct FloatRegisters;
+
+impl Deref for FloatRegisters {
+    type Target = [u8];
+    fn deref(&self) -> &[u8] {
+        unsafe {
+            slice::from_raw_parts(self as *const FloatRegisters as *const u8, mem::size_of::<FloatRegisters>())
+        }
+    }
+}
+
+impl DerefMut for FloatRegisters {
+    fn deref_mut(&mut self) -> &mut [u8] {
+        unsafe {
+            slice::from_raw_parts_mut(self as *mut FloatRegisters as *mut u8, mem::size_of::<FloatRegisters>())
+        }
+    }
 }
