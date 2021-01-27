@@ -103,10 +103,13 @@ impl DerefMut for IntRegisters {
     }
 }
 
-//TODO
 #[derive(Clone, Copy, Debug, Default)]
 #[repr(packed)]
-pub struct FloatRegisters;
+pub struct FloatRegisters {
+    pub fp_simd_regs: [u128; 32],
+    pub fpsr: u32,
+    pub fpcr: u32
+}
 
 impl Deref for FloatRegisters {
     type Target = [u8];
