@@ -7,11 +7,13 @@ macro_rules! syscall {
     ($($name:ident($a:ident, $($b:ident, $($c:ident, $($d:ident, $($e:ident, $($f:ident, )?)?)?)?)?);)+) => {
         $(
             pub unsafe fn $name(mut $a: usize, $(mut $b: usize, $($c: usize, $($d: usize, $($e: usize, $($f: usize)?)?)?)?)?) -> Result<usize> {
+                let ret: usize;
+
                 asm!(
                     "svc 0",
                     in("x8") $a,
                     $(
-                        inout("x0") $b,
+                        in("x0") $b,
                         $(
                             in("x1") $c,
                             $(
@@ -25,10 +27,11 @@ macro_rules! syscall {
                             )?
                         )?
                     )?
+                    lateout("x0") ret,
                     options(nostack),
                 );
 
-                Error::demux($a)
+                Error::demux(ret)
             }
         )+
     };
@@ -52,7 +55,7 @@ pub struct IntRegisters {
     pub spsr_el1: usize,
     pub esr_el1: usize,
     pub sp_el0: usize,      // Shouldn't be used if interrupt occurred at EL1
-    pub padding: usize,     // To keep the struct even number aligned 
+    pub padding: usize,     // To keep the struct even number aligned
     pub x30: usize,
     pub x29: usize,
     pub x28: usize,
