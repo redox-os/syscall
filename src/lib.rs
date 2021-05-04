@@ -23,6 +23,10 @@ mod arch;
 #[path="arch/aarch64.rs"]
 mod arch;
 
+#[cfg(all(any(target_os = "none", target_os = "redox"), target_arch = "riscv64"))]
+#[path="arch/riscv64.rs"]
+mod arch;
+
 #[cfg(all(any(target_os = "none", target_os = "redox"), target_arch = "x86"))]
 #[path="arch/x86.rs"]
 mod arch;
