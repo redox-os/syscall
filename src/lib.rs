@@ -1,6 +1,5 @@
 #![feature(asm)]
 #![feature(llvm_asm)]
-#![feature(const_fn)] // see https://github.com/rust-lang/rfcs/pull/2632
 #![cfg_attr(not(test), no_std)]
 
 #[cfg(test)]
