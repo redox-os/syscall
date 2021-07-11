@@ -64,6 +64,7 @@ pub const F_SETFL: usize = 4;
 pub const FUTEX_WAIT: usize = 0;
 pub const FUTEX_WAKE: usize = 1;
 pub const FUTEX_REQUEUE: usize = 2;
+pub const FUTEX_WAIT64: usize = 3;
 
 bitflags! {
     pub struct MapFlags: usize {
