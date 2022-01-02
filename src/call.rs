@@ -1,5 +1,5 @@
 use super::arch::*;
-use super::data::{Map, SigAction, Stat, StatVfs, TimeSpec};
+use super::data::{ExecMemRange, Map, SigAction, Stat, StatVfs, TimeSpec};
 use super::error::Result;
 use super::flag::*;
 use super::number::*;
@@ -85,9 +85,18 @@ pub fn fcntl(fd: usize, cmd: usize, arg: usize) -> Result<usize> {
     unsafe { syscall3(SYS_FCNTL, fd, cmd, arg) }
 }
 
-/// Replace the current process with a new executable
-pub fn fexec(fd: usize, args: &[[usize; 2]], vars: &[[usize; 2]]) -> Result<usize> {
-    unsafe { syscall5(SYS_FEXEC, fd, args.as_ptr() as usize, args.len(), vars.as_ptr() as usize, vars.len()) }
+// TODO: Support specifying FDs to keep/close (for FDs not included in that list, it would take
+// into account O_CLOEXEC).
+// TODO: Allow setting all registers of the target process?
+/// Replace the current process with a new executable, allowing the user to specify memory ranges
+/// to either keep, move, or add. It will then jump to [`instruction_ptr`] in the new process
+/// memory specified by the range map, with the stack pointer set accordingly. This syscall does
+/// not support setuid/setgid; instead, privilege escalation must be done by a higher-privileged
+/// process performing these actions via ptrace.
+// TODO: never type
+pub fn exec(memranges: &[ExecMemRange], instruction_ptr: usize, stack_ptr: usize) -> Result<core::convert::Infallible> {
+    unsafe { syscall4(SYS_EXEC, memranges.as_ptr() as usize, memranges.len(), instruction_ptr, stack_ptr)?; }
+    panic!("SYS_EXEC should only return in case of an error");
 }
 
 /// Map a file into memory, but with the ability to set the address to map into, either as a hint
