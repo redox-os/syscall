@@ -297,13 +297,14 @@ macro_rules! ptrace_event {
 }
 
 #[repr(C)]
+#[derive(Clone, Copy, Debug)]
 pub struct ExecMemRange {
     /// The address where the range is intended to be.
     pub address: usize,
     /// The size of the memory range.
     pub size: usize,
     /// Flags describing permissions (i.e. R/W/X)
-    pub flags: MapFlags,
+    pub flags: usize,
     /// If this equals [`address`], the range is kept untouched although flags can change, and the
     /// range can be shortened or partly zeroed. If it is different, it will move `[old_address,
     /// old_address+size)` to `[address, address+size]`.
