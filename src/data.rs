@@ -326,3 +326,29 @@ impl DerefMut for ExecMemRange {
         }
     }
 }
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+pub struct CloneInfo  {
+    /// The newly allocated stack to use for the child process when [`CLONE_VM`] is set. Otherwise
+    /// it is ignored.
+    pub target_stack: usize,
+    /// The newly allocated signal stack, when [`CLONE_VM`] is set, otherwise ignored. If no signal
+    /// stack is desired (i.e. all sigactions are SIG_DFL), then this may be set to `usize::MAX`.
+    pub target_sigstack: usize,
+}
+impl Deref for CloneInfo {
+    type Target = [u8];
+    fn deref(&self) -> &[u8] {
+        unsafe {
+            slice::from_raw_parts(self as *const Self as *const u8, mem::size_of::<Self>())
+        }
+    }
+}
+
+impl DerefMut for CloneInfo {
+    fn deref_mut(&mut self) -> &mut [u8] {
+        unsafe {
+            slice::from_raw_parts_mut(self as *mut Self as *mut u8, mem::size_of::<Self>())
+        }
+    }
+}
