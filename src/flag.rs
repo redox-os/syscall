@@ -32,18 +32,6 @@ macro_rules! bitflags {
     }
 }
 
-bitflags! {
-    pub struct CloneFlags: usize {
-        const CLONE_VM = 0x100;
-        const CLONE_FS = 0x200;
-        const CLONE_FILES = 0x400;
-        const CLONE_SIGHAND = 0x800;
-        const CLONE_VFORK = 0x4000;
-        const CLONE_THREAD = 0x10000;
-        const CLONE_STACK = 0x1000_0000;
-    }
-}
-
 pub const CLOCK_REALTIME: usize = 1;
 pub const CLOCK_MONOTONIC: usize = 4;
 
