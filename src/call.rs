@@ -38,11 +38,6 @@ pub fn chmod<T: AsRef<str>>(path: T, mode: usize) -> Result<usize> {
     unsafe { syscall3(SYS_CHMOD, path.as_ref().as_ptr() as usize, path.as_ref().len(), mode) }
 }
 
-/// Produce a fork of the current process, or a new process thread
-pub unsafe fn clone(flags: CloneFlags) -> Result<usize> {
-    syscall1(SYS_CLONE, flags.bits())
-}
-
 /// Close a file
 pub fn close(fd: usize) -> Result<usize> {
     unsafe { syscall1(SYS_CLOSE, fd) }

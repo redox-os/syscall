@@ -41,7 +41,6 @@ pub const SYS_FUTIMENS: usize =   SYS_CLASS_FILE | SYS_ARG_SLICE | 320;
 pub const SYS_EXEC: usize =     101;
 pub const SYS_CHDIR: usize =    12;
 pub const SYS_CLOCK_GETTIME: usize = 265;
-pub const SYS_CLONE: usize =    120;
 pub const SYS_EXIT: usize =     1;
 pub const SYS_FUTEX: usize =    240;
 pub const SYS_GETCWD: usize =   183;
