@@ -38,7 +38,6 @@ pub const SYS_FSYNC: usize =      SYS_CLASS_FILE | 118;
 pub const SYS_FTRUNCATE: usize =  SYS_CLASS_FILE | 93;
 pub const SYS_FUTIMENS: usize =   SYS_CLASS_FILE | SYS_ARG_SLICE | 320;
 
-pub const SYS_EXEC: usize =     101;
 pub const SYS_CHDIR: usize =    12;
 pub const SYS_CLOCK_GETTIME: usize = 265;
 pub const SYS_EXIT: usize =     1;
