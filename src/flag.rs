@@ -201,8 +201,10 @@ bitflags! {
         /// If you don't catch this, the child is started as normal.
         const PTRACE_EVENT_CLONE = 0x0000_0000_0000_0100;
 
-        const PTRACE_EVENT_MASK = 0x0000_0000_0000_0F00;
+        /// Sent when current-addrspace is changed, allowing the tracer to reopen the memory file.
+        const PTRACE_EVENT_ADDRSPACE_SWITCH = 0x0000_0000_0000_0200;
 
+        const PTRACE_EVENT_MASK = 0x0000_0000_0000_0F00;
 
         /// Special meaning, depending on the event. Usually, when fired before
         /// an action, it will skip performing that action.
@@ -279,13 +281,6 @@ bitflags! {
         const SA_RESETHAND = 0x80000000;
     }
 }
-
-// Auxiliery vector types
-pub const AT_NULL: usize = 0;
-pub const AT_PHDR: usize = 3;
-pub const AT_PHENT: usize = 4;
-pub const AT_PHNUM: usize = 5;
-pub const AT_ENTRY: usize = 9;
 
 bitflags! {
     pub struct WaitFlags: usize {
