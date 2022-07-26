@@ -290,6 +290,11 @@ bitflags! {
     }
 }
 
+pub const ADDRSPACE_OP_MMAP: usize = 0;
+pub const ADDRSPACE_OP_MUNMAP: usize = 1;
+pub const ADDRSPACE_OP_MPROTECT: usize = 2;
+pub const ADDRSPACE_OP_TRANSFER: usize = 3;
+
 /// True if status indicates the child is stopped.
 pub fn wifstopped(status: usize) -> bool {
     (status & 0xff) == 0x7f
