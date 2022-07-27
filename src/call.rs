@@ -38,11 +38,6 @@ pub fn chmod<T: AsRef<str>>(path: T, mode: usize) -> Result<usize> {
     unsafe { syscall3(SYS_CHMOD, path.as_ref().as_ptr() as usize, path.as_ref().len(), mode) }
 }
 
-/// Produce a fork of the current process, or a new process thread
-pub unsafe fn clone(flags: CloneFlags) -> Result<usize> {
-    syscall1(SYS_CLONE, flags.bits())
-}
-
 /// Close a file
 pub fn close(fd: usize) -> Result<usize> {
     unsafe { syscall1(SYS_CLOSE, fd) }
@@ -83,11 +78,6 @@ pub fn fchown(fd: usize, uid: u32, gid: u32) -> Result<usize> {
 /// Change file descriptor flags
 pub fn fcntl(fd: usize, cmd: usize, arg: usize) -> Result<usize> {
     unsafe { syscall3(SYS_FCNTL, fd, cmd, arg) }
-}
-
-/// Replace the current process with a new executable
-pub fn fexec(fd: usize, args: &[[usize; 2]], vars: &[[usize; 2]]) -> Result<usize> {
-    unsafe { syscall5(SYS_FEXEC, fd, args.as_ptr() as usize, args.len(), vars.as_ptr() as usize, vars.len()) }
 }
 
 /// Map a file into memory, but with the ability to set the address to map into, either as a hint
