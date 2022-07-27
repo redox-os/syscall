@@ -4,6 +4,7 @@ use core::{ptr, slice};
 
 use crate::Result;
 use crate::{PartialAllocStrategy, PhysallocFlags};
+use crate::arch::PAGE_SIZE;
 
 /// An RAII guard of a physical memory allocation. Currently all physically allocated memory are
 /// page-aligned and take up at least 4k of space (on x86_64).
@@ -12,9 +13,6 @@ pub struct PhysBox {
     address: usize,
     size: usize
 }
-
-#[cfg(target_arch = "x86_64")]
-const PAGE_SIZE: usize = 4096;
 
 const fn round_up(x: usize) -> usize {
     (x + PAGE_SIZE - 1) / PAGE_SIZE * PAGE_SIZE
