@@ -132,3 +132,25 @@ impl DerefMut for FloatRegisters {
         }
     }
 }
+
+#[derive(Clone, Copy, Debug, Default)]
+#[repr(packed)]
+pub struct EnvRegisters {
+    // TODO: do we need any of these?
+}
+impl Deref for EnvRegisters {
+    type Target = [u8];
+    fn deref(&self) -> &[u8] {
+        unsafe {
+            slice::from_raw_parts(self as *const EnvRegisters as *const u8, mem::size_of::<EnvRegisters>())
+        }
+    }
+}
+
+impl DerefMut for EnvRegisters {
+    fn deref_mut(&mut self) -> &mut [u8] {
+        unsafe {
+            slice::from_raw_parts_mut(self as *mut EnvRegisters as *mut u8, mem::size_of::<EnvRegisters>())
+        }
+    }
+}
