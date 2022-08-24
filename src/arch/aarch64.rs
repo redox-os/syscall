@@ -51,13 +51,6 @@ syscall! {
 #[derive(Copy, Clone, Debug, Default)]
 #[repr(C)]
 pub struct IntRegisters {
-    pub elr_el1: usize,
-    pub tpidr_el0: usize,
-    pub tpidrro_el0: usize,
-    pub spsr_el1: usize,
-    pub esr_el1: usize,
-    pub sp_el0: usize,      // Shouldn't be used if interrupt occurred at EL1
-    pub padding: usize,     // To keep the struct even number aligned
     pub x30: usize,
     pub x29: usize,
     pub x28: usize,
@@ -136,7 +129,8 @@ impl DerefMut for FloatRegisters {
 #[derive(Clone, Copy, Debug, Default)]
 #[repr(packed)]
 pub struct EnvRegisters {
-    // TODO: do we need any of these?
+    pub tpidr_el0: usize,
+    pub tpidrro_el0: usize,
 }
 impl Deref for EnvRegisters {
     type Target = [u8];
