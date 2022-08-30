@@ -95,7 +95,7 @@ pub struct Dma<T: ?Sized> {
 
 impl<T> Dma<T> {
     pub fn from_physbox_uninit(phys: PhysBox) -> Result<Dma<MaybeUninit<T>>> {
-        let virt = unsafe { crate::physmap(phys.address, phys.size, crate::PHYSMAP_WRITE)? } as *mut MaybeUninit<T>;
+        let virt = unsafe { crate::physmap(phys.address, phys.size, crate::PHYSMAP_NO_CACHE | crate::PHYSMAP_WRITE)? } as *mut MaybeUninit<T>;
 
         Ok(Dma {
             phys,
@@ -156,7 +156,7 @@ impl<T> Dma<[T]> {
         assert!(len <= max_len);
 
         Ok(Dma {
-            virt: unsafe { slice::from_raw_parts_mut(crate::physmap(phys.address, phys.size, crate::PHYSMAP_WRITE)? as *mut MaybeUninit<T>, len) } as *mut [MaybeUninit<T>],
+            virt: unsafe { slice::from_raw_parts_mut(crate::physmap(phys.address, phys.size, crate::PHYSMAP_NO_CACHE | crate::PHYSMAP_WRITE)? as *mut MaybeUninit<T>, len) } as *mut [MaybeUninit<T>],
             phys,
         })
     }
