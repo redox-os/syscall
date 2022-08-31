@@ -3,7 +3,7 @@ use core::ops::{Deref, DerefMut};
 use core::{ptr, slice};
 
 use crate::Result;
-use crate::{PartialAllocStrategy, PhysallocFlags};
+use crate::{PartialAllocStrategy, PhysallocFlags, PhysmapFlags};
 use crate::arch::PAGE_SIZE;
 
 /// An RAII guard of a physical memory allocation. Currently all physically allocated memory are
@@ -19,6 +19,18 @@ const fn round_up(x: usize) -> usize {
 }
 fn assert_aligned(x: usize) {
     assert_eq!(x % PAGE_SIZE, 0);
+}
+
+#[cfg(target_arch = "aarch64")]
+fn physmap_flags() -> PhysmapFlags {
+    // aarch64 currently must map DMA memory without caching to ensure coherence
+    crate::PHYSMAP_NO_CACHE | crate::PHYSMAP_WRITE
+}
+
+#[cfg(any(target_arch = "x86", target_arch = "x86_64"))]
+fn physmap_flags() -> PhysmapFlags {
+    // x86 ensures cache coherence with DMA memory
+    crate::PHYSMAP_WRITE
 }
 
 impl PhysBox {
@@ -95,7 +107,7 @@ pub struct Dma<T: ?Sized> {
 
 impl<T> Dma<T> {
     pub fn from_physbox_uninit(phys: PhysBox) -> Result<Dma<MaybeUninit<T>>> {
-        let virt = unsafe { crate::physmap(phys.address, phys.size, crate::PHYSMAP_NO_CACHE | crate::PHYSMAP_WRITE)? } as *mut MaybeUninit<T>;
+        let virt = unsafe { crate::physmap(phys.address, phys.size, physmap_flags())? } as *mut MaybeUninit<T>;
 
         Ok(Dma {
             phys,
@@ -156,7 +168,7 @@ impl<T> Dma<[T]> {
         assert!(len <= max_len);
 
         Ok(Dma {
-            virt: unsafe { slice::from_raw_parts_mut(crate::physmap(phys.address, phys.size, crate::PHYSMAP_NO_CACHE | crate::PHYSMAP_WRITE)? as *mut MaybeUninit<T>, len) } as *mut [MaybeUninit<T>],
+            virt: unsafe { slice::from_raw_parts_mut(crate::physmap(phys.address, phys.size, physmap_flags())? as *mut MaybeUninit<T>, len) } as *mut [MaybeUninit<T>],
             phys,
         })
     }
