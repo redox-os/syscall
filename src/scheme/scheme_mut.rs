@@ -1,10 +1,12 @@
 use core::{mem, slice};
 
+use crate::CallerCtx;
+use crate::OpenResult;
 use crate::data::*;
 use crate::error::*;
 use crate::flag::*;
 use crate::number::*;
-use crate::scheme::str_from_raw_parts;
+use crate::scheme::*;
 
 pub trait SchemeMut {
     fn handle(&mut self, packet: &mut Packet) {
@@ -81,6 +83,10 @@ pub trait SchemeMut {
     fn open(&mut self, path: &str, flags: usize, uid: u32, gid: u32) -> Result<usize> {
         Err(Error::new(ENOENT))
     }
+    #[allow(unused_variables)]
+    fn xopen(&mut self, path: &str, flags: usize, ctx: &CallerCtx) -> Result<OpenResult> {
+        convert_to_this_scheme(self.open(path, flags, ctx.uid, ctx.gid))
+    }
 
     #[allow(unused_variables)]
     fn chmod(&mut self, path: &str, mode: u16, uid: u32, gid: u32) -> Result<usize> {
@@ -101,6 +107,11 @@ pub trait SchemeMut {
     #[allow(unused_variables)]
     fn dup(&mut self, old_id: usize, buf: &[u8]) -> Result<usize> {
         Err(Error::new(EBADF))
+    }
+
+    #[allow(unused_variables)]
+    fn xdup(&mut self, old_id: usize, buf: &[u8], ctx: &CallerCtx) -> Result<OpenResult> {
+        convert_to_this_scheme(self.dup(old_id, buf))
     }
 
     #[allow(unused_variables)]

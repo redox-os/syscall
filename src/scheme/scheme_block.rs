@@ -1,10 +1,12 @@
 use core::{mem, slice};
 
+use crate::CallerCtx;
+use crate::OpenResult;
 use crate::data::*;
 use crate::error::*;
 use crate::flag::*;
 use crate::number::*;
-use crate::scheme::str_from_raw_parts;
+use crate::scheme::*;
 
 pub trait SchemeBlock {
     fn handle(&self, packet: &Packet) -> Option<usize> {
@@ -81,6 +83,10 @@ pub trait SchemeBlock {
     fn open(&self, path: &str, flags: usize, uid: u32, gid: u32) -> Result<Option<usize>> {
         Err(Error::new(ENOENT))
     }
+    #[allow(unused_variables)]
+    fn xopen(&self, path: &str, flags: usize, ctx: &CallerCtx) -> Result<Option<OpenResult>> {
+        convert_to_this_scheme_block(self.open(path, flags, ctx.uid, ctx.gid))
+    }
 
     #[allow(unused_variables)]
     fn chmod(&self, path: &str, mode: u16, uid: u32, gid: u32) -> Result<Option<usize>> {
@@ -101,6 +107,11 @@ pub trait SchemeBlock {
     #[allow(unused_variables)]
     fn dup(&self, old_id: usize, buf: &[u8]) -> Result<Option<usize>> {
         Err(Error::new(EBADF))
+    }
+
+    #[allow(unused_variables)]
+    fn xdup(&self, old_id: usize, buf: &[u8], ctx: &CallerCtx) -> Result<Option<OpenResult>> {
+        convert_to_this_scheme_block(self.dup(old_id, buf))
     }
 
     #[allow(unused_variables)]

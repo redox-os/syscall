@@ -1,5 +1,7 @@
 use core::{slice, str};
 
+use crate::Result;
+
 pub use self::scheme::Scheme;
 pub use self::scheme_mut::SchemeMut;
 pub use self::scheme_block::SchemeBlock;
@@ -16,3 +18,21 @@ mod scheme_mut;
 mod scheme_block;
 mod scheme_block_mut;
 mod seek;
+
+pub struct CallerCtx {
+    pub pid: usize,
+    pub uid: u32,
+    pub gid: u32,
+}
+
+pub enum OpenResult {
+    ThisScheme { number: usize },
+    OtherScheme { fd: usize },
+}
+
+pub(crate) fn convert_to_this_scheme(r: Result<usize>) -> Result<OpenResult> {
+    r.map(|number| OpenResult::ThisScheme { number })
+}
+pub(crate) fn convert_to_this_scheme_block(r: Result<Option<usize>>) -> Result<Option<OpenResult>> {
+    r.map(|o| o.map(|number| OpenResult::ThisScheme { number }))
+}
