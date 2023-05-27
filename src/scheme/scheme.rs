@@ -12,8 +12,9 @@ pub trait Scheme {
     fn handle(&self, packet: &mut Packet) {
         let res = match packet.a {
             SYS_OPEN => if let Some(path) = unsafe { str_from_raw_parts(packet.b as *const u8, packet.c) } {
-                self.open(path, packet.d, packet.uid, packet.gid)
-            } else {
+                convert_in_scheme_handle(packet, self.xopen(path, packet.d, &CallerCtx::from_packet(&packet)))
+            }
+            else {
                 Err(Error::new(EINVAL))
             },
             SYS_RMDIR => if let Some(path) = unsafe { str_from_raw_parts(packet.b as *const u8, packet.c) } {
@@ -27,7 +28,7 @@ pub trait Scheme {
                 Err(Error::new(EINVAL))
             },
 
-            SYS_DUP => self.dup(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }),
+            SYS_DUP => convert_in_scheme_handle(packet, self.xdup(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }, &CallerCtx::from_packet(&packet))),
             SYS_READ => self.read(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
             SYS_WRITE => self.write(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }),
             SYS_LSEEK => self.seek(packet.b, packet.c as isize, packet.d).map(|o| o as usize),
