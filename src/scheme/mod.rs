@@ -1,6 +1,6 @@
 use core::{slice, str};
 
-use crate::{Error, Result, EOPNOTSUPP, ESKMSG, Packet};
+use crate::{Error, Result, EOPNOTSUPP, ESKMSG, Packet, SKMSG_FRETURNFD};
 
 pub use self::scheme::Scheme;
 pub use self::scheme_mut::SchemeMut;
@@ -49,7 +49,8 @@ pub(crate) fn convert_in_scheme_handle(packet: &mut Packet, result: Result<OpenR
     match result {
         Ok(OpenResult::ThisScheme { number }) => Ok(number),
         Ok(OpenResult::OtherScheme { fd }) => {
-            packet.b = fd;
+            packet.b = SKMSG_FRETURNFD;
+            packet.c = fd;
             Err(Error::new(ESKMSG))
         }
         Err(err) => Err(err),
