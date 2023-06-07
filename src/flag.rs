@@ -54,6 +54,8 @@ pub const FUTEX_WAKE: usize = 1;
 pub const FUTEX_REQUEUE: usize = 2;
 pub const FUTEX_WAIT64: usize = 3;
 
+pub const SKMSG_FRETURNFD: usize = 0;
+
 bitflags! {
     pub struct MapFlags: usize {
         const PROT_NONE = 0x0000_0000;

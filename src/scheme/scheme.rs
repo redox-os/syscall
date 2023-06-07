@@ -1,17 +1,20 @@
 use core::{mem, slice};
 
+use crate::CallerCtx;
+use crate::OpenResult;
 use crate::data::*;
 use crate::error::*;
 use crate::flag::*;
 use crate::number::*;
-use crate::scheme::str_from_raw_parts;
+use crate::scheme::*;
 
 pub trait Scheme {
     fn handle(&self, packet: &mut Packet) {
         let res = match packet.a {
             SYS_OPEN => if let Some(path) = unsafe { str_from_raw_parts(packet.b as *const u8, packet.c) } {
-                self.open(path, packet.d, packet.uid, packet.gid)
-            } else {
+                convert_in_scheme_handle(packet, self.xopen(path, packet.d, &CallerCtx::from_packet(&packet)))
+            }
+            else {
                 Err(Error::new(EINVAL))
             },
             SYS_RMDIR => if let Some(path) = unsafe { str_from_raw_parts(packet.b as *const u8, packet.c) } {
@@ -25,7 +28,7 @@ pub trait Scheme {
                 Err(Error::new(EINVAL))
             },
 
-            SYS_DUP => self.dup(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }),
+            SYS_DUP => convert_in_scheme_handle(packet, self.xdup(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }, &CallerCtx::from_packet(&packet))),
             SYS_READ => self.read(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
             SYS_WRITE => self.write(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }),
             SYS_LSEEK => self.seek(packet.b, packet.c as isize, packet.d).map(|o| o as usize),
@@ -81,6 +84,10 @@ pub trait Scheme {
     fn open(&self, path: &str, flags: usize, uid: u32, gid: u32) -> Result<usize> {
         Err(Error::new(ENOENT))
     }
+    #[allow(unused_variables)]
+    fn xopen(&self, path: &str, flags: usize, ctx: &CallerCtx) -> Result<OpenResult> {
+        convert_to_this_scheme(self.open(path, flags, ctx.uid, ctx.gid))
+    }
 
     #[allow(unused_variables)]
     fn chmod(&self, path: &str, mode: u16, uid: u32, gid: u32) -> Result<usize> {
@@ -101,6 +108,11 @@ pub trait Scheme {
     #[allow(unused_variables)]
     fn dup(&self, old_id: usize, buf: &[u8]) -> Result<usize> {
         Err(Error::new(EBADF))
+    }
+
+    #[allow(unused_variables)]
+    fn xdup(&self, old_id: usize, buf: &[u8], ctx: &CallerCtx) -> Result<OpenResult> {
+        convert_to_this_scheme(self.dup(old_id, buf))
     }
 
     #[allow(unused_variables)]
