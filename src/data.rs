@@ -149,6 +149,24 @@ pub struct SigAction {
     pub sa_mask: [u64; 2],
     pub sa_flags: SigActionFlags,
 }
+impl Deref for SigAction {
+    type Target = [u8];
+    fn deref(&self) -> &[u8] {
+        unsafe {
+            slice::from_raw_parts(self as *const SigAction as *const u8,
+                                  mem::size_of::<SigAction>())
+        }
+    }
+}
+
+impl DerefMut for SigAction {
+    fn deref_mut(&mut self) -> &mut [u8] {
+        unsafe {
+            slice::from_raw_parts_mut(self as *mut SigAction as *mut u8,
+                                      mem::size_of::<SigAction>())
+        }
+    }
+}
 
 #[allow(dead_code)]
 unsafe fn _assert_size_of_function_is_sane() {
