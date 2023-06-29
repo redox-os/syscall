@@ -37,6 +37,11 @@ pub const SYS_FSYNC: usize =      SYS_CLASS_FILE | 118;
 pub const SYS_FTRUNCATE: usize =  SYS_CLASS_FILE | 93;
 pub const SYS_FUTIMENS: usize =   SYS_CLASS_FILE | SYS_ARG_SLICE | 320;
 
+pub const KSMSG_MMAP: usize = SYS_CLASS_FILE | 72;
+pub const KSMSG_MSYNC: usize = SYS_CLASS_FILE | 73;
+pub const KSMSG_MUNMAP: usize = SYS_CLASS_FILE | 74;
+pub const KSMSG_MMAP_PREP: usize = SYS_CLASS_FILE | 75;
+
 pub const SYS_CLOCK_GETTIME: usize = 265;
 pub const SYS_EXIT: usize =     1;
 pub const SYS_FUTEX: usize =    240;
