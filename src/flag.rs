@@ -54,11 +54,18 @@ pub const FUTEX_WAKE: usize = 1;
 pub const FUTEX_REQUEUE: usize = 2;
 pub const FUTEX_WAIT64: usize = 3;
 
+// packet.c = fd
 pub const SKMSG_FRETURNFD: usize = 0;
+
+// packet.uid:packet.gid = offset, packet.c = page_count
+pub const SKMSG_PROVIDE_MMAP: usize = 1;
 
 bitflags! {
     pub struct MapFlags: usize {
+        // TODO: Downgrade PROT_NONE to global constant? (bitflags specifically states zero flags
+        // can cause buggy behavior).
         const PROT_NONE = 0x0000_0000;
+
         const PROT_EXEC = 0x0001_0000;
         const PROT_WRITE = 0x0002_0000;
         const PROT_READ = 0x0004_0000;
@@ -66,7 +73,6 @@ bitflags! {
         const MAP_SHARED = 0x0001;
         const MAP_PRIVATE = 0x0002;
 
-        /// Only accepted for mmap2(2).
         const MAP_FIXED = 0x0004;
         const MAP_FIXED_NOREPLACE = 0x000C;
     }

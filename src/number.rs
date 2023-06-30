@@ -37,9 +37,16 @@ pub const SYS_FSYNC: usize =      SYS_CLASS_FILE | 118;
 pub const SYS_FTRUNCATE: usize =  SYS_CLASS_FILE | 93;
 pub const SYS_FUTIMENS: usize =   SYS_CLASS_FILE | SYS_ARG_SLICE | 320;
 
+// b = file, c = flags, d = required_page_count, uid:gid = offset
 pub const KSMSG_MMAP: usize = SYS_CLASS_FILE | 72;
+
+// b = file, c = flags, d = page_count, uid:gid = offset
 pub const KSMSG_MSYNC: usize = SYS_CLASS_FILE | 73;
+
+// b = file, c = page_count, uid:gid = offset
 pub const KSMSG_MUNMAP: usize = SYS_CLASS_FILE | 74;
+
+// b = file, c = flags, d = page_count, uid:gid = offset
 pub const KSMSG_MMAP_PREP: usize = SYS_CLASS_FILE | 75;
 
 pub const SYS_CLOCK_GETTIME: usize = 265;
