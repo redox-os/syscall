@@ -57,7 +57,7 @@ pub const FUTEX_WAIT64: usize = 3;
 // packet.c = fd
 pub const SKMSG_FRETURNFD: usize = 0;
 
-// packet.uid:packet.gid = offset, packet.c = page_count
+// packet.uid:packet.gid = offset, packet.c = base address, packet.d = page count
 pub const SKMSG_PROVIDE_MMAP: usize = 1;
 
 bitflags! {
@@ -75,6 +75,19 @@ bitflags! {
 
         const MAP_FIXED = 0x0004;
         const MAP_FIXED_NOREPLACE = 0x000C;
+
+        /// For *userspace-backed mmaps*, return from the mmap call before all pages have been
+        /// provided by the scheme. This requires the scheme to be trusted, as the current context
+        /// can block indefinitely, if the scheme does not respond to the page fault handler's
+        /// request, as it tries to map the page by requesting it from the scheme.
+        ///
+        /// In some cases however, such as the program loader, the data needs to be trusted as much
+        /// with or without MAP_LAZY, and if so, mapping lazily will not cause insecureness by
+        /// itself.
+        ///
+        /// For kernel-backed mmaps, this flag has no effect at all. It is unspecified whether
+        /// kernel mmaps are lazy or not.
+        const MAP_LAZY = 0x0010;
     }
 }
 
