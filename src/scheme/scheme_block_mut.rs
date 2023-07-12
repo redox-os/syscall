@@ -61,6 +61,9 @@ pub trait SchemeBlockMut {
             },
             SYS_CLOSE => self.close(packet.b),
 
+            KSMSG_MMAP_PREP => self.mmap_prep(packet.b, u64::from(packet.uid) | (u64::from(packet.gid) << 32), packet.c, MapFlags::from_bits_truncate(packet.d)),
+            KSMSG_MUNMAP => self.munmap(packet.b, u64::from(packet.uid) | (u64::from(packet.gid) << 32), packet.c),
+
             _ => Err(Error::new(ENOSYS))
         };
 
@@ -177,5 +180,15 @@ pub trait SchemeBlockMut {
     #[allow(unused_variables)]
     fn close(&mut self, id: usize) -> Result<Option<usize>> {
         Err(Error::new(EBADF))
+    }
+
+    #[allow(unused_variables)]
+    fn mmap_prep(&mut self, id: usize, offset: u64, size: usize, flags: MapFlags) -> Result<Option<usize>> {
+        Err(Error::new(EOPNOTSUPP))
+    }
+
+    #[allow(unused_variables)]
+    fn munmap(&mut self, id: usize, offset: u64, size: usize) -> Result<Option<usize>> {
+        Err(Error::new(EOPNOTSUPP))
     }
 }
