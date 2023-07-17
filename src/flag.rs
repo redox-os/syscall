@@ -355,3 +355,11 @@ pub fn wexitstatus(status: usize) -> usize {
 pub fn wcoredump(status: usize) -> bool {
     (status & 0x80) != 0
 }
+
+bitflags! {
+    pub struct MremapFlags: usize {
+        const FIXED = 1;
+        const FIXED_REPLACE = 3;
+        // TODO: MAYMOVE, DONTUNMAP
+    }
+}

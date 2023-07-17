@@ -25,10 +25,16 @@ pub const SYS_FCHMOD: usize =     SYS_CLASS_FILE | 94;
 pub const SYS_FCHOWN: usize =     SYS_CLASS_FILE | 207;
 pub const SYS_FCNTL: usize =      SYS_CLASS_FILE | 55;
 pub const SYS_FEVENT: usize =     SYS_CLASS_FILE | 927;
+
+// TODO: Rename FMAP/FUNMAP to MMAP/MUNMAP
 pub const SYS_FMAP_OLD: usize =   SYS_CLASS_FILE | SYS_ARG_SLICE | 90;
 pub const SYS_FMAP: usize =       SYS_CLASS_FILE | SYS_ARG_SLICE | 900;
+// TODO: SYS_FUNMAP should be SYS_CLASS_FILE
+// TODO: Remove FMAP/FMAP_OLD
 pub const SYS_FUNMAP_OLD: usize = SYS_CLASS_FILE | 91;
 pub const SYS_FUNMAP: usize =     SYS_CLASS_FILE | 92;
+pub const SYS_MREMAP: usize = 155;
+
 pub const SYS_FPATH: usize =      SYS_CLASS_FILE | SYS_ARG_MSLICE | 928;
 pub const SYS_FRENAME: usize =    SYS_CLASS_FILE | SYS_ARG_PATH | 38;
 pub const SYS_FSTAT: usize =      SYS_CLASS_FILE | SYS_ARG_MSLICE | 28;
