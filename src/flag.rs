@@ -90,6 +90,15 @@ bitflags! {
         const MAP_LAZY = 0x0010;
     }
 }
+bitflags! {
+    pub struct MunmapFlags: usize {
+        /// Indicates whether the funmap call must implicitly do an msync, for the changes to
+        /// become visible later.
+        ///
+        /// This flag will currently be set if and only if MAP_SHARED | PROT_WRITE are set.
+        const NEEDS_SYNC = 1;
+    }
+}
 
 pub const MODE_TYPE: u16 = 0xF000;
 pub const MODE_DIR: u16 = 0x4000;
