@@ -36,18 +36,6 @@ pub trait SchemeBlock {
             SYS_FCHOWN => self.fchown(packet.b, packet.c as u32, packet.d as u32),
             SYS_FCNTL => self.fcntl(packet.b, packet.c, packet.d),
             SYS_FEVENT => self.fevent(packet.b, EventFlags::from_bits_truncate(packet.c)).map(|f| f.map(|f| f.bits())),
-            SYS_FMAP_OLD => if packet.d >= mem::size_of::<OldMap>() {
-                self.fmap_old(packet.b, unsafe { &*(packet.c as *const OldMap) })
-            } else {
-                Err(Error::new(EFAULT))
-            },
-            SYS_FMAP => if packet.d >= mem::size_of::<Map>() {
-                self.fmap(packet.b, unsafe { &*(packet.c as *const Map) })
-            } else {
-                Err(Error::new(EFAULT))
-            },
-            SYS_FUNMAP_OLD => self.funmap_old(packet.b),
-            SYS_FUNMAP => self.funmap(packet.b, packet.c),
             SYS_FPATH => self.fpath(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
             SYS_FRENAME => if let Some(path) = unsafe { str_from_raw_parts(packet.c as *const u8, packet.d) } {
                 self.frename(packet.b, path, packet.uid, packet.gid)
@@ -72,6 +60,10 @@ pub trait SchemeBlock {
                 Err(Error::new(EFAULT))
             },
             SYS_CLOSE => self.close(packet.b),
+
+            KSMSG_MMAP_PREP => self.mmap_prep(packet.b, u64::from(packet.uid) | (u64::from(packet.gid) << 32), packet.c, MapFlags::from_bits_truncate(packet.d)),
+            KSMSG_MUNMAP => self.munmap(packet.b, u64::from(packet.uid) | (u64::from(packet.gid) << 32), packet.c, MunmapFlags::from_bits_truncate(packet.d)),
+
             _ => Err(Error::new(ENOSYS))
         };
 
@@ -151,32 +143,6 @@ pub trait SchemeBlock {
     }
 
     #[allow(unused_variables)]
-    fn fmap_old(&self, id: usize, map: &OldMap) -> Result<Option<usize>> {
-        Err(Error::new(EBADF))
-    }
-    #[allow(unused_variables)]
-    fn fmap(&self, id: usize, map: &Map) -> Result<Option<usize>> {
-        if map.flags.contains(MapFlags::MAP_FIXED) {
-            return Err(Error::new(EINVAL));
-        }
-        self.fmap_old(id, &OldMap {
-            offset: map.offset,
-            size: map.size,
-            flags: map.flags,
-        })
-    }
-
-    #[allow(unused_variables)]
-    fn funmap_old(&self, address: usize) -> Result<Option<usize>> {
-        Ok(Some(0))
-    }
-
-    #[allow(unused_variables)]
-    fn funmap(&self, address: usize, length: usize) -> Result<Option<usize>> {
-        Ok(Some(0))
-    }
-
-    #[allow(unused_variables)]
     fn fpath(&self, id: usize, buf: &mut [u8]) -> Result<Option<usize>> {
         Err(Error::new(EBADF))
     }
@@ -214,5 +180,15 @@ pub trait SchemeBlock {
     #[allow(unused_variables)]
     fn close(&self, id: usize) -> Result<Option<usize>> {
         Err(Error::new(EBADF))
+    }
+
+    #[allow(unused_variables)]
+    fn mmap_prep(&self, id: usize, offset: u64, size: usize, flags: MapFlags) -> Result<Option<usize>> {
+        Err(Error::new(EOPNOTSUPP))
+    }
+
+    #[allow(unused_variables)]
+    fn munmap(&self, id: usize, offset: u64, size: usize, flags: MunmapFlags) -> Result<Option<usize>> {
+        Err(Error::new(EOPNOTSUPP))
     }
 }
