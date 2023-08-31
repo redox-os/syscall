@@ -77,7 +77,6 @@ pub const SYS_PHYSALLOC3: usize=9453;
 pub const SYS_PHYSFREE: usize = 946;
 pub const SYS_PHYSMAP: usize =  947;
 pub const SYS_VIRTTOPHYS: usize=949;
-pub const SYS_PIPE2: usize =    331;
 pub const SYS_SETPGID: usize =  57;
 pub const SYS_SETREGID: usize = 204;
 pub const SYS_SETRENS: usize =  952;
