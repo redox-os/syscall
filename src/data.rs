@@ -1,5 +1,6 @@
 use core::ops::{Deref, DerefMut};
 use core::{mem, slice};
+use crate::IntRegisters;
 use crate::flag::{EventFlags, MapFlags, PtraceFlags, SigActionFlags};
 
 #[derive(Copy, Clone, Debug, Default)]
@@ -146,7 +147,7 @@ impl DerefMut for Packet {
 #[repr(C)]
 pub struct SigAction {
     pub sa_handler: Option<extern "C" fn(usize)>,
-    pub sa_mask: [u64; 2],
+    pub sa_mask: u64,
     pub sa_flags: SigActionFlags,
 }
 impl Deref for SigAction {
@@ -359,6 +360,29 @@ impl DerefMut for GrantDesc {
     fn deref_mut(&mut self) -> &mut [u8] {
         unsafe {
             slice::from_raw_parts_mut(self as *mut GrantDesc as *mut u8, mem::size_of::<GrantDesc>())
+        }
+    }
+}
+#[derive(Clone, Copy, Debug, Default)]
+#[repr(C, align(64))]
+pub struct SignalStack {
+    pub intregs: IntRegisters,
+    pub old_procmask: u64,
+}
+
+impl Deref for SignalStack {
+    type Target = [u8];
+    fn deref(&self) -> &[u8] {
+        unsafe {
+            slice::from_raw_parts(self as *const Self as *const u8, mem::size_of::<Self>())
+        }
+    }
+}
+
+impl DerefMut for SignalStack {
+    fn deref_mut(&mut self) -> &mut [u8] {
+        unsafe {
+            slice::from_raw_parts_mut(self as *mut Self as *mut u8, mem::size_of::<Self>())
         }
     }
 }
