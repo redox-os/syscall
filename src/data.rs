@@ -368,6 +368,14 @@ impl DerefMut for GrantDesc {
 pub struct SignalStack {
     pub intregs: IntRegisters,
     pub old_procmask: u64,
+    pub sa_mask: u64,
+    pub sa_flags: u32,
+    pub sig_num: u32,
+    pub sa_handler: usize,
+    // offset = 3*64 bytes from this point.
+    //
+    // NOTE: If any new fields are added, make sure 64 byte alignment is maintained (for x86_64
+    // XSAVE, other arches may not necessarily need that alignment).
 }
 
 impl Deref for SignalStack {
