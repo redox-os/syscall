@@ -26,6 +26,8 @@ pub const SYS_FCHOWN: usize =     SYS_CLASS_FILE | 207;
 pub const SYS_FCNTL: usize =      SYS_CLASS_FILE | 55;
 pub const SYS_FEVENT: usize =     SYS_CLASS_FILE | 927;
 
+pub const SYS_SENDFD: usize =     SYS_CLASS_FILE | 34;
+
 // TODO: Rename FMAP/FUNMAP to MMAP/MUNMAP
 pub const SYS_FMAP_OLD: usize =   SYS_CLASS_FILE | SYS_ARG_SLICE | 90;
 pub const SYS_FMAP: usize =       SYS_CLASS_FILE | SYS_ARG_SLICE | 900;

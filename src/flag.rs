@@ -60,6 +60,35 @@ pub const SKMSG_FRETURNFD: usize = 0;
 // packet.uid:packet.gid = offset, packet.c = base address, packet.d = page count
 pub const SKMSG_PROVIDE_MMAP: usize = 1;
 
+// packet.id provides state, packet.c = dest fd or pointer to dest fd, packet.d = flags
+pub const SKMSG_FOBTAINFD: usize = 2;
+
+// TODO: Split SendFdFlags into caller flags and flags that the scheme receives?
+bitflags::bitflags! {
+    pub struct SendFdFlags: usize {
+        /// If set, the kernel will enforce that the file descriptor is exclusively owned.
+        ///
+        /// That is, there will no longer exist any other reference to that FD when removed from
+        /// the file table (SYS_SENDFD always removes the FD from the file table, but without this
+        /// flag, it can be retained by SYS_DUPing it first).
+        const EXCLUSIVE = 1;
+    }
+}
+bitflags::bitflags! {
+    pub struct FobtainFdFlags: usize {
+        /// If set, `packet.c` specifies the destination file descriptor slot, otherwise the lowest
+        /// available slot will be selected, and placed in the usize pointed to by `packet.c`.
+        const MANUAL_FD = 1;
+
+        // If set, the file descriptor received is guaranteed to be exclusively owned (by the file
+        // table the obtainer is running in).
+        const EXCLUSIVE = 2;
+
+        // No, cloexec won't be stored in the kernel in the future, when the stable ABI is moved to
+        // relibc, so no flag for that!
+    }
+}
+
 bitflags! {
     pub struct MapFlags: usize {
         // TODO: Downgrade PROT_NONE to global constant? (bitflags specifically states zero flags
