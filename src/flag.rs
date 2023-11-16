@@ -13,13 +13,20 @@ macro_rules! bitflags {
     ) => {
         // First, use the inner bitflags
         inner_bitflags! {
-            #[derive(Default)]
+            #[derive(PartialEq, Eq, PartialOrd, Ord, Hash, Debug, Clone, Copy, Default)]
             $(#[$outer])*
             pub struct $BitFlags: $T {
                 $(
                     $(#[$inner $($args)*])*
                     const $Flag = $value;
                 )+
+            }
+        }
+
+        impl $BitFlags {
+            #[deprecated = "use the safe `from_bits_retain` method instead"]
+            pub unsafe fn from_bits_unchecked(bits: $T) -> Self {
+                Self::from_bits_retain(bits)
             }
         }
 
@@ -278,7 +285,7 @@ impl Deref for PtraceFlags {
         // Same as to_ne_bytes but in-place
         unsafe {
             slice::from_raw_parts(
-                &self.bits as *const _ as *const u8,
+                &self.bits() as *const _ as *const u8,
                 mem::size_of::<u64>()
             )
         }

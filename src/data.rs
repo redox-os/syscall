@@ -315,7 +315,7 @@ macro_rules! ptrace_event {
 }
 
 bitflags::bitflags! {
-    #[derive(Default)]
+    #[derive(PartialEq, Eq, PartialOrd, Ord, Hash, Debug, Clone, Copy, Default)]
     pub struct GrantFlags: usize {
         const GRANT_READ = 0x0000_0001;
         const GRANT_WRITE = 0x0000_0002;
@@ -326,6 +326,13 @@ bitflags::bitflags! {
         const GRANT_SCHEME = 0x0000_0020;
         const GRANT_PHYS = 0x0000_0040;
         const GRANT_PINNED = 0x0000_0080;
+    }
+}
+
+impl GrantFlags {
+    #[deprecated = "use the safe `from_bits_retain` method instead"]
+    pub unsafe fn from_bits_unchecked(bits: usize) -> Self {
+        Self::from_bits_retain(bits)
     }
 }
 

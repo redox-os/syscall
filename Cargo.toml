@@ -15,5 +15,5 @@ name = "syscall"
 rustc-dep-of-std = ["core", "bitflags/rustc-dep-of-std"]
 
 [dependencies]
-bitflags = "1.1.0"
+bitflags = "2.4"
 core = { version = "1.0.0", optional = true, package = "rustc-std-workspace-core" }
