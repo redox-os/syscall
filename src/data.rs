@@ -326,6 +326,7 @@ bitflags::bitflags! {
         const GRANT_SCHEME = 0x0000_0020;
         const GRANT_PHYS = 0x0000_0040;
         const GRANT_PINNED = 0x0000_0080;
+        const GRANT_PHYS_CONTIGUOUS = 0x0000_0100;
     }
 }
 
