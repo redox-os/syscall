@@ -74,7 +74,6 @@ pub const SYS_KILL: usize =     37;
 pub const SYS_MPROTECT: usize = 125;
 pub const SYS_MKNS: usize =     984;
 pub const SYS_NANOSLEEP: usize =162;
-pub const SYS_PHYSMAP: usize =  947;
 pub const SYS_VIRTTOPHYS: usize=949;
 pub const SYS_SETPGID: usize =  57;
 pub const SYS_SETREGID: usize = 204;

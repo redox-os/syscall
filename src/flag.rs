@@ -166,14 +166,6 @@ pub const O_SYMLINK: usize =    0x4000_0000;
 pub const O_NOFOLLOW: usize =   0x8000_0000;
 pub const O_ACCMODE: usize =    O_RDONLY | O_WRONLY | O_RDWR;
 
-bitflags! {
-    pub struct PhysmapFlags: usize {
-        const PHYSMAP_WRITE = 0x0000_0001;
-        const PHYSMAP_WRITE_COMBINE = 0x0000_0002;
-        const PHYSMAP_NO_CACHE = 0x0000_0004;
-    }
-}
-
 // The top 48 bits of PTRACE_* are reserved, for now
 
 bitflags! {

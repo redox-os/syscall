@@ -205,15 +205,6 @@ pub fn open<T: AsRef<str>>(path: T, flags: usize) -> Result<usize> {
     unsafe { syscall3(SYS_OPEN, path.as_ref().as_ptr() as usize, path.as_ref().len(), flags) }
 }
 
-/// Map physical memory to virtual memory
-///
-/// # Errors
-///
-/// * `EPERM` - `uid != 0`
-pub unsafe fn physmap(physical_address: usize, size: usize, flags: PhysmapFlags) -> Result<usize> {
-    syscall3(SYS_PHYSMAP, physical_address, size, flags.bits())
-}
-
 /// Read from a file descriptor into a buffer
 pub fn read(fd: usize, buf: &mut [u8]) -> Result<usize> {
     unsafe { syscall3(SYS_READ, fd, buf.as_mut_ptr() as usize, buf.len()) }
