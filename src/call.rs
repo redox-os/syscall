@@ -205,56 +205,6 @@ pub fn open<T: AsRef<str>>(path: T, flags: usize) -> Result<usize> {
     unsafe { syscall3(SYS_OPEN, path.as_ref().as_ptr() as usize, path.as_ref().len(), flags) }
 }
 
-/// Allocate frames, linearly in physical memory.
-///
-/// # Errors
-///
-/// * `EPERM` - `uid != 0`
-/// * `ENOMEM` - the system has run out of available memory
-pub unsafe fn physalloc(size: usize) -> Result<usize> {
-    syscall1(SYS_PHYSALLOC, size)
-}
-
-/// Allocate frames, linearly in physical memory, with an extra set of flags. If the flags contain
-/// [`PARTIAL_ALLOC`], this will result in `physalloc3` with `min = 1`.
-///
-/// Refer to the simpler [`physalloc`] and the more complex [`physalloc3`], that this convenience
-/// function is based on.
-///
-/// # Errors
-///
-/// * `EPERM` - `uid != 0`
-/// * `ENOMEM` - the system has run out of available memory
-pub unsafe fn physalloc2(size: usize, flags: usize) -> Result<usize> {
-    let mut ret = 1usize;
-    physalloc3(size, flags, &mut ret)
-}
-
-/// Allocate frames, linearly in physical memory, with an extra set of flags. If the flags contain
-/// [`PARTIAL_ALLOC`], the `min` parameter specifies the number of frames that have to be allocated
-/// for this operation to succeed. The return value is the offset of the first frame, and `min` is
-/// overwritten with the number of frames actually allocated.
-///
-/// Refer to the simpler [`physalloc`] and the simpler library function [`physalloc2`].
-///
-/// # Errors
-///
-/// * `EPERM` - `uid != 0`
-/// * `ENOMEM` - the system has run out of available memory
-/// * `EINVAL` - `min = 0`
-pub unsafe fn physalloc3(size: usize, flags: usize, min: &mut usize) -> Result<usize> {
-    syscall3(SYS_PHYSALLOC3, size, flags, min as *mut usize as usize)
-}
-
-/// Free physically allocated pages
-///
-/// # Errors
-///
-/// * `EPERM` - `uid != 0`
-pub unsafe fn physfree(physical_address: usize, size: usize) -> Result<usize> {
-    syscall2(SYS_PHYSFREE, physical_address, size)
-}
-
 /// Map physical memory to virtual memory
 ///
 /// # Errors
