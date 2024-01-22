@@ -394,3 +394,27 @@ impl DerefMut for SignalStack {
         }
     }
 }
+#[derive(Clone, Copy, Debug, Default)]
+#[repr(C)]
+pub struct SetSighandlerData {
+    pub entry: usize,
+    pub altstack_base: usize,
+    pub altstack_len: usize,
+}
+
+impl Deref for SetSighandlerData {
+    type Target = [u8];
+    fn deref(&self) -> &[u8] {
+        unsafe {
+            slice::from_raw_parts(self as *const Self as *const u8, mem::size_of::<Self>())
+        }
+    }
+}
+
+impl DerefMut for SetSighandlerData {
+    fn deref_mut(&mut self) -> &mut [u8] {
+        unsafe {
+            slice::from_raw_parts_mut(self as *mut Self as *mut u8, mem::size_of::<Self>())
+        }
+    }
+}
