@@ -57,6 +57,9 @@ pub const KSMSG_MUNMAP: usize = SYS_CLASS_FILE | 74;
 // b = file, c = flags, d = page_count, uid:gid = offset
 pub const KSMSG_MMAP_PREP: usize = SYS_CLASS_FILE | 75;
 
+// b = target_packetid_lo32, c = target_packetid_hi32
+pub const KSMSG_CANCEL: usize = SYS_CLASS_FILE | 76;
+
 pub const SYS_CLOCK_GETTIME: usize = 265;
 pub const SYS_EXIT: usize =     1;
 pub const SYS_FUTEX: usize =    240;
