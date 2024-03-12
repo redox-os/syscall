@@ -244,7 +244,7 @@ pub fn sigaction(sig: usize, act: Option<&SigAction>, oldact: Option<&mut SigAct
 }
 
 /// Get and/or set signal masks
-pub fn sigprocmask(how: usize, set: Option<&[u64; 2]>, oldset: Option<&mut [u64; 2]>) -> Result<usize> {
+pub fn sigprocmask(how: usize, set: Option<&u64>, oldset: Option<&mut u64>) -> Result<usize> {
     unsafe { syscall3(SYS_SIGPROCMASK, how,
                       set.map(|x| x as *const _).unwrap_or_else(ptr::null) as usize,
                       oldset.map(|x| x as *mut _).unwrap_or_else(ptr::null_mut) as usize) }
