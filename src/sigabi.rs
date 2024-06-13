@@ -40,7 +40,7 @@ pub struct Sigcontrol {
     pub control_flags: SigatomicUsize,
 
     pub saved_ip: NonatomicUsize,          // rip/eip/pc
-    pub saved_archdep_reg: NonatomicUsize, // rflags/eflags/x0
+    pub saved_archdep_reg: NonatomicUsize, // rflags(x64)/eflags(x86)/x0(aarch64)/t0(riscv64)
 }
 #[derive(Clone, Copy, Debug)]
 pub struct SenderInfo {
