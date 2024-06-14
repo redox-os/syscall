@@ -13,6 +13,7 @@ name = "syscall"
 
 [features]
 rustc-dep-of-std = ["core", "bitflags/rustc-dep-of-std"]
+std = []
 
 [dependencies]
 bitflags = "2.4"

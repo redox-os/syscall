@@ -72,6 +72,7 @@ pub const SKMSG_FOBTAINFD: usize = 2;
 
 // TODO: Split SendFdFlags into caller flags and flags that the scheme receives?
 bitflags::bitflags! {
+    #[derive(Clone, Copy, Debug)]
     pub struct SendFdFlags: usize {
         /// If set, the kernel will enforce that the file descriptor is exclusively owned.
         ///
@@ -82,6 +83,7 @@ bitflags::bitflags! {
     }
 }
 bitflags::bitflags! {
+    #[derive(Clone, Copy, Debug)]
     pub struct FobtainFdFlags: usize {
         /// If set, `packet.c` specifies the destination file descriptor slot, otherwise the lowest
         /// available slot will be selected, and placed in the usize pointed to by `packet.c`.
@@ -333,5 +335,13 @@ bitflags! {
         const FIXED = 1;
         const FIXED_REPLACE = 3;
         // TODO: MAYMOVE, DONTUNMAP
+    }
+}
+bitflags! {
+    pub struct RwFlags: u32 {
+        const NONBLOCK = 1;
+        const APPEND = 2;
+        // TODO: sync/dsync
+        // TODO: O_DIRECT?
     }
 }
