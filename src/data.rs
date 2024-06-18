@@ -397,9 +397,9 @@ impl DerefMut for SignalStack {
 #[derive(Clone, Copy, Debug, Default)]
 #[repr(C)]
 pub struct SetSighandlerData {
-    pub entry: usize,
-    pub altstack_base: usize,
-    pub altstack_len: usize,
+    pub user_handler: usize,
+    pub excp_handler: usize,
+    pub word_addr: usize,
 }
 
 impl Deref for SetSighandlerData {
