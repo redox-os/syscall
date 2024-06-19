@@ -1,4 +1,5 @@
 #![cfg_attr(not(any(feature = "std", test)), no_std)]
+#![feature(sync_unsafe_cell)]
 
 #[cfg(test)]
 extern crate core;

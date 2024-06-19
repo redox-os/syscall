@@ -1,4 +1,6 @@
+use core::cell::SyncUnsafeCell;
 use core::ops::{Deref, DerefMut};
+use core::sync::atomic::AtomicU64;
 use core::{mem, slice};
 use crate::IntRegisters;
 use crate::flag::{EventFlags, MapFlags, PtraceFlags, SigActionFlags};
@@ -363,37 +365,7 @@ impl DerefMut for GrantDesc {
         }
     }
 }
-#[derive(Clone, Copy, Debug, Default)]
-#[repr(C, align(64))]
-pub struct SignalStack {
-    pub intregs: IntRegisters,
-    pub old_procmask: u64,
-    pub sa_mask: u64,
-    pub sa_flags: u32,
-    pub sig_num: u32,
-    pub sa_handler: usize,
-    // offset = 3*64 bytes from this point.
-    //
-    // NOTE: If any new fields are added, make sure 64 byte alignment is maintained (for x86_64
-    // XSAVE, other arches may not necessarily need that alignment).
-}
 
-impl Deref for SignalStack {
-    type Target = [u8];
-    fn deref(&self) -> &[u8] {
-        unsafe {
-            slice::from_raw_parts(self as *const Self as *const u8, mem::size_of::<Self>())
-        }
-    }
-}
-
-impl DerefMut for SignalStack {
-    fn deref_mut(&mut self) -> &mut [u8] {
-        unsafe {
-            slice::from_raw_parts_mut(self as *mut Self as *mut u8, mem::size_of::<Self>())
-        }
-    }
-}
 #[derive(Clone, Copy, Debug, Default)]
 #[repr(C)]
 pub struct SetSighandlerData {
@@ -417,4 +389,17 @@ impl DerefMut for SetSighandlerData {
             slice::from_raw_parts_mut(self as *mut Self as *mut u8, mem::size_of::<Self>())
         }
     }
+}
+
+#[derive(Debug)]
+pub struct Sigcontrol {
+    // composed of [lo pend|lo mask, hi pend|hi mask]
+    pub word: [AtomicU64; 2],
+
+    pub control: SyncUnsafeCell<usize>,
+
+    pub saved_scratch_a: SyncUnsafeCell<usize>,
+    pub saved_scratch_b: SyncUnsafeCell<usize>,
+    pub saved_ip: SyncUnsafeCell<usize>,
+    pub saved_sp: SyncUnsafeCell<usize>,
 }
