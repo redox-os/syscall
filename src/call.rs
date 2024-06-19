@@ -1,10 +1,10 @@
 use super::arch::*;
-use super::data::{Map, SigAction, Stat, StatVfs, TimeSpec};
+use super::data::{Map, Stat, StatVfs, TimeSpec};
 use super::error::Result;
 use super::flag::*;
 use super::number::*;
 
-use core::{mem, ptr};
+use core::mem;
 
 /// Close a file
 pub fn close(fd: usize) -> Result<usize> {

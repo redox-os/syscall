@@ -2,8 +2,8 @@ use core::cell::SyncUnsafeCell;
 use core::ops::{Deref, DerefMut};
 use core::sync::atomic::AtomicU64;
 use core::{mem, slice};
-use crate::IntRegisters;
-use crate::flag::{EventFlags, MapFlags, PtraceFlags, SigActionFlags};
+
+use crate::flag::{EventFlags, MapFlags, PtraceFlags, SigcontrolFlags};
 
 #[derive(Copy, Clone, Debug, Default)]
 #[repr(C)]
@@ -143,41 +143,6 @@ impl DerefMut for Packet {
             slice::from_raw_parts_mut(self as *mut Packet as *mut u8, mem::size_of::<Packet>())
         }
     }
-}
-
-#[derive(Copy, Clone, Debug, Default, PartialEq)]
-#[repr(C)]
-pub struct SigAction {
-    pub sa_handler: Option<extern "C" fn(usize)>,
-    pub sa_mask: u64,
-    pub sa_flags: SigActionFlags,
-}
-impl Deref for SigAction {
-    type Target = [u8];
-    fn deref(&self) -> &[u8] {
-        unsafe {
-            slice::from_raw_parts(self as *const SigAction as *const u8,
-                                  mem::size_of::<SigAction>())
-        }
-    }
-}
-
-impl DerefMut for SigAction {
-    fn deref_mut(&mut self) -> &mut [u8] {
-        unsafe {
-            slice::from_raw_parts_mut(self as *mut SigAction as *mut u8,
-                                      mem::size_of::<SigAction>())
-        }
-    }
-}
-
-#[allow(dead_code)]
-unsafe fn _assert_size_of_function_is_sane() {
-    // Transmuting will complain *at compile time* if sizes differ.
-    // Rust forbids a fn-pointer from being 0 so to allow SIG_DFL to
-    // exist, we use Option<extern "C" fn(usize)> which will mean 0
-    // becomes None
-    let _ = mem::transmute::<Option<extern "C" fn(usize)>, usize>(None);
 }
 
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
@@ -396,7 +361,7 @@ pub struct Sigcontrol {
     // composed of [lo pend|lo mask, hi pend|hi mask]
     pub word: [AtomicU64; 2],
 
-    pub control: SyncUnsafeCell<usize>,
+    pub control_flags: SyncUnsafeCell<SigcontrolFlags>,
 
     pub saved_scratch_a: SyncUnsafeCell<usize>,
     pub saved_scratch_b: SyncUnsafeCell<usize>,

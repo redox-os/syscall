@@ -257,26 +257,6 @@ pub const SIGIO: usize =    29;
 pub const SIGPWR: usize =   30;
 pub const SIGSYS: usize =   31;
 
-pub const SIG_DFL: usize = 0;
-pub const SIG_IGN: usize = 1;
-
-pub const SIG_BLOCK: usize = 0;
-pub const SIG_UNBLOCK: usize = 1;
-pub const SIG_SETMASK: usize = 2;
-
-bitflags! {
-    pub struct SigActionFlags: usize {
-        const SA_NOCLDSTOP = 0x00000001;
-        const SA_NOCLDWAIT = 0x00000002;
-        const SA_SIGINFO =   0x00000004;
-        const SA_RESTORER =  0x04000000;
-        const SA_ONSTACK =   0x08000000;
-        const SA_RESTART =   0x10000000;
-        const SA_NODEFER =   0x40000000;
-        const SA_RESETHAND = 0x80000000;
-    }
-}
-
 bitflags! {
     pub struct WaitFlags: usize {
         const WNOHANG =    0x01;
@@ -343,5 +323,13 @@ bitflags! {
         const APPEND = 2;
         // TODO: sync/dsync
         // TODO: O_DIRECT?
+    }
+}
+bitflags! {
+    pub struct SigcontrolFlags: usize {
+        /// Prevents the kernel from jumping the context to the signal trampoline, but otherwise
+        /// has absolutely no effect on which signals are blocked etc. Meant to be used for
+        /// short-lived critical sections inside libc.
+        const INHIBIT_DELIVERY = 1;
     }
 }
