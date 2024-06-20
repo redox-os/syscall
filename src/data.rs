@@ -1,6 +1,6 @@
 use core::cell::SyncUnsafeCell;
 use core::ops::{Deref, DerefMut};
-use core::sync::atomic::AtomicU64;
+use core::sync::atomic::{AtomicU64, Ordering};
 use core::{mem, slice};
 
 use crate::flag::{EventFlags, MapFlags, PtraceFlags, SigcontrolFlags};
@@ -336,7 +336,8 @@ impl DerefMut for GrantDesc {
 pub struct SetSighandlerData {
     pub user_handler: usize,
     pub excp_handler: usize,
-    pub word_addr: usize,
+    pub thread_control_addr: usize,
+    pub proc_control_addr: usize,
 }
 
 impl Deref for SetSighandlerData {
@@ -355,7 +356,14 @@ impl DerefMut for SetSighandlerData {
         }
     }
 }
+/// Signal runtime struct for the entire process
+#[derive(Debug, Default)]
+pub struct SigProcControl {
+    // composed of [lo pend|lo mask, hi pend|hi mask]
+    pub word: [AtomicU64; 2],
+}
 
+/// Signal runtime struct for a thread
 #[derive(Debug, Default)]
 pub struct Sigcontrol {
     // composed of [lo pend|lo mask, hi pend|hi mask]
@@ -372,4 +380,19 @@ pub struct Sigcontrol {
 
 pub fn sig_bit(sig: usize) -> u64 {
     1 << (sig - 1)
+}
+impl SigProcControl {
+    pub fn signal_will_stop(&self, sig: usize) -> bool {
+        let bit = if sig == crate::SIGTSTP {
+            crate::SIGW0_TSTP_IS_STOP_BIT
+        } else if sig == crate::SIGTTIN {
+            crate::SIGW0_TTIN_IS_STOP_BIT
+        } else if sig == crate::SIGTTOU {
+            crate::SIGW0_TTOU_IS_STOP_BIT
+        } else {
+            panic!()
+        };
+
+        self.word[0].load(Ordering::SeqCst) & bit == bit
+    }
 }

@@ -341,10 +341,10 @@ bitflags! {
 //
 // Since it's also not meaningful for individual threads to store anything sigaction related, as
 // sigaction is process-level, these bits are only used in the process sigcontrol structure (TODO).
-const SIGW0_TSTP_IS_STOP_BIT: u64 = 1 << (SIGKILL - 1);
-const SIGW0_TTIN_IS_STOP_BIT: u64 = 1 << (SIGSTOP - 1);
-const SIGW0_TTOU_IS_STOP_BIT: u64 = 1 << (SIGKILL + 31);
+pub const SIGW0_TSTP_IS_STOP_BIT: u64 = 1 << (SIGKILL - 1);
+pub const SIGW0_TTIN_IS_STOP_BIT: u64 = 1 << (SIGSTOP - 1);
+pub const SIGW0_TTOU_IS_STOP_BIT: u64 = 1 << (SIGKILL + 31);
 
-const SIGW0_UNUSED1: u64 = 1 << (SIGSTOP + 31);
-const SIGW0_UNUSED2: u64 = 1 << 31;
-const SIGW0_UNUSED3: u64 = 1 << 63;
+pub const SIGW0_UNUSED1: u64 = 1 << (SIGSTOP + 31);
+pub const SIGW0_UNUSED2: u64 = 1 << 31;
+pub const SIGW0_UNUSED3: u64 = 1 << 63;
