@@ -356,7 +356,7 @@ impl DerefMut for SetSighandlerData {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Sigcontrol {
     // composed of [lo pend|lo mask, hi pend|hi mask]
     pub word: [AtomicU64; 2],
@@ -365,6 +365,7 @@ pub struct Sigcontrol {
 
     pub saved_scratch_a: SyncUnsafeCell<usize>,
     pub saved_scratch_b: SyncUnsafeCell<usize>,
+    pub saved_flags: SyncUnsafeCell<usize>,
     pub saved_ip: SyncUnsafeCell<usize>,
     pub saved_sp: SyncUnsafeCell<usize>,
 }

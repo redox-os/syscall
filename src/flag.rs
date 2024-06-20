@@ -333,3 +333,18 @@ bitflags! {
         const INHIBIT_DELIVERY = 1;
     }
 }
+// SIGKILL and SIGSTOP are not considered regular signals, and are merely special codes for
+// force-killing and stopping a process or individual thread, respectively. Thus, we use 3 of those
+// 4 unused bits (those intended for [SIGKILL, SIGSTOP] x ["pending", "masked"]) to store whether
+// SIGTSTP, SIGTTOU, and SIGTTOU, should act as SIG_DFL ("stop"). While this "stop" bit is set,
+// neither the regular pending nor the mask bits are meaningful.
+//
+// Since it's also not meaningful for individual threads to store anything sigaction related, as
+// sigaction is process-level, these bits are only used in the process sigcontrol structure (TODO).
+const SIGW0_TSTP_IS_STOP_BIT: u64 = 1 << (SIGKILL - 1);
+const SIGW0_TTIN_IS_STOP_BIT: u64 = 1 << (SIGSTOP - 1);
+const SIGW0_TTOU_IS_STOP_BIT: u64 = 1 << (SIGKILL + 31);
+
+const SIGW0_UNUSED1: u64 = 1 << (SIGSTOP + 31);
+const SIGW0_UNUSED2: u64 = 1 << 31;
+const SIGW0_UNUSED3: u64 = 1 << 63;
