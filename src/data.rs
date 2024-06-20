@@ -369,3 +369,7 @@ pub struct Sigcontrol {
     pub saved_ip: SyncUnsafeCell<usize>,
     pub saved_sp: SyncUnsafeCell<usize>,
 }
+
+pub fn sig_bit(sig: usize) -> u64 {
+    1 << (sig - 1)
+}
