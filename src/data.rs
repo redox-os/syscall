@@ -1,6 +1,5 @@
-use core::cell::SyncUnsafeCell;
 use core::ops::{Deref, DerefMut};
-use core::sync::atomic::{AtomicU64, Ordering};
+use core::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
 use core::{mem, slice};
 
 use crate::flag::{EventFlags, MapFlags, PtraceFlags, SigcontrolFlags};
@@ -358,6 +357,7 @@ impl DerefMut for SetSighandlerData {
 }
 /// Signal runtime struct for the entire process
 #[derive(Debug, Default)]
+#[repr(C)]
 pub struct SigProcControl {
     // composed of [lo pend|lo mask, hi pend|hi mask]
     pub word: [AtomicU64; 2],
@@ -365,17 +365,53 @@ pub struct SigProcControl {
 
 /// Signal runtime struct for a thread
 #[derive(Debug, Default)]
+#[repr(C)]
 pub struct Sigcontrol {
     // composed of [lo pend|lo mask, hi pend|hi mask]
     pub word: [AtomicU64; 2],
 
-    pub control_flags: SyncUnsafeCell<SigcontrolFlags>,
+    pub control_flags: SigatomicUsize,
 
-    pub saved_scratch_a: SyncUnsafeCell<usize>,
-    pub saved_scratch_b: SyncUnsafeCell<usize>,
-    pub saved_flags: SyncUnsafeCell<usize>,
-    pub saved_ip: SyncUnsafeCell<usize>,
-    pub saved_sp: SyncUnsafeCell<usize>,
+    pub saved_scratch_a: NonatomicUsize,
+    pub saved_scratch_b: NonatomicUsize,
+    pub saved_flags: NonatomicUsize,
+    pub saved_ip: NonatomicUsize,
+    pub saved_sp: NonatomicUsize,
+}
+#[derive(Debug, Default)]
+#[repr(transparent)]
+pub struct SigatomicUsize(AtomicUsize);
+
+impl SigatomicUsize {
+    #[inline]
+    pub fn load(&self, ordering: Ordering) -> usize {
+        let value = self.0.load(Ordering::Relaxed);
+        if ordering != Ordering::Relaxed {
+            core::sync::atomic::compiler_fence(ordering);
+        }
+        value
+    }
+    #[inline]
+    pub fn store(&self, value: usize, ordering: Ordering) {
+        if ordering != Ordering::Relaxed {
+            core::sync::atomic::compiler_fence(ordering);
+        }
+        self.0.store(value, Ordering::Relaxed);
+    }
+}
+#[derive(Debug, Default)]
+#[repr(transparent)]
+pub struct NonatomicUsize(AtomicUsize);
+
+impl NonatomicUsize {
+    #[inline]
+    pub fn get(&self) -> usize {
+        self.0.load(Ordering::Relaxed)
+    }
+    #[inline]
+    pub fn set(&self, value: usize) {
+        self.0.store(value, Ordering::Relaxed);
+    }
 }
 
 pub fn sig_bit(sig: usize) -> u64 {
