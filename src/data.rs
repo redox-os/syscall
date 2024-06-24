@@ -436,7 +436,7 @@ impl SigProcControl {
     }
 }
 
-#[cfg(target_has_atomic = "64")]
+#[cfg(not(target_arch = "x86"))]
 pub use core::sync::atomic::AtomicU64;
 
 #[cfg(target_arch = "x86")]
