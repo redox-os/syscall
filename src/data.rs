@@ -1,6 +1,9 @@
-use core::ops::{Deref, DerefMut};
-use core::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
-use core::{mem, slice};
+use core::{
+    mem,
+    ops::{Deref, DerefMut},
+    slice,
+    sync::atomic::{AtomicUsize, Ordering},
+};
 
 use crate::flag::{EventFlags, MapFlags, PtraceFlags, SigcontrolFlags};
 
@@ -9,23 +12,19 @@ use crate::flag::{EventFlags, MapFlags, PtraceFlags, SigcontrolFlags};
 pub struct Event {
     pub id: usize,
     pub flags: EventFlags,
-    pub data: usize
+    pub data: usize,
 }
 
 impl Deref for Event {
     type Target = [u8];
     fn deref(&self) -> &[u8] {
-        unsafe {
-            slice::from_raw_parts(self as *const Event as *const u8, mem::size_of::<Event>())
-        }
+        unsafe { slice::from_raw_parts(self as *const Event as *const u8, mem::size_of::<Event>()) }
     }
 }
 
 impl DerefMut for Event {
     fn deref_mut(&mut self) -> &mut [u8] {
-        unsafe {
-            slice::from_raw_parts_mut(self as *mut Event as *mut u8, mem::size_of::<Event>())
-        }
+        unsafe { slice::from_raw_parts_mut(self as *mut Event as *mut u8, mem::size_of::<Event>()) }
     }
 }
 
@@ -40,8 +39,10 @@ impl Deref for ITimerSpec {
     type Target = [u8];
     fn deref(&self) -> &[u8] {
         unsafe {
-            slice::from_raw_parts(self as *const ITimerSpec as *const u8,
-                                  mem::size_of::<ITimerSpec>())
+            slice::from_raw_parts(
+                self as *const ITimerSpec as *const u8,
+                mem::size_of::<ITimerSpec>(),
+            )
         }
     }
 }
@@ -49,8 +50,10 @@ impl Deref for ITimerSpec {
 impl DerefMut for ITimerSpec {
     fn deref_mut(&mut self) -> &mut [u8] {
         unsafe {
-            slice::from_raw_parts_mut(self as *mut ITimerSpec as *mut u8,
-                                      mem::size_of::<ITimerSpec>())
+            slice::from_raw_parts_mut(
+                self as *mut ITimerSpec as *mut u8,
+                mem::size_of::<ITimerSpec>(),
+            )
         }
     }
 }
@@ -100,17 +103,13 @@ pub struct Map {
 impl Deref for Map {
     type Target = [u8];
     fn deref(&self) -> &[u8] {
-        unsafe {
-            slice::from_raw_parts(self as *const Map as *const u8, mem::size_of::<Map>())
-        }
+        unsafe { slice::from_raw_parts(self as *const Map as *const u8, mem::size_of::<Map>()) }
     }
 }
 
 impl DerefMut for Map {
     fn deref_mut(&mut self) -> &mut [u8] {
-        unsafe {
-            slice::from_raw_parts_mut(self as *mut Map as *mut u8, mem::size_of::<Map>())
-        }
+        unsafe { slice::from_raw_parts_mut(self as *mut Map as *mut u8, mem::size_of::<Map>()) }
     }
 }
 
@@ -124,7 +123,7 @@ pub struct Packet {
     pub a: usize,
     pub b: usize,
     pub c: usize,
-    pub d: usize
+    pub d: usize,
 }
 
 impl Deref for Packet {
@@ -167,19 +166,13 @@ pub struct Stat {
 impl Deref for Stat {
     type Target = [u8];
     fn deref(&self) -> &[u8] {
-        unsafe {
-            slice::from_raw_parts(self as *const Stat as *const u8,
-                                  mem::size_of::<Stat>())
-        }
+        unsafe { slice::from_raw_parts(self as *const Stat as *const u8, mem::size_of::<Stat>()) }
     }
 }
 
 impl DerefMut for Stat {
     fn deref_mut(&mut self) -> &mut [u8] {
-        unsafe {
-            slice::from_raw_parts_mut(self as *mut Stat as *mut u8,
-                                      mem::size_of::<Stat>())
-        }
+        unsafe { slice::from_raw_parts_mut(self as *mut Stat as *mut u8, mem::size_of::<Stat>()) }
     }
 }
 
@@ -196,8 +189,10 @@ impl Deref for StatVfs {
     type Target = [u8];
     fn deref(&self) -> &[u8] {
         unsafe {
-            slice::from_raw_parts(self as *const StatVfs as *const u8,
-                                  mem::size_of::<StatVfs>())
+            slice::from_raw_parts(
+                self as *const StatVfs as *const u8,
+                mem::size_of::<StatVfs>(),
+            )
         }
     }
 }
@@ -205,8 +200,7 @@ impl Deref for StatVfs {
 impl DerefMut for StatVfs {
     fn deref_mut(&mut self) -> &mut [u8] {
         unsafe {
-            slice::from_raw_parts_mut(self as *mut StatVfs as *mut u8,
-                                      mem::size_of::<StatVfs>())
+            slice::from_raw_parts_mut(self as *mut StatVfs as *mut u8, mem::size_of::<StatVfs>())
         }
     }
 }
@@ -222,8 +216,10 @@ impl Deref for TimeSpec {
     type Target = [u8];
     fn deref(&self) -> &[u8] {
         unsafe {
-            slice::from_raw_parts(self as *const TimeSpec as *const u8,
-                                  mem::size_of::<TimeSpec>())
+            slice::from_raw_parts(
+                self as *const TimeSpec as *const u8,
+                mem::size_of::<TimeSpec>(),
+            )
         }
     }
 }
@@ -231,8 +227,7 @@ impl Deref for TimeSpec {
 impl DerefMut for TimeSpec {
     fn deref_mut(&mut self) -> &mut [u8] {
         unsafe {
-            slice::from_raw_parts_mut(self as *mut TimeSpec as *mut u8,
-                                      mem::size_of::<TimeSpec>())
+            slice::from_raw_parts_mut(self as *mut TimeSpec as *mut u8, mem::size_of::<TimeSpec>())
         }
     }
 }
@@ -246,14 +241,17 @@ pub struct PtraceEvent {
     pub c: usize,
     pub d: usize,
     pub e: usize,
-    pub f: usize
+    pub f: usize,
 }
 
 impl Deref for PtraceEvent {
     type Target = [u8];
     fn deref(&self) -> &[u8] {
         unsafe {
-            slice::from_raw_parts(self as *const PtraceEvent as *const u8, mem::size_of::<PtraceEvent>())
+            slice::from_raw_parts(
+                self as *const PtraceEvent as *const u8,
+                mem::size_of::<PtraceEvent>(),
+            )
         }
     }
 }
@@ -261,7 +259,10 @@ impl Deref for PtraceEvent {
 impl DerefMut for PtraceEvent {
     fn deref_mut(&mut self) -> &mut [u8] {
         unsafe {
-            slice::from_raw_parts_mut(self as *mut PtraceEvent as *mut u8, mem::size_of::<PtraceEvent>())
+            slice::from_raw_parts_mut(
+                self as *mut PtraceEvent as *mut u8,
+                mem::size_of::<PtraceEvent>(),
+            )
         }
     }
 }
@@ -317,7 +318,10 @@ impl Deref for GrantDesc {
     type Target = [u8];
     fn deref(&self) -> &[u8] {
         unsafe {
-            slice::from_raw_parts(self as *const GrantDesc as *const u8, mem::size_of::<GrantDesc>())
+            slice::from_raw_parts(
+                self as *const GrantDesc as *const u8,
+                mem::size_of::<GrantDesc>(),
+            )
         }
     }
 }
@@ -325,7 +329,10 @@ impl Deref for GrantDesc {
 impl DerefMut for GrantDesc {
     fn deref_mut(&mut self) -> &mut [u8] {
         unsafe {
-            slice::from_raw_parts_mut(self as *mut GrantDesc as *mut u8, mem::size_of::<GrantDesc>())
+            slice::from_raw_parts_mut(
+                self as *mut GrantDesc as *mut u8,
+                mem::size_of::<GrantDesc>(),
+            )
         }
     }
 }
@@ -342,17 +349,13 @@ pub struct SetSighandlerData {
 impl Deref for SetSighandlerData {
     type Target = [u8];
     fn deref(&self) -> &[u8] {
-        unsafe {
-            slice::from_raw_parts(self as *const Self as *const u8, mem::size_of::<Self>())
-        }
+        unsafe { slice::from_raw_parts(self as *const Self as *const u8, mem::size_of::<Self>()) }
     }
 }
 
 impl DerefMut for SetSighandlerData {
     fn deref_mut(&mut self) -> &mut [u8] {
-        unsafe {
-            slice::from_raw_parts_mut(self as *mut Self as *mut u8, mem::size_of::<Self>())
-        }
+        unsafe { slice::from_raw_parts_mut(self as *mut Self as *mut u8, mem::size_of::<Self>()) }
     }
 }
 /// Signal runtime struct for the entire process
@@ -430,5 +433,98 @@ impl SigProcControl {
         };
 
         self.word[0].load(Ordering::SeqCst) & bit == bit
+    }
+}
+
+#[cfg(target_has_atomic = "64")]
+pub use core::sync::atomic::AtomicU64;
+
+#[cfg(target_arch = "x86")]
+pub use self::atomic::AtomicU64;
+
+#[cfg(target_arch = "x86")]
+mod atomic {
+    use core::{cell::UnsafeCell, sync::atomic::Ordering};
+
+    #[derive(Debug, Default)]
+    pub struct AtomicU64(UnsafeCell<u64>);
+
+    unsafe impl Send for AtomicU64 {}
+    unsafe impl Sync for AtomicU64 {}
+
+    impl AtomicU64 {
+        pub const fn new(inner: u64) -> Self {
+            Self(UnsafeCell::new(inner))
+        }
+        pub fn compare_exchange(
+            &self,
+            old: u64,
+            new: u64,
+            _success: Ordering,
+            _failure: Ordering,
+        ) -> Result<u64, u64> {
+            let old_hi = (old >> 32) as u32;
+            let old_lo = old as u32;
+            let new_hi = (new >> 32) as u32;
+            let new_lo = new as u32;
+            let mut out_hi;
+            let mut out_lo;
+
+            unsafe {
+                core::arch::asm!("cmpxchg8b [{}]", in(reg) self.0.get(), inout("eax") old_hi => out_hi, inout("edx") old_lo => out_lo, in("ecx") new_hi, in("ebx") new_lo);
+            }
+
+            if old_hi == out_hi && old_lo == out_lo {
+                Ok(old)
+            } else {
+                Ok(u64::from(out_lo) | (u64::from(out_hi) << 32))
+            }
+        }
+        pub fn load(&self, ordering: Ordering) -> u64 {
+            match self.compare_exchange(0, 0, ordering, ordering) {
+                Ok(new) => new,
+                Err(new) => new,
+            }
+        }
+        pub fn store(&self, new: u64, ordering: Ordering) {
+            let mut old = 0;
+
+            loop {
+                match self.compare_exchange(old, new, ordering, Ordering::Relaxed) {
+                    Ok(_) => break,
+                    Err(new) => {
+                        old = new;
+                        core::hint::spin_loop();
+                    }
+                }
+            }
+        }
+        pub fn fetch_update(
+            &self,
+            set_order: Ordering,
+            fetch_order: Ordering,
+            mut f: impl FnMut(u64) -> Option<u64>,
+        ) -> Result<u64, u64> {
+            let mut old = self.load(fetch_order);
+
+            loop {
+                let new = f(old).ok_or(old)?;
+                match self.compare_exchange(old, new, set_order, Ordering::Relaxed) {
+                    Ok(_) => return Ok(new),
+                    Err(changed) => {
+                        old = changed;
+                        core::hint::spin_loop();
+                    }
+                }
+            }
+        }
+        pub fn fetch_or(&self, bits: u64, order: Ordering) -> u64 {
+            self.fetch_update(order, Ordering::Relaxed, |b| Some(b | bits))
+                .unwrap()
+        }
+        pub fn fetch_and(&self, bits: u64, order: Ordering) -> u64 {
+            self.fetch_update(order, Ordering::Relaxed, |b| Some(b & bits))
+                .unwrap()
+        }
     }
 }
