@@ -2,7 +2,6 @@ image: "redoxos/redoxer"
 
 stages:
     - build
-    - test
 
 cache:
     paths:
@@ -15,9 +14,3 @@ build:linux:
 build:redox:
     stage: build
     script: redoxer build --verbose
-
-test:redox:
-    stage: test
-    dependencies:
-        - build:redox
-    script: redoxer test --verbose

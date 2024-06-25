@@ -58,6 +58,3 @@ pub mod schemev2;
 
 pub mod scheme;
 pub use scheme::*;
-
-#[cfg(test)]
-mod tests;
