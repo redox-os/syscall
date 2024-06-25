@@ -362,7 +362,7 @@ impl DerefMut for SetSighandlerData {
 #[derive(Debug, Default)]
 #[repr(C)]
 pub struct SigProcControl {
-    // composed of [lo pend|lo mask, hi pend|hi mask]
+    // composed of [lo "pending" | lo "unmasked", hi "pending" | hi "unmasked"]
     pub word: [AtomicU64; 2],
 }
 
@@ -370,7 +370,7 @@ pub struct SigProcControl {
 #[derive(Debug, Default)]
 #[repr(C)]
 pub struct Sigcontrol {
-    // composed of [lo pend|lo mask, hi pend|hi mask]
+    // composed of [lo "pending" | lo "unmasked", hi "pending" | hi "unmasked"]
     pub word: [AtomicU64; 2],
 
     pub control_flags: SigatomicUsize,
