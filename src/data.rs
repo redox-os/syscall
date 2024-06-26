@@ -471,7 +471,7 @@ mod atomic {
             let mut out_lo;
 
             unsafe {
-                core::arch::asm!("cmpxchg8b [{}]", in(reg) self.0.get(), inout("edx") old_hi => out_hi, inout("eax") old_lo => out_lo, in("ecx") new_hi, in("ebx") new_lo);
+                core::arch::asm!("lock cmpxchg8b [{}]", in(reg) self.0.get(), inout("edx") old_hi => out_hi, inout("eax") old_lo => out_lo, in("ecx") new_hi, in("ebx") new_lo);
             }
 
             if old_hi == out_hi && old_lo == out_lo {
