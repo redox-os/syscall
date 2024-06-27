@@ -523,5 +523,9 @@ mod atomic {
             self.fetch_update(order, Ordering::Relaxed, |b| Some(b & bits))
                 .unwrap()
         }
+        pub fn fetch_add(&self, term: u64, order: Ordering) -> u64 {
+            self.fetch_update(order, Ordering::Relaxed, |b| Some(b.wrapping_add(term)))
+                .unwrap()
+        }
     }
 }
