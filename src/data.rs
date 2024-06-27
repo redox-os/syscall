@@ -375,11 +375,8 @@ pub struct Sigcontrol {
 
     pub control_flags: SigatomicUsize,
 
-    pub saved_scratch_a: NonatomicUsize,
-    pub saved_scratch_b: NonatomicUsize,
-    pub saved_flags: NonatomicUsize,
-    pub saved_ip: NonatomicUsize,
-    pub saved_sp: NonatomicUsize,
+    pub saved_ip: NonatomicUsize, // rip/eip/pc
+    pub saved_archdep_reg: NonatomicUsize, // rflags/eflags/x0
 }
 #[derive(Debug, Default)]
 #[repr(transparent)]
