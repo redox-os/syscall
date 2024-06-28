@@ -378,6 +378,14 @@ pub struct Sigcontrol {
     pub saved_ip: NonatomicUsize, // rip/eip/pc
     pub saved_archdep_reg: NonatomicUsize, // rflags/eflags/x0
 }
+
+impl Sigcontrol {
+    pub fn currently_pending_unblocked(&self) -> u64 {
+        let [w0, w1] = self.word.each_ref().map(|w| w.load(Ordering::Relaxed));
+        (w0 & 0xffff_ffff) | ((w1 & 0xffff_ffff) << 32)
+    }
+}
+
 #[derive(Debug, Default)]
 #[repr(transparent)]
 pub struct SigatomicUsize(AtomicUsize);
