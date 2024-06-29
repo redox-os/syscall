@@ -359,11 +359,22 @@ impl DerefMut for SetSighandlerData {
     }
 }
 /// Signal runtime struct for the entire process
-#[derive(Debug, Default)]
-#[repr(C)]
+#[derive(Debug)]
+#[repr(C, align(4096))]
 pub struct SigProcControl {
-    // composed of [lo "pending" | lo "unmasked", hi "pending" | hi "unmasked"]
-    pub word: [AtomicU64; 2],
+    pub pending: AtomicU64,
+    pub actions: [RawAction; 64],
+}
+#[derive(Debug)]
+#[repr(C, align(16))]
+pub struct RawAction {
+    /// Only two MSBs are interesting for the kernel. If bit 63 is set, signal is ignored. If bit
+    /// 62 is set and the signal is SIGTSTP/SIGTTIN/SIGTTOU, it's equivalent to the action of
+    /// SIGSTOP.
+    pub first: AtomicU64,
+    /// Completely ignored by the kernel, but exists so userspace can (when 16-byte atomics exist)
+    /// atomically set both the handler, sigaction flags, and sigaction mask.
+    pub user_data: AtomicU64,
 }
 
 /// Signal runtime struct for a thread
@@ -426,18 +437,12 @@ pub fn sig_bit(sig: usize) -> u64 {
     1 << (sig - 1)
 }
 impl SigProcControl {
+    pub fn signal_will_ign(&self, sig: usize) -> bool {
+        self.actions[sig - 1].first.load(Ordering::Relaxed) & (1 << 63) != 0
+    }
     pub fn signal_will_stop(&self, sig: usize) -> bool {
-        let bit = if sig == crate::SIGTSTP {
-            crate::SIGW0_TSTP_IS_STOP_BIT
-        } else if sig == crate::SIGTTIN {
-            crate::SIGW0_TTIN_IS_STOP_BIT
-        } else if sig == crate::SIGTTOU {
-            crate::SIGW0_TTOU_IS_STOP_BIT
-        } else {
-            panic!()
-        };
-
-        self.word[0].load(Ordering::SeqCst) & bit == bit
+        use crate::flag::*;
+        matches!(sig, SIGTSTP | SIGTTIN | SIGTTOU) && self.actions[sig - 1].first.load(Ordering::Relaxed) & (1 << 62) != 0
     }
 }
 
