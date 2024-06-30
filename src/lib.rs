@@ -1,4 +1,5 @@
 #![cfg_attr(not(any(feature = "std", test)), no_std)]
+#![allow(unexpected_cfgs)] // why does this even exist?
 
 #[cfg(test)]
 extern crate core;
@@ -52,6 +53,9 @@ pub mod io;
 
 /// Call numbers used by each system call
 pub mod number;
+
+/// ABI for shared memory based signals
+pub mod sigabi;
 
 /// V2 scheme format
 pub mod schemev2;
