@@ -217,21 +217,25 @@ mod tests {
 
     use crate::Sigcontrol;
 
+    #[derive(Default)]
+    struct FakeThread {
+        ctl: Sigcontrol,
+        ctxt: Mutex<()>,
+    }
+
     #[test]
     fn singlethread_mask() {
         model(|| {
-            let tctl = Arc::new(Sigcontrol::default());
-            let mutex = Arc::new(Mutex::new(()));
+            let fake_thread = Arc::new(FakeThread::default());
 
             let thread = {
-                let tctl = Arc::clone(&tctl);
-                let mutex = Arc::clone(&mutex);
+                let fake_thread = Arc::clone(&fake_thread);
 
                 thread::spawn(move || {
-                    tctl.set_allowset(!0);
+                    fake_thread.ctl.set_allowset(!0);
                     {
-                        let _g = mutex.lock();
-                        if tctl.currently_pending_unblocked() == 0 {
+                        let _g = fake_thread.ctxt.lock();
+                        if fake_thread.ctl.currently_pending_unblocked() == 0 {
                             drop(_g);
                             thread::park();
                         }
@@ -240,13 +244,13 @@ mod tests {
             };
 
             for sig in 1..=64 {
-                let _g = mutex.lock();
+                let _g = fake_thread.ctxt.lock();
 
                 let idx = sig - 1;
                 let bit = 1 << (idx % 32);
 
-                tctl.word[idx / 32].fetch_or(bit, Ordering::Relaxed);
-                let w = tctl.word[idx / 32].load(Ordering::Relaxed);
+                fake_thread.ctl.word[idx / 32].fetch_or(bit, Ordering::Relaxed);
+                let w = fake_thread.ctl.word[idx / 32].load(Ordering::Relaxed);
 
                 if w & (w >> 32) != 0 {
                     thread.thread().unpark();
