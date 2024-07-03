@@ -146,7 +146,7 @@ mod atomic {
             if old_hi == out_hi && old_lo == out_lo {
                 Ok(old)
             } else {
-                Ok(u64::from(out_lo) | (u64::from(out_hi) << 32))
+                Err(u64::from(out_lo) | (u64::from(out_hi) << 32))
             }
         }
         pub fn load(&self, ordering: Ordering) -> u64 {
