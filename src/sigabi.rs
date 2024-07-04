@@ -96,8 +96,12 @@ pub fn sig_bit(sig: usize) -> u64 {
     1 << (sig - 1)
 }
 impl SigProcControl {
-    pub fn signal_will_ign(&self, sig: usize) -> bool {
-        self.actions[sig - 1].first.load(Ordering::Relaxed) & (1 << 63) != 0
+    pub fn signal_will_ign(&self, sig: usize, is_parent_sigchld: bool) -> bool {
+        let flags = self.actions[sig - 1].first.load(Ordering::Relaxed);
+        let will_ign = flags & (1 << 63) != 0;
+        let sig_specific = flags & (1 << 62) != 0; // SA_NOCLDSTOP if sig == SIGCHLD
+
+        will_ign || (sig == SIGCHLD && is_parent_sigchld && sig_specific)
     }
     pub fn signal_will_stop(&self, sig: usize) -> bool {
         use crate::flag::*;
@@ -107,6 +111,8 @@ impl SigProcControl {
 
 #[cfg(not(target_arch = "x86"))]
 pub use core::sync::atomic::AtomicU64;
+
+use crate::SIGCHLD;
 
 #[cfg(target_arch = "x86")]
 pub use self::atomic::AtomicU64;
