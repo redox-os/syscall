@@ -28,13 +28,17 @@ pub struct Sigcontrol {
 
     pub control_flags: SigatomicUsize,
 
-    pub saved_ip: NonatomicUsize, // rip/eip/pc
+    pub saved_ip: NonatomicUsize,          // rip/eip/pc
     pub saved_archdep_reg: NonatomicUsize, // rflags/eflags/x0
 }
 
 impl Sigcontrol {
-    pub fn currently_pending_unblocked(&self) -> u64 {
-        let [w0, w1] = self.word.each_ref().map(|w| w.load(Ordering::Relaxed)).map(|w| (w & 0xffff_ffff) & (w >> 32));
+    pub fn currently_pending_unblocked(&self, proc: &SigProcControl) -> u64 {
+        let proc_pending = proc.pending.load(Ordering::Relaxed);
+        let [w0, w1] = core::array::from_fn(|i| {
+            let w = self.word[i].load(Ordering::Relaxed);
+            ((w | (proc_pending >> (i * 32))) & 0xffff_ffff) & (w >> 32)
+        });
         //core::sync::atomic::fence(Ordering::Acquire);
         w0 | (w1 << 32)
     }
@@ -105,7 +109,8 @@ impl SigProcControl {
     }
     pub fn signal_will_stop(&self, sig: usize) -> bool {
         use crate::flag::*;
-        matches!(sig, SIGTSTP | SIGTTIN | SIGTTOU) && self.actions[sig - 1].first.load(Ordering::Relaxed) & (1 << 62) != 0
+        matches!(sig, SIGTSTP | SIGTTIN | SIGTTOU)
+            && self.actions[sig - 1].first.load(Ordering::Relaxed) & (1 << 62) != 0
     }
 }
 
@@ -210,16 +215,17 @@ mod atomic {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::Arc;
-    use std::sync::atomic::Ordering;
+    use std::sync::{atomic::Ordering, Arc};
 
     #[cfg(not(loom))]
-    use std::{thread, sync::Mutex};
+    use std::{sync::Mutex, thread};
     #[cfg(not(loom))]
-    fn model(f: impl FnOnce()) { f() }
+    fn model(f: impl FnOnce()) {
+        f()
+    }
 
     #[cfg(loom)]
-    use loom::{model, thread, sync::Mutex};
+    use loom::{model, sync::Mutex, thread};
 
     use crate::Sigcontrol;
 
