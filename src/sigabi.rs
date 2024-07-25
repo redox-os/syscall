@@ -1,11 +1,20 @@
-use core::sync::atomic::{AtomicUsize, Ordering};
+use core::sync::atomic::{AtomicU8, AtomicUsize, Ordering};
 
 /// Signal runtime struct for the entire process
 #[derive(Debug)]
 #[repr(C, align(4096))]
 pub struct SigProcControl {
     pub pending: AtomicU64,
+    pub qhead: AtomicU8,
+    pub _rsvd: [u8; 7],
     pub actions: [RawAction; 64],
+    pub queue: [RealtimeSig; 32],
+    pub qtail: AtomicU8,
+}
+#[derive(Debug)]
+#[repr(transparent)]
+pub struct RealtimeSig {
+    pub arg: NonatomicUsize,
 }
 #[derive(Debug)]
 #[repr(C, align(16))]
@@ -86,6 +95,11 @@ impl SigatomicUsize {
 pub struct NonatomicUsize(AtomicUsize);
 
 impl NonatomicUsize {
+    #[inline]
+    pub const fn new(a: usize) -> Self {
+        Self(AtomicUsize::new(a))
+    }
+
     #[inline]
     pub fn get(&self) -> usize {
         self.0.load(Ordering::Relaxed)
