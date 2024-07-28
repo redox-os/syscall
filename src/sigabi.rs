@@ -5,18 +5,16 @@ use core::sync::atomic::{AtomicU8, AtomicUsize, Ordering};
 #[repr(C, align(4096))]
 pub struct SigProcControl {
     pub pending: AtomicU64,
-    pub qhead: AtomicU8,
-    pub _rsvd: [u8; 7],
     pub actions: [RawAction; 64],
-    pub queue: [RealtimeSig; 32],
-    pub qtail: AtomicU8,
+    //pub queue: [RealtimeSig; 32], TODO
+    // qhead, qtail TODO
 }
-#[derive(Debug)]
+/*#[derive(Debug)]
 #[repr(transparent)]
 pub struct RealtimeSig {
     pub arg: NonatomicUsize,
-}
-#[derive(Debug)]
+}*/
+#[derive(Debug, Default)]
 #[repr(C, align(16))]
 pub struct RawAction {
     /// Only two MSBs are interesting for the kernel. If bit 63 is set, signal is ignored. If bit
@@ -229,7 +227,10 @@ mod atomic {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::{atomic::Ordering, Arc};
+    use std::sync::{
+        atomic::{AtomicU64, Ordering},
+        Arc,
+    };
 
     #[cfg(not(loom))]
     use std::{sync::Mutex, thread};
@@ -241,12 +242,24 @@ mod tests {
     #[cfg(loom)]
     use loom::{model, sync::Mutex, thread};
 
-    use crate::Sigcontrol;
+    use crate::{RawAction, SigProcControl, Sigcontrol};
 
-    #[derive(Default)]
     struct FakeThread {
         ctl: Sigcontrol,
+        pctl: SigProcControl,
         ctxt: Mutex<()>,
+    }
+    impl Default for FakeThread {
+        fn default() -> Self {
+            Self {
+                ctl: Sigcontrol::default(),
+                pctl: SigProcControl {
+                    pending: AtomicU64::new(0),
+                    actions: core::array::from_fn(|_| RawAction::default()),
+                },
+                ctxt: Default::default(),
+            }
+        }
     }
 
     #[test]
@@ -261,7 +274,11 @@ mod tests {
                     fake_thread.ctl.set_allowset(!0);
                     {
                         let _g = fake_thread.ctxt.lock();
-                        if fake_thread.ctl.currently_pending_unblocked() == 0 {
+                        if fake_thread
+                            .ctl
+                            .currently_pending_unblocked(&fake_thread.pctl)
+                            == 0
+                        {
                             drop(_g);
                             thread::park();
                         }
