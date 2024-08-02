@@ -6,6 +6,7 @@ use core::sync::atomic::{AtomicU8, AtomicUsize, Ordering};
 pub struct SigProcControl {
     pub pending: AtomicU64,
     pub actions: [RawAction; 64],
+    pub sender_infos: [AtomicU64; 32],
     //pub queue: [RealtimeSig; 32], TODO
     // qhead, qtail TODO
 }
@@ -33,10 +34,31 @@ pub struct Sigcontrol {
     // composed of [lo "pending" | lo "unmasked", hi "pending" | hi "unmasked"]
     pub word: [AtomicU64; 2],
 
+    // lo = sender pid, hi = sender ruid
+    pub sender_infos: [AtomicU64; 32],
+
     pub control_flags: SigatomicUsize,
 
     pub saved_ip: NonatomicUsize,          // rip/eip/pc
     pub saved_archdep_reg: NonatomicUsize, // rflags/eflags/x0
+}
+#[derive(Clone, Copy, Debug)]
+pub struct SenderInfo {
+    pub pid: u32,
+    pub ruid: u32,
+}
+impl SenderInfo {
+    #[inline]
+    pub fn raw(self) -> u64 {
+        u64::from(self.pid) | (u64::from(self.ruid) << 32)
+    }
+    #[inline]
+    pub const fn from_raw(raw: u64) -> Self {
+        Self {
+            pid: raw as u32,
+            ruid: (raw >> 32) as u32,
+        }
+    }
 }
 
 impl Sigcontrol {
