@@ -1,4 +1,4 @@
-use core::sync::atomic::{AtomicUsize, Ordering};
+use core::sync::atomic::{AtomicU8, AtomicUsize, Ordering};
 
 /// Signal runtime struct for the entire process
 #[derive(Debug)]
@@ -6,8 +6,16 @@ use core::sync::atomic::{AtomicUsize, Ordering};
 pub struct SigProcControl {
     pub pending: AtomicU64,
     pub actions: [RawAction; 64],
+    pub sender_infos: [AtomicU64; 32],
+    //pub queue: [RealtimeSig; 32], TODO
+    // qhead, qtail TODO
 }
-#[derive(Debug)]
+/*#[derive(Debug)]
+#[repr(transparent)]
+pub struct RealtimeSig {
+    pub arg: NonatomicUsize,
+}*/
+#[derive(Debug, Default)]
 #[repr(C, align(16))]
 pub struct RawAction {
     /// Only two MSBs are interesting for the kernel. If bit 63 is set, signal is ignored. If bit
@@ -26,10 +34,31 @@ pub struct Sigcontrol {
     // composed of [lo "pending" | lo "unmasked", hi "pending" | hi "unmasked"]
     pub word: [AtomicU64; 2],
 
+    // lo = sender pid, hi = sender ruid
+    pub sender_infos: [AtomicU64; 32],
+
     pub control_flags: SigatomicUsize,
 
     pub saved_ip: NonatomicUsize,          // rip/eip/pc
     pub saved_archdep_reg: NonatomicUsize, // rflags/eflags/x0
+}
+#[derive(Clone, Copy, Debug)]
+pub struct SenderInfo {
+    pub pid: u32,
+    pub ruid: u32,
+}
+impl SenderInfo {
+    #[inline]
+    pub fn raw(self) -> u64 {
+        u64::from(self.pid) | (u64::from(self.ruid) << 32)
+    }
+    #[inline]
+    pub const fn from_raw(raw: u64) -> Self {
+        Self {
+            pid: raw as u32,
+            ruid: (raw >> 32) as u32,
+        }
+    }
 }
 
 impl Sigcontrol {
@@ -86,6 +115,11 @@ impl SigatomicUsize {
 pub struct NonatomicUsize(AtomicUsize);
 
 impl NonatomicUsize {
+    #[inline]
+    pub const fn new(a: usize) -> Self {
+        Self(AtomicUsize::new(a))
+    }
+
     #[inline]
     pub fn get(&self) -> usize {
         self.0.load(Ordering::Relaxed)
@@ -215,7 +249,10 @@ mod atomic {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::{atomic::Ordering, Arc};
+    use std::sync::{
+        atomic::{AtomicU64, Ordering},
+        Arc,
+    };
 
     #[cfg(not(loom))]
     use std::{sync::Mutex, thread};
@@ -227,12 +264,24 @@ mod tests {
     #[cfg(loom)]
     use loom::{model, sync::Mutex, thread};
 
-    use crate::Sigcontrol;
+    use crate::{RawAction, SigProcControl, Sigcontrol};
 
-    #[derive(Default)]
     struct FakeThread {
         ctl: Sigcontrol,
+        pctl: SigProcControl,
         ctxt: Mutex<()>,
+    }
+    impl Default for FakeThread {
+        fn default() -> Self {
+            Self {
+                ctl: Sigcontrol::default(),
+                pctl: SigProcControl {
+                    pending: AtomicU64::new(0),
+                    actions: core::array::from_fn(|_| RawAction::default()),
+                },
+                ctxt: Default::default(),
+            }
+        }
     }
 
     #[test]
@@ -247,7 +296,11 @@ mod tests {
                     fake_thread.ctl.set_allowset(!0);
                     {
                         let _g = fake_thread.ctxt.lock();
-                        if fake_thread.ctl.currently_pending_unblocked() == 0 {
+                        if fake_thread
+                            .ctl
+                            .currently_pending_unblocked(&fake_thread.pctl)
+                            == 0
+                        {
                             drop(_g);
                             thread::park();
                         }

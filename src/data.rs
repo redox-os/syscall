@@ -358,3 +358,32 @@ impl DerefMut for SetSighandlerData {
     }
 }
 pub use crate::sigabi::*;
+
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
+#[repr(C)]
+pub struct RtSigInfo {
+    pub arg: usize,
+    pub code: i32,
+    pub uid: u32,
+    pub pid: u32, // TODO: usize?
+}
+
+impl Deref for RtSigInfo {
+    type Target = [u8];
+    fn deref(&self) -> &[u8] {
+        unsafe {
+            slice::from_raw_parts(
+                self as *const RtSigInfo as *const u8,
+                mem::size_of::<RtSigInfo>(),
+            )
+        }
+    }
+}
+
+impl DerefMut for RtSigInfo {
+    fn deref_mut(&mut self) -> &mut [u8] {
+        unsafe {
+            slice::from_raw_parts_mut(self as *mut RtSigInfo as *mut u8, mem::size_of::<RtSigInfo>())
+        }
+    }
+}
