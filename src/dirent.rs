@@ -1,6 +1,8 @@
-use core::mem::size_of;
-use core::ops::{Deref, DerefMut};
-use core::slice;
+use core::{
+    mem::size_of,
+    ops::{Deref, DerefMut},
+    slice,
+};
 
 use crate::error::{Error, Result, EINVAL};
 
@@ -90,7 +92,7 @@ impl<'a> DirentIter<'a> {
 pub struct Invalid;
 
 impl<'a> Iterator for DirentIter<'a> {
-    type Item = Result<(&'a DirentHeader, &'a [u8], &'a DirentFooter), Invalid>;
+    type Item = Result<(&'a DirentHeader, &'a [u8]), Invalid>;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.0.len() < size_of::<DirentHeader>() {
@@ -103,20 +105,21 @@ impl<'a> Iterator for DirentIter<'a> {
         let (this, remaining) = self.0.split_at(usize::from(header.record_len));
         self.0 = remaining;
 
-        let name_and_footer = &this[size_of::<DirentHeader>()..];
-        let Some(off) = name_and_footer.len().checked_sub(size_of::<DirentFooter>()) else {
-            return Some(Err(Invalid));
-        };
-        let (name, footer_bytes) = name_and_footer.split_at(off);
-        let footer = unsafe { &*(footer_bytes.as_ptr().cast::<DirentFooter>()) };
+        let name_and_nul = &this[size_of::<DirentHeader>()..];
+        let name = &name_and_nul[..name_and_nul.len() - 1];
 
-        Some(Ok((header, name, footer)))
+        Some(Ok((header, name)))
     }
 }
 
-
 pub struct DirentBuf<B> {
     buffer: B,
+
+    // Exists in order to allow future extensions to the DirentHeader struct, and be compatible
+    // with the old dirent struct that contains d_off, which is obviously not in DirentHeader.
+    // TODO: might add an upper bound to protect against cache miss DoS.
+    header_size: u16,
+
     written: usize,
 }
 /// Abstraction between &mut [u8] and the kernel's UserSliceWo.
@@ -152,30 +155,45 @@ impl<'a> Buffer<'a> for &'a mut [u8] {
 }
 
 impl<'a, B: Buffer<'a>> DirentBuf<B> {
-    pub const fn new(buffer: B) -> Self {
-        Self {
-            buffer,
-            written: 0,
+    pub fn new(buffer: B, header_size: u16) -> Option<Self> {
+        if usize::from(header_size) < size_of::<DirentHeader>() {
+            return None;
         }
+
+        Some(Self {
+            buffer,
+            header_size,
+            written: 0,
+        })
     }
     pub fn entry(&mut self, kind: DirentKind, name: &str) -> Result<()> {
         let name16 = u16::try_from(name.len()).map_err(|_| Error::new(EINVAL))?;
-        let record_len = u16::try_from(size_of::<DirentHeader>() + size_of::<DirentFooter>()).unwrap().checked_add(name16).ok_or(Error::new(EINVAL))?;
+        let record_len = self
+            .header_size
+            .checked_add(name16)
+            // NUL byte
+            .and_then(|l| l.checked_add(1))
+            .ok_or(Error::new(EINVAL))?;
 
-        let [this, remaining] = core::mem::replace(&mut self.buffer, B::empty()).split_at(usize::from(record_len)).ok_or(Error::new(EINVAL))?;
+        let [this, remaining] = core::mem::replace(&mut self.buffer, B::empty())
+            .split_at(usize::from(record_len))
+            .ok_or(Error::new(EINVAL))?;
 
-        let [this_header, this_name_footer] = this.split_at(size_of::<DirentHeader>()).ok_or(Error::new(EINVAL))?;
-        let name_footer_length = this_name_footer.length();
-        let [this_name, this_footer] = this_name_footer.split_at(name_footer_length - size_of::<DirentFooter>()).ok_or(Error::new(EINVAL))?;
+        let [this_header_variable, this_name_and_nul] = this
+            .split_at(usize::from(self.header_size))
+            .ok_or(Error::new(EINVAL))?;
+        let [this_name, this_name_nul] = this_name_and_nul.split_at(usize::from(name16)).unwrap();
+        let [this_header, _this_header_extra] = this_header_variable
+            .split_at(size_of::<DirentHeader>())
+            .unwrap();
         this_header.copy_from_slice_exact(&DirentHeader {
             record_len,
             inode: 0,
             kind: kind as u8,
         })?;
         this_name.copy_from_slice_exact(name.as_bytes())?;
-        this_footer.copy_from_slice_exact(&DirentFooter {
-            _rsvdz: 0,
-        })?;
+        this_name_nul.copy_from_slice_exact(&[0])?;
+
         self.written += usize::from(record_len);
         self.buffer = remaining;
 

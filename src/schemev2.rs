@@ -163,6 +163,7 @@ impl Opcode {
             24 => Msync,
 
             25 => Cancel,
+            26 => Getdents,
 
             _ => return None,
         })
