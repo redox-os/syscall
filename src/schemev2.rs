@@ -125,6 +125,8 @@ pub enum Opcode {
     Msync = 24, // TODO
 
     Cancel = 25, // @tag
+
+    Getdents = 26,
 }
 
 impl Opcode {
