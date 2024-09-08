@@ -111,7 +111,7 @@ impl DerefMut for IntRegisters {
 }
 
 #[derive(Clone, Copy, Debug, Default)]
-#[repr(packed)]
+#[repr(C, packed)]
 pub struct FloatRegisters {
     pub fp_simd_regs: [u128; 32],
     pub fpsr: u32,
@@ -142,7 +142,7 @@ impl DerefMut for FloatRegisters {
 }
 
 #[derive(Clone, Copy, Debug, Default)]
-#[repr(packed)]
+#[repr(C, packed)]
 pub struct EnvRegisters {
     pub tpidr_el0: usize,
     pub tpidrro_el0: usize,

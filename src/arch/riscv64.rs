@@ -79,7 +79,7 @@ impl DerefMut for IntRegisters {
 }
 
 #[derive(Clone, Copy, Debug, Default)]
-#[repr(packed)]
+#[repr(C, packed)]
 pub struct FloatRegisters {
     //TODO
 }
