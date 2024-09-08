@@ -1,14 +1,20 @@
-use core::cmp::PartialEq;
-use core::ops::{BitAnd, BitOr, Not};
+use core::{
+    cmp::PartialEq,
+    ops::{BitAnd, BitOr, Not},
+};
 
 pub trait Io {
-    type Value: Copy + PartialEq + BitAnd<Output = Self::Value> + BitOr<Output = Self::Value> + Not<Output = Self::Value>;
+    type Value: Copy
+        + PartialEq
+        + BitAnd<Output = Self::Value>
+        + BitOr<Output = Self::Value>
+        + Not<Output = Self::Value>;
 
     fn read(&self) -> Self::Value;
     fn write(&mut self, value: Self::Value);
 
     #[inline(always)]
-    fn readf(&self, flags: Self::Value) -> bool  {
+    fn readf(&self, flags: Self::Value) -> bool {
         (self.read() & flags) as Self::Value == flags
     }
 
@@ -23,14 +29,12 @@ pub trait Io {
 }
 
 pub struct ReadOnly<I> {
-    inner: I
+    inner: I,
 }
 
 impl<I> ReadOnly<I> {
     pub const fn new(inner: I) -> ReadOnly<I> {
-        ReadOnly {
-            inner: inner
-        }
+        ReadOnly { inner: inner }
     }
 }
 
@@ -47,14 +51,12 @@ impl<I: Io> ReadOnly<I> {
 }
 
 pub struct WriteOnly<I> {
-    inner: I
+    inner: I,
 }
 
 impl<I> WriteOnly<I> {
     pub const fn new(inner: I) -> WriteOnly<I> {
-        WriteOnly {
-            inner: inner
-        }
+        WriteOnly { inner: inner }
     }
 }
 

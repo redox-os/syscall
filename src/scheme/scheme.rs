@@ -1,70 +1,112 @@
 use core::{mem, slice};
 
-use crate::CallerCtx;
-use crate::OpenResult;
-use crate::data::*;
-use crate::error::*;
-use crate::flag::*;
-use crate::number::*;
-use crate::scheme::*;
+use crate::{data::*, error::*, flag::*, number::*, scheme::*, CallerCtx, OpenResult};
 
 pub trait Scheme {
     fn handle(&self, packet: &mut Packet) {
         let res = match packet.a {
-            SYS_OPEN => if let Some(path) = unsafe { str_from_raw_parts(packet.b as *const u8, packet.c) } {
-                convert_in_scheme_handle(packet, self.xopen(path, packet.d, &CallerCtx::from_packet(&packet)))
+            SYS_OPEN => {
+                if let Some(path) = unsafe { str_from_raw_parts(packet.b as *const u8, packet.c) } {
+                    convert_in_scheme_handle(
+                        packet,
+                        self.xopen(path, packet.d, &CallerCtx::from_packet(&packet)),
+                    )
+                } else {
+                    Err(Error::new(EINVAL))
+                }
             }
-            else {
-                Err(Error::new(EINVAL))
-            },
-            SYS_RMDIR => if let Some(path) = unsafe { str_from_raw_parts(packet.b as *const u8, packet.c) } {
-                self.rmdir(path, packet.uid, packet.gid)
-            } else {
-                Err(Error::new(EINVAL))
-            },
-            SYS_UNLINK => if let Some(path) = unsafe { str_from_raw_parts(packet.b as *const u8, packet.c) } {
-                self.unlink(path, packet.uid, packet.gid)
-            } else {
-                Err(Error::new(EINVAL))
-            },
+            SYS_RMDIR => {
+                if let Some(path) = unsafe { str_from_raw_parts(packet.b as *const u8, packet.c) } {
+                    self.rmdir(path, packet.uid, packet.gid)
+                } else {
+                    Err(Error::new(EINVAL))
+                }
+            }
+            SYS_UNLINK => {
+                if let Some(path) = unsafe { str_from_raw_parts(packet.b as *const u8, packet.c) } {
+                    self.unlink(path, packet.uid, packet.gid)
+                } else {
+                    Err(Error::new(EINVAL))
+                }
+            }
 
-            SYS_DUP => convert_in_scheme_handle(packet, self.xdup(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }, &CallerCtx::from_packet(&packet))),
-            SYS_READ => self.read(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
-            SYS_WRITE => self.write(packet.b, unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) }),
-            SYS_LSEEK => self.seek(packet.b, packet.c as isize, packet.d).map(|o| o as usize),
+            SYS_DUP => convert_in_scheme_handle(
+                packet,
+                self.xdup(
+                    packet.b,
+                    unsafe { slice::from_raw_parts(packet.c as *const u8, packet.d) },
+                    &CallerCtx::from_packet(&packet),
+                ),
+            ),
+            SYS_READ => self.read(packet.b, unsafe {
+                slice::from_raw_parts_mut(packet.c as *mut u8, packet.d)
+            }),
+            SYS_WRITE => self.write(packet.b, unsafe {
+                slice::from_raw_parts(packet.c as *const u8, packet.d)
+            }),
+            SYS_LSEEK => self
+                .seek(packet.b, packet.c as isize, packet.d)
+                .map(|o| o as usize),
             SYS_FCHMOD => self.fchmod(packet.b, packet.c as u16),
             SYS_FCHOWN => self.fchown(packet.b, packet.c as u32, packet.d as u32),
             SYS_FCNTL => self.fcntl(packet.b, packet.c, packet.d),
-            SYS_FEVENT => self.fevent(packet.b, EventFlags::from_bits_truncate(packet.c)).map(|f| f.bits()),
-            SYS_FPATH => self.fpath(packet.b, unsafe { slice::from_raw_parts_mut(packet.c as *mut u8, packet.d) }),
-            SYS_FRENAME => if let Some(path) = unsafe { str_from_raw_parts(packet.c as *const u8, packet.d) } {
-                self.frename(packet.b, path, packet.uid, packet.gid)
-            } else {
-                Err(Error::new(EINVAL))
-            },
-            SYS_FSTAT => if packet.d >= mem::size_of::<Stat>() {
-                self.fstat(packet.b, unsafe { &mut *(packet.c as *mut Stat) })
-            } else {
-                Err(Error::new(EFAULT))
-            },
-            SYS_FSTATVFS => if packet.d >= mem::size_of::<StatVfs>() {
-                self.fstatvfs(packet.b, unsafe { &mut *(packet.c as *mut StatVfs) })
-            } else {
-                Err(Error::new(EFAULT))
-            },
+            SYS_FEVENT => self
+                .fevent(packet.b, EventFlags::from_bits_truncate(packet.c))
+                .map(|f| f.bits()),
+            SYS_FPATH => self.fpath(packet.b, unsafe {
+                slice::from_raw_parts_mut(packet.c as *mut u8, packet.d)
+            }),
+            SYS_FRENAME => {
+                if let Some(path) = unsafe { str_from_raw_parts(packet.c as *const u8, packet.d) } {
+                    self.frename(packet.b, path, packet.uid, packet.gid)
+                } else {
+                    Err(Error::new(EINVAL))
+                }
+            }
+            SYS_FSTAT => {
+                if packet.d >= mem::size_of::<Stat>() {
+                    self.fstat(packet.b, unsafe { &mut *(packet.c as *mut Stat) })
+                } else {
+                    Err(Error::new(EFAULT))
+                }
+            }
+            SYS_FSTATVFS => {
+                if packet.d >= mem::size_of::<StatVfs>() {
+                    self.fstatvfs(packet.b, unsafe { &mut *(packet.c as *mut StatVfs) })
+                } else {
+                    Err(Error::new(EFAULT))
+                }
+            }
             SYS_FSYNC => self.fsync(packet.b),
             SYS_FTRUNCATE => self.ftruncate(packet.b, packet.c),
-            SYS_FUTIMENS => if packet.d >= mem::size_of::<TimeSpec>() {
-                self.futimens(packet.b, unsafe { slice::from_raw_parts(packet.c as *const TimeSpec, packet.d / mem::size_of::<TimeSpec>()) })
-            } else {
-                Err(Error::new(EFAULT))
-            },
+            SYS_FUTIMENS => {
+                if packet.d >= mem::size_of::<TimeSpec>() {
+                    self.futimens(packet.b, unsafe {
+                        slice::from_raw_parts(
+                            packet.c as *const TimeSpec,
+                            packet.d / mem::size_of::<TimeSpec>(),
+                        )
+                    })
+                } else {
+                    Err(Error::new(EFAULT))
+                }
+            }
             SYS_CLOSE => self.close(packet.b),
 
-            KSMSG_MMAP_PREP => self.mmap_prep(packet.b, u64::from(packet.uid) | (u64::from(packet.gid) << 32), packet.c, MapFlags::from_bits_truncate(packet.d)),
-            KSMSG_MUNMAP => self.munmap(packet.b, u64::from(packet.uid) | (u64::from(packet.gid) << 32), packet.c, MunmapFlags::from_bits_truncate(packet.d)),
+            KSMSG_MMAP_PREP => self.mmap_prep(
+                packet.b,
+                u64::from(packet.uid) | (u64::from(packet.gid) << 32),
+                packet.c,
+                MapFlags::from_bits_truncate(packet.d),
+            ),
+            KSMSG_MUNMAP => self.munmap(
+                packet.b,
+                u64::from(packet.uid) | (u64::from(packet.gid) << 32),
+                packet.c,
+                MunmapFlags::from_bits_truncate(packet.d),
+            ),
 
-            _ => Err(Error::new(ENOSYS))
+            _ => Err(Error::new(ENOSYS)),
         };
 
         packet.a = Error::mux(res);

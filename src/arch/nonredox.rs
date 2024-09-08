@@ -23,8 +23,14 @@ pub unsafe fn syscall4(_a: usize, _b: usize, _c: usize, _d: usize, _e: usize) ->
     Err(Error::new(ENOSYS))
 }
 
-pub unsafe fn syscall5(_a: usize, _b: usize, _c: usize, _d: usize, _e: usize, _f: usize)
-                       -> Result<usize> {
+pub unsafe fn syscall5(
+    _a: usize,
+    _b: usize,
+    _c: usize,
+    _d: usize,
+    _e: usize,
+    _f: usize,
+) -> Result<usize> {
     Err(Error::new(ENOSYS))
 }
 

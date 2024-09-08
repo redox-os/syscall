@@ -1,5 +1,8 @@
-use core::{mem, slice};
-use core::ops::{Deref, DerefMut};
+use core::{
+    mem,
+    ops::{Deref, DerefMut},
+    slice,
+};
 
 use super::error::{Error, Result};
 
@@ -56,7 +59,10 @@ impl Deref for IntRegisters {
     type Target = [u8];
     fn deref(&self) -> &[u8] {
         unsafe {
-            slice::from_raw_parts(self as *const IntRegisters as *const u8, mem::size_of::<IntRegisters>())
+            slice::from_raw_parts(
+                self as *const IntRegisters as *const u8,
+                mem::size_of::<IntRegisters>(),
+            )
         }
     }
 }
@@ -64,7 +70,10 @@ impl Deref for IntRegisters {
 impl DerefMut for IntRegisters {
     fn deref_mut(&mut self) -> &mut [u8] {
         unsafe {
-            slice::from_raw_parts_mut(self as *mut IntRegisters as *mut u8, mem::size_of::<IntRegisters>())
+            slice::from_raw_parts_mut(
+                self as *mut IntRegisters as *mut u8,
+                mem::size_of::<IntRegisters>(),
+            )
         }
     }
 }
@@ -79,7 +88,10 @@ impl Deref for FloatRegisters {
     type Target = [u8];
     fn deref(&self) -> &[u8] {
         unsafe {
-            slice::from_raw_parts(self as *const FloatRegisters as *const u8, mem::size_of::<FloatRegisters>())
+            slice::from_raw_parts(
+                self as *const FloatRegisters as *const u8,
+                mem::size_of::<FloatRegisters>(),
+            )
         }
     }
 }
@@ -87,7 +99,10 @@ impl Deref for FloatRegisters {
 impl DerefMut for FloatRegisters {
     fn deref_mut(&mut self) -> &mut [u8] {
         unsafe {
-            slice::from_raw_parts_mut(self as *mut FloatRegisters as *mut u8, mem::size_of::<FloatRegisters>())
+            slice::from_raw_parts_mut(
+                self as *mut FloatRegisters as *mut u8,
+                mem::size_of::<FloatRegisters>(),
+            )
         }
     }
 }

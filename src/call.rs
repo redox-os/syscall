@@ -1,8 +1,10 @@
-use super::arch::*;
-use super::data::{Map, Stat, StatVfs, TimeSpec};
-use super::error::Result;
-use super::flag::*;
-use super::number::*;
+use super::{
+    arch::*,
+    data::{Map, Stat, StatVfs, TimeSpec},
+    error::Result,
+    flag::*,
+    number::*,
+};
 
 use core::mem;
 
@@ -34,13 +36,11 @@ pub fn exit(status: usize) -> Result<usize> {
 /// Change file permissions
 pub fn fchmod(fd: usize, mode: u16) -> Result<usize> {
     unsafe { syscall2(SYS_FCHMOD, fd, mode as usize) }
-
 }
 
 /// Change file ownership
 pub fn fchown(fd: usize, uid: u32, gid: u32) -> Result<usize> {
     unsafe { syscall3(SYS_FCHOWN, fd, uid as usize, gid as usize) }
-
 }
 
 /// Change file descriptor flags
@@ -59,7 +59,12 @@ pub fn fcntl(fd: usize, cmd: usize, arg: usize) -> Result<usize> {
 /// `EEXIST` - if [`MapFlags::MAP_FIXED`] was set, and the address specified was already in use.
 ///
 pub unsafe fn fmap(fd: usize, map: &Map) -> Result<usize> {
-    syscall3(SYS_FMAP, fd, map as *const Map as usize, mem::size_of::<Map>())
+    syscall3(
+        SYS_FMAP,
+        fd,
+        map as *const Map as usize,
+        mem::size_of::<Map>(),
+    )
 }
 
 /// Unmap whole (or partial) continous memory-mapped files
@@ -74,17 +79,38 @@ pub fn fpath(fd: usize, buf: &mut [u8]) -> Result<usize> {
 
 /// Rename a file
 pub fn frename<T: AsRef<str>>(fd: usize, path: T) -> Result<usize> {
-    unsafe { syscall3(SYS_FRENAME, fd, path.as_ref().as_ptr() as usize, path.as_ref().len()) }
+    unsafe {
+        syscall3(
+            SYS_FRENAME,
+            fd,
+            path.as_ref().as_ptr() as usize,
+            path.as_ref().len(),
+        )
+    }
 }
 
 /// Get metadata about a file
 pub fn fstat(fd: usize, stat: &mut Stat) -> Result<usize> {
-    unsafe { syscall3(SYS_FSTAT, fd, stat as *mut Stat as usize, mem::size_of::<Stat>()) }
+    unsafe {
+        syscall3(
+            SYS_FSTAT,
+            fd,
+            stat as *mut Stat as usize,
+            mem::size_of::<Stat>(),
+        )
+    }
 }
 
 /// Get metadata about a filesystem
 pub fn fstatvfs(fd: usize, stat: &mut StatVfs) -> Result<usize> {
-    unsafe { syscall3(SYS_FSTATVFS, fd, stat as *mut StatVfs as usize, mem::size_of::<StatVfs>()) }
+    unsafe {
+        syscall3(
+            SYS_FSTATVFS,
+            fd,
+            stat as *mut StatVfs as usize,
+            mem::size_of::<StatVfs>(),
+        )
+    }
 }
 
 /// Sync a file descriptor to its underlying medium
@@ -99,13 +125,32 @@ pub fn ftruncate(fd: usize, len: usize) -> Result<usize> {
 
 // Change modify and/or access times
 pub fn futimens(fd: usize, times: &[TimeSpec]) -> Result<usize> {
-    unsafe { syscall3(SYS_FUTIMENS, fd, times.as_ptr() as usize, times.len() * mem::size_of::<TimeSpec>()) }
+    unsafe {
+        syscall3(
+            SYS_FUTIMENS,
+            fd,
+            times.as_ptr() as usize,
+            times.len() * mem::size_of::<TimeSpec>(),
+        )
+    }
 }
 
 /// Fast userspace mutex
-pub unsafe fn futex(addr: *mut i32, op: usize, val: i32, val2: usize, addr2: *mut i32)
-                    -> Result<usize> {
-    syscall5(SYS_FUTEX, addr as usize, op, (val as isize) as usize, val2, addr2 as usize)
+pub unsafe fn futex(
+    addr: *mut i32,
+    op: usize,
+    val: i32,
+    val2: usize,
+    addr2: *mut i32,
+) -> Result<usize> {
+    syscall5(
+        SYS_FUTEX,
+        addr as usize,
+        op,
+        (val as isize) as usize,
+        val2,
+        addr2 as usize,
+    )
 }
 
 /// Get the effective group ID
@@ -190,13 +235,25 @@ pub unsafe fn mprotect(addr: usize, size: usize, flags: MapFlags) -> Result<usiz
 
 /// Sleep for the time specified in `req`
 pub fn nanosleep(req: &TimeSpec, rem: &mut TimeSpec) -> Result<usize> {
-    unsafe { syscall2(SYS_NANOSLEEP, req as *const TimeSpec as usize,
-                                     rem as *mut TimeSpec as usize) }
+    unsafe {
+        syscall2(
+            SYS_NANOSLEEP,
+            req as *const TimeSpec as usize,
+            rem as *mut TimeSpec as usize,
+        )
+    }
 }
 
 /// Open a file
 pub fn open<T: AsRef<str>>(path: T, flags: usize) -> Result<usize> {
-    unsafe { syscall3(SYS_OPEN, path.as_ref().as_ptr() as usize, path.as_ref().len(), flags) }
+    unsafe {
+        syscall3(
+            SYS_OPEN,
+            path.as_ref().as_ptr() as usize,
+            path.as_ref().len(),
+            flags,
+        )
+    }
 }
 
 /// Read from a file descriptor into a buffer
@@ -206,7 +263,13 @@ pub fn read(fd: usize, buf: &mut [u8]) -> Result<usize> {
 
 /// Remove a directory
 pub fn rmdir<T: AsRef<str>>(path: T) -> Result<usize> {
-    unsafe { syscall2(SYS_RMDIR, path.as_ref().as_ptr() as usize, path.as_ref().len()) }
+    unsafe {
+        syscall2(
+            SYS_RMDIR,
+            path.as_ref().as_ptr() as usize,
+            path.as_ref().len(),
+        )
+    }
 }
 
 /// Set the process group ID
@@ -236,7 +299,13 @@ pub fn umask(mask: usize) -> Result<usize> {
 
 /// Remove a file
 pub fn unlink<T: AsRef<str>>(path: T) -> Result<usize> {
-    unsafe { syscall2(SYS_UNLINK, path.as_ref().as_ptr() as usize, path.as_ref().len()) }
+    unsafe {
+        syscall2(
+            SYS_UNLINK,
+            path.as_ref().as_ptr() as usize,
+            path.as_ref().len(),
+        )
+    }
 }
 
 /// Convert a virtual address to a physical one
@@ -250,7 +319,14 @@ pub unsafe fn virttophys(virtual_address: usize) -> Result<usize> {
 
 /// Check if a child process has exited or received a signal
 pub fn waitpid(pid: usize, status: &mut usize, options: WaitFlags) -> Result<usize> {
-    unsafe { syscall3(SYS_WAITPID, pid, status as *mut usize as usize, options.bits()) }
+    unsafe {
+        syscall3(
+            SYS_WAITPID,
+            pid,
+            status as *mut usize as usize,
+            options.bits(),
+        )
+    }
 }
 
 /// Write a buffer to a file descriptor
@@ -285,7 +361,14 @@ pub fn sched_yield() -> Result<usize> {
 pub fn sendfd(receiver_socket: usize, fd: usize, flags: usize, arg: u64) -> Result<usize> {
     #[cfg(target_pointer_width = "32")]
     unsafe {
-        syscall5(SYS_SENDFD, receiver_socket, fd, flags, arg as u32 as usize, (arg >> 32) as u32 as usize)
+        syscall5(
+            SYS_SENDFD,
+            receiver_socket,
+            fd,
+            flags,
+            arg as u32 as usize,
+            (arg >> 32) as u32 as usize,
+        )
     }
 
     #[cfg(target_pointer_width = "64")]

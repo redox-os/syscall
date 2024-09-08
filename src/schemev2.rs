@@ -1,5 +1,8 @@
-use core::ops::{Deref, DerefMut};
-use core::{mem, slice};
+use core::{
+    mem,
+    ops::{Deref, DerefMut},
+    slice,
+};
 
 use bitflags::bitflags;
 
@@ -16,17 +19,13 @@ pub struct Sqe {
 impl Deref for Sqe {
     type Target = [u8];
     fn deref(&self) -> &[u8] {
-        unsafe {
-            slice::from_raw_parts(self as *const Sqe as *const u8, mem::size_of::<Sqe>())
-        }
+        unsafe { slice::from_raw_parts(self as *const Sqe as *const u8, mem::size_of::<Sqe>()) }
     }
 }
 
 impl DerefMut for Sqe {
     fn deref_mut(&mut self) -> &mut [u8] {
-        unsafe {
-            slice::from_raw_parts_mut(self as *mut Sqe as *mut u8, mem::size_of::<Sqe>())
-        }
+        unsafe { slice::from_raw_parts_mut(self as *mut Sqe as *mut u8, mem::size_of::<Sqe>()) }
     }
 }
 
@@ -50,17 +49,13 @@ pub struct Cqe {
 impl Deref for Cqe {
     type Target = [u8];
     fn deref(&self) -> &[u8] {
-        unsafe {
-            slice::from_raw_parts(self as *const Cqe as *const u8, mem::size_of::<Cqe>())
-        }
+        unsafe { slice::from_raw_parts(self as *const Cqe as *const u8, mem::size_of::<Cqe>()) }
     }
 }
 
 impl DerefMut for Cqe {
     fn deref_mut(&mut self) -> &mut [u8] {
-        unsafe {
-            slice::from_raw_parts_mut(self as *mut Cqe as *mut u8, mem::size_of::<Cqe>())
-        }
+        unsafe { slice::from_raw_parts_mut(self as *mut Cqe as *mut u8, mem::size_of::<Cqe>()) }
     }
 }
 
@@ -102,26 +97,26 @@ impl CqeOpcode {
 #[non_exhaustive]
 #[derive(Clone, Copy, Debug)]
 pub enum Opcode {
-    Open = 0, // path_ptr, path_len (utf8), flags
-    Rmdir = 1, // path_ptr, path_len (utf8)
-    Unlink = 2, // path_ptr, path_len (utf8)
-    Close = 3, // fd
-    Dup = 4, // old fd, buf_ptr, buf_len
-    Read = 5, // fd, buf_ptr, buf_len, TODO offset, TODO flags, _
-    Write = 6, // fd, buf_ptr, buf_len, TODO offset, TODO flags)
-    Fsize = 7, // fd
-    Fchmod = 8, // fd, new mode
-    Fchown = 9, // fd, new uid, new gid
-    Fcntl = 10, // fd, cmd, arg
+    Open = 0,    // path_ptr, path_len (utf8), flags
+    Rmdir = 1,   // path_ptr, path_len (utf8)
+    Unlink = 2,  // path_ptr, path_len (utf8)
+    Close = 3,   // fd
+    Dup = 4,     // old fd, buf_ptr, buf_len
+    Read = 5,    // fd, buf_ptr, buf_len, TODO offset, TODO flags, _
+    Write = 6,   // fd, buf_ptr, buf_len, TODO offset, TODO flags)
+    Fsize = 7,   // fd
+    Fchmod = 8,  // fd, new mode
+    Fchown = 9,  // fd, new uid, new gid
+    Fcntl = 10,  // fd, cmd, arg
     Fevent = 11, // fd, requested mask
     Sendfd = 12,
     Fpath = 13, // fd, buf_ptr, buf_len
     Frename = 14,
-    Fstat = 15, // fd, buf_ptr, buf_len
-    Fstatvfs = 16, // fd, buf_ptr, buf_len
-    Fsync = 17, // fd
+    Fstat = 15,     // fd, buf_ptr, buf_len
+    Fstatvfs = 16,  // fd, buf_ptr, buf_len
+    Fsync = 17,     // fd
     Ftruncate = 18, // fd, new len
-    Futimens = 19, // fd, times_buf, times_len
+    Futimens = 19,  // fd, times_buf, times_len
 
     MmapPrep = 20,
     RequestMmap = 21,

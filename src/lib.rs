@@ -4,36 +4,30 @@
 #[cfg(test)]
 extern crate core;
 
-pub use self::arch::*;
-pub use self::call::*;
-pub use self::data::*;
-pub use self::error::*;
-pub use self::flag::*;
-pub use self::io::*;
-pub use self::number::*;
+pub use self::{arch::*, call::*, data::*, error::*, flag::*, io::*, number::*};
 
 #[cfg(all(any(target_os = "none", target_os = "redox"), target_arch = "arm"))]
-#[path="arch/nonredox.rs"]
+#[path = "arch/nonredox.rs"]
 mod arch;
 
 #[cfg(all(any(target_os = "none", target_os = "redox"), target_arch = "aarch64"))]
-#[path="arch/aarch64.rs"]
+#[path = "arch/aarch64.rs"]
 mod arch;
 
 #[cfg(all(any(target_os = "none", target_os = "redox"), target_arch = "riscv64"))]
-#[path="arch/riscv64.rs"]
+#[path = "arch/riscv64.rs"]
 mod arch;
 
 #[cfg(all(any(target_os = "none", target_os = "redox"), target_arch = "x86"))]
-#[path="arch/x86.rs"]
+#[path = "arch/x86.rs"]
 mod arch;
 
 #[cfg(all(any(target_os = "none", target_os = "redox"), target_arch = "x86_64"))]
-#[path="arch/x86_64.rs"]
+#[path = "arch/x86_64.rs"]
 mod arch;
 
 #[cfg(not(any(target_os = "none", target_os = "redox")))]
-#[path="arch/nonredox.rs"]
+#[path = "arch/nonredox.rs"]
 mod arch;
 
 /// Function definitions
