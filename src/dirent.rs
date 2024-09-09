@@ -10,8 +10,8 @@ use crate::error::{Error, Result, EINVAL};
 #[repr(packed)]
 pub struct DirentHeader {
     pub inode: u64,
-    // This struct intentionally not include a "next" offset field, unlike Linux, to guarantee the
-    // iterator will be reasonably deterministic, even if the scheme is adversarial.
+    // This struct intentionally does not include a "next" offset field, unlike Linux, to easily
+    // guarantee the iterator will be reasonably deterministic, even if the scheme is adversarial.
     pub record_len: u16,
     /// A `DirentKind`.
     ///
@@ -31,25 +31,6 @@ impl DerefMut for DirentHeader {
         unsafe { slice::from_raw_parts_mut(self as *mut Self as *mut u8, size_of::<Self>()) }
     }
 }
-#[derive(Clone, Copy, Debug, Default)]
-#[repr(packed)]
-pub struct DirentFooter {
-    pub _rsvdz: u8,
-}
-
-impl Deref for DirentFooter {
-    type Target = [u8];
-    fn deref(&self) -> &[u8] {
-        unsafe { slice::from_raw_parts(self as *const Self as *const u8, size_of::<Self>()) }
-    }
-}
-
-impl DerefMut for DirentFooter {
-    fn deref_mut(&mut self) -> &mut [u8] {
-        unsafe { slice::from_raw_parts_mut(self as *mut Self as *mut u8, size_of::<Self>()) }
-    }
-}
-
 #[derive(Clone, Copy, Debug, Default)]
 #[repr(u8)]
 pub enum DirentKind {
@@ -135,6 +116,9 @@ pub trait Buffer<'a>: Sized + 'a {
 
     /// Copy from `src`, lengths must match exactly.
     fn copy_from_slice_exact(self, src: &[u8]) -> Result<()>;
+
+    /// Write zeroes to this part of the buffer.
+    fn zero_out(self) -> Result<()>;
 }
 impl<'a> Buffer<'a> for &'a mut [u8] {
     fn empty() -> Self {
@@ -150,6 +134,10 @@ impl<'a> Buffer<'a> for &'a mut [u8] {
     }
     fn copy_from_slice_exact(self, src: &[u8]) -> Result<()> {
         self.copy_from_slice(src);
+        Ok(())
+    }
+    fn zero_out(self) -> Result<()> {
+        self.fill(0);
         Ok(())
     }
 }
@@ -183,7 +171,7 @@ impl<'a, B: Buffer<'a>> DirentBuf<B> {
             .split_at(usize::from(self.header_size))
             .ok_or(Error::new(EINVAL))?;
         let [this_name, this_name_nul] = this_name_and_nul.split_at(usize::from(name16)).unwrap();
-        let [this_header, _this_header_extra] = this_header_variable
+        let [this_header, this_header_extra] = this_header_variable
             .split_at(size_of::<DirentHeader>())
             .unwrap();
         this_header.copy_from_slice_exact(&DirentHeader {
@@ -191,6 +179,7 @@ impl<'a, B: Buffer<'a>> DirentBuf<B> {
             inode: 0,
             kind: kind as u8,
         })?;
+        this_header_extra.zero_out()?;
         this_name.copy_from_slice_exact(name.as_bytes())?;
         this_name_nul.copy_from_slice_exact(&[0])?;
 
