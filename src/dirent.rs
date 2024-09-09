@@ -115,9 +115,15 @@ pub trait Buffer<'a>: Sized + 'a {
     fn split_at(self, index: usize) -> Option<[Self; 2]>;
 
     /// Copy from `src`, lengths must match exactly.
+    ///
+    /// Allowed to overwrite subsequent buffer space, for performance reasons. Can be changed in
+    /// the future if too restrictive.
     fn copy_from_slice_exact(self, src: &[u8]) -> Result<()>;
 
     /// Write zeroes to this part of the buffer.
+    ///
+    /// Allowed to overwrite subsequent buffer space, for performance reasons. Can be changed in
+    /// the future if too restrictive.
     fn zero_out(self) -> Result<()>;
 }
 impl<'a> Buffer<'a> for &'a mut [u8] {
@@ -171,6 +177,10 @@ impl<'a, B: Buffer<'a>> DirentBuf<B> {
             .split_at(usize::from(self.header_size))
             .ok_or(Error::new(EINVAL))?;
         let [this_name, this_name_nul] = this_name_and_nul.split_at(usize::from(name16)).unwrap();
+
+        // Every write here is currently sequential, allowing the buffer trait to do optimizations
+        // where subbuffer writes are out-of-bounds (but inside the total buffer).
+
         let [this_header, this_header_extra] = this_header_variable
             .split_at(size_of::<DirentHeader>())
             .unwrap();
