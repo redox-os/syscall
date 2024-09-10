@@ -4,12 +4,19 @@ use core::{
     slice,
 };
 
-use crate::error::{Error, Result, EINVAL};
+use crate::{
+    error::{Error, Result, EINVAL},
+    ENAMETOOLONG,
+};
 
 #[derive(Clone, Copy, Debug, Default)]
 #[repr(packed)]
 pub struct DirentHeader {
     pub inode: u64,
+    /// A filesystem-specific opaque value used to uniquely identify directory entries. This value,
+    /// in the last returned entry from a SYS_GETDENTS invocation, shall be passed to the next
+    /// call.
+    pub next_opaque_id: u64,
     // This struct intentionally does not include a "next" offset field, unlike Linux, to easily
     // guarantee the iterator will be reasonably deterministic, even if the scheme is adversarial.
     pub record_len: u16,
@@ -96,9 +103,10 @@ impl<'a> Iterator for DirentIter<'a> {
 pub struct DirentBuf<B> {
     buffer: B,
 
-    // Exists in order to allow future extensions to the DirentHeader struct, and be compatible
-    // with the old dirent struct that contains d_off, which is obviously not in DirentHeader.
-    // TODO: might add an upper bound to protect against cache miss DoS.
+    // Exists in order to allow future extensions to the DirentHeader struct.
+
+    // TODO: Might add an upper bound to protect against cache miss DoS. The kernel currently
+    // forbids any other value than size_of::<DirentHeader>().
     header_size: u16,
 
     written: usize,
@@ -148,6 +156,13 @@ impl<'a> Buffer<'a> for &'a mut [u8] {
     }
 }
 
+pub struct DirEntry<'name> {
+    pub inode: u64,
+    pub next_opaque_id: u64,
+    pub name: &'name str,
+    pub kind: DirentKind,
+}
+
 impl<'a, B: Buffer<'a>> DirentBuf<B> {
     pub fn new(buffer: B, header_size: u16) -> Option<Self> {
         if usize::from(header_size) < size_of::<DirentHeader>() {
@@ -160,14 +175,15 @@ impl<'a, B: Buffer<'a>> DirentBuf<B> {
             written: 0,
         })
     }
-    pub fn entry(&mut self, kind: DirentKind, name: &str) -> Result<()> {
-        let name16 = u16::try_from(name.len()).map_err(|_| Error::new(EINVAL))?;
+    pub fn entry(&mut self, entry: DirEntry<'_>) -> Result<()> {
+        let name16 = u16::try_from(entry.name.len()).map_err(|_| Error::new(EINVAL))?;
         let record_len = self
             .header_size
             .checked_add(name16)
-            // NUL byte
+            // XXX: NUL byte. Unfortunately this is probably the only performant way to be
+            // compatible with C.
             .and_then(|l| l.checked_add(1))
-            .ok_or(Error::new(EINVAL))?;
+            .ok_or(Error::new(ENAMETOOLONG))?;
 
         let [this, remaining] = core::mem::replace(&mut self.buffer, B::empty())
             .split_at(usize::from(record_len))
@@ -175,22 +191,27 @@ impl<'a, B: Buffer<'a>> DirentBuf<B> {
 
         let [this_header_variable, this_name_and_nul] = this
             .split_at(usize::from(self.header_size))
-            .ok_or(Error::new(EINVAL))?;
-        let [this_name, this_name_nul] = this_name_and_nul.split_at(usize::from(name16)).unwrap();
+            .expect("already know header_size + ... >= header_size");
+
+        let [this_name, this_name_nul] = this_name_and_nul
+            .split_at(usize::from(name16))
+            .expect("already know name.len() <= name.len() + 1");
 
         // Every write here is currently sequential, allowing the buffer trait to do optimizations
         // where subbuffer writes are out-of-bounds (but inside the total buffer).
 
         let [this_header, this_header_extra] = this_header_variable
             .split_at(size_of::<DirentHeader>())
-            .unwrap();
+            .expect("already checked header_size <= size_of Header");
+
         this_header.copy_from_slice_exact(&DirentHeader {
             record_len,
-            inode: 0,
-            kind: kind as u8,
+            next_opaque_id: entry.next_opaque_id,
+            inode: entry.inode,
+            kind: entry.kind as u8,
         })?;
         this_header_extra.zero_out()?;
-        this_name.copy_from_slice_exact(name.as_bytes())?;
+        this_name.copy_from_slice_exact(entry.name.as_bytes())?;
         this_name_nul.copy_from_slice_exact(&[0])?;
 
         self.written += usize::from(record_len);
