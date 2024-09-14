@@ -12,7 +12,9 @@ edition = "2021"
 name = "syscall"
 
 [features]
+default = ["userspace"]
 rustc-dep-of-std = ["core", "bitflags/rustc-dep-of-std"]
+userspace = []
 std = []
 
 [dependencies]

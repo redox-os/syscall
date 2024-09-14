@@ -1,19 +1,17 @@
 use core::{
-    arch::asm,
     mem,
     ops::{Deref, DerefMut},
     slice,
 };
 
-use super::error::{Error, Result};
-
 pub const PAGE_SIZE: usize = 4096;
 
+#[cfg(feature = "userspace")]
 macro_rules! syscall {
     ($($name:ident($a:ident, $($b:ident, $($c:ident, $($d:ident, $($e:ident, $($f:ident, )?)?)?)?)?);)+) => {
         $(
-            pub unsafe fn $name(mut $a: usize, $($b: usize, $($c: usize, $($d: usize, $($e: usize, $($f: usize)?)?)?)?)?) -> Result<usize> {
-                asm!(
+            pub unsafe fn $name(mut $a: usize, $($b: usize, $($c: usize, $($d: usize, $($e: usize, $($f: usize)?)?)?)?)?) -> crate::error::Result<usize> {
+                core::arch::asm!(
                     "syscall",
                     inout("rax") $a,
                     $(
@@ -36,12 +34,13 @@ macro_rules! syscall {
                     options(nostack),
                 );
 
-                Error::demux($a)
+                crate::error::Error::demux($a)
             }
         )+
     };
 }
 
+#[cfg(feature = "userspace")]
 syscall! {
     syscall0(a,);
     syscall1(a, b,);

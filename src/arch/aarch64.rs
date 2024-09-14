@@ -8,6 +8,7 @@ use super::error::{Error, Result};
 
 pub const PAGE_SIZE: usize = 4096;
 
+#[cfg(feature = "userspace")]
 macro_rules! syscall {
     ($($name:ident($a:ident, $($b:ident, $($c:ident, $($d:ident, $($e:ident, $($f:ident, )?)?)?)?)?);)+) => {
         $(
@@ -42,6 +43,7 @@ macro_rules! syscall {
     };
 }
 
+#[cfg(feature = "userspace")]
 syscall! {
     syscall0(a,);
     syscall1(a, b,);

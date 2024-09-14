@@ -9,6 +9,7 @@ use super::error::{Error, Result};
 
 pub const PAGE_SIZE: usize = 4096;
 
+#[cfg(feature = "userspace")]
 macro_rules! syscall {
     ($($name:ident($a:ident, $($b:ident, $($c:ident, $($d:ident, $($e:ident, $($f:ident, )?)?)?)?)?);)+) => {
         $(
@@ -40,6 +41,7 @@ macro_rules! syscall {
     };
 }
 
+#[cfg(feature = "userspace")]
 syscall! {
     syscall0(a,);
     syscall1(a, b,);
@@ -50,6 +52,7 @@ syscall! {
     //syscall5(a, b, c, d, e, f,);
 }
 
+#[cfg(feature = "userspace")]
 pub unsafe fn syscall4(mut a: usize, b: usize, c: usize, d: usize, e: usize) -> Result<usize> {
     asm!(
         "xchg esi, {e}
@@ -66,6 +69,7 @@ pub unsafe fn syscall4(mut a: usize, b: usize, c: usize, d: usize, e: usize) -> 
     Error::demux(a)
 }
 
+#[cfg(feature = "userspace")]
 pub unsafe fn syscall5(
     mut a: usize,
     b: usize,
