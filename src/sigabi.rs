@@ -1,4 +1,4 @@
-use core::sync::atomic::{AtomicU8, AtomicUsize, Ordering};
+use core::sync::atomic::{AtomicUsize, Ordering};
 
 /// Signal runtime struct for the entire process
 #[derive(Debug)]
@@ -278,6 +278,7 @@ mod tests {
                 pctl: SigProcControl {
                     pending: AtomicU64::new(0),
                     actions: core::array::from_fn(|_| RawAction::default()),
+                    sender_infos: Default::default(),
                 },
                 ctxt: Default::default(),
             }
