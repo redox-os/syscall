@@ -292,11 +292,6 @@ pub fn setreuid(ruid: usize, euid: usize) -> Result<usize> {
     unsafe { syscall2(SYS_SETREUID, ruid, euid) }
 }
 
-/// Set the file mode creation mask
-pub fn umask(mask: usize) -> Result<usize> {
-    unsafe { syscall1(SYS_UMASK, mask) }
-}
-
 /// Remove a file
 pub fn unlink<T: AsRef<str>>(path: T) -> Result<usize> {
     unsafe {

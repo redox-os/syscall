@@ -88,6 +88,5 @@ pub const SYS_SETPGID: usize = 57;
 pub const SYS_SETREGID: usize = 204;
 pub const SYS_SETRENS: usize = 952;
 pub const SYS_SETREUID: usize = 203;
-pub const SYS_UMASK: usize = 60;
 pub const SYS_WAITPID: usize = 7;
 pub const SYS_YIELD: usize = 158;
