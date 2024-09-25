@@ -143,8 +143,7 @@ impl<'a> Buffer<'a> for &'a mut [u8] {
     }
 
     fn split_at(self, index: usize) -> Option<[Self; 2]> {
-        let (a, b) = self.split_at_mut(index);
-        Some([a, b])
+        self.split_at_mut_checked(index).map(|(a, b)| [a, b])
     }
     fn copy_from_slice_exact(self, src: &[u8]) -> Result<()> {
         self.copy_from_slice(src);
