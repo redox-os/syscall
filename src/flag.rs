@@ -311,6 +311,9 @@ bitflags! {
     pub struct MremapFlags: usize {
         const FIXED = 1;
         const FIXED_REPLACE = 3;
+        /// Alias's memory region at `old_address` to `new_address` such that both regions share
+        /// the same frames.
+        const KEEP_OLD = 1 << 2;
         // TODO: MAYMOVE, DONTUNMAP
     }
 }
