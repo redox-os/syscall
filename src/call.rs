@@ -28,11 +28,6 @@ pub fn dup2(fd: usize, newfd: usize, buf: &[u8]) -> Result<usize> {
     unsafe { syscall4(SYS_DUP2, fd, newfd, buf.as_ptr() as usize, buf.len()) }
 }
 
-/// Exit the current process
-pub fn exit(status: usize) -> Result<usize> {
-    unsafe { syscall1(SYS_EXIT, status) }
-}
-
 /// Change file permissions
 pub fn fchmod(fd: usize, mode: u16) -> Result<usize> {
     unsafe { syscall2(SYS_FCHMOD, fd, mode as usize) }
@@ -154,51 +149,6 @@ pub unsafe fn futex(
     )
 }
 
-/// Get the effective group ID
-pub fn getegid() -> Result<usize> {
-    unsafe { syscall0(SYS_GETEGID) }
-}
-
-/// Get the effective namespace
-pub fn getens() -> Result<usize> {
-    unsafe { syscall0(SYS_GETENS) }
-}
-
-/// Get the effective user ID
-pub fn geteuid() -> Result<usize> {
-    unsafe { syscall0(SYS_GETEUID) }
-}
-
-/// Get the current group ID
-pub fn getgid() -> Result<usize> {
-    unsafe { syscall0(SYS_GETGID) }
-}
-
-/// Get the current namespace
-pub fn getns() -> Result<usize> {
-    unsafe { syscall0(SYS_GETNS) }
-}
-
-/// Get the current process ID
-pub fn getpid() -> Result<usize> {
-    unsafe { syscall0(SYS_GETPID) }
-}
-
-/// Get the process group ID
-pub fn getpgid(pid: usize) -> Result<usize> {
-    unsafe { syscall1(SYS_GETPGID, pid) }
-}
-
-/// Get the parent process ID
-pub fn getppid() -> Result<usize> {
-    unsafe { syscall0(SYS_GETPPID) }
-}
-
-/// Get the current user ID
-pub fn getuid() -> Result<usize> {
-    unsafe { syscall0(SYS_GETUID) }
-}
-
 /// Set the I/O privilege level
 ///
 /// # Errors
@@ -207,11 +157,6 @@ pub fn getuid() -> Result<usize> {
 /// * `EINVAL` - `level > 3`
 pub unsafe fn iopl(level: usize) -> Result<usize> {
     syscall1(SYS_IOPL, level)
-}
-
-/// Send a signal `sig` to the process identified by `pid`
-pub fn kill(pid: usize, sig: usize) -> Result<usize> {
-    unsafe { syscall2(SYS_KILL, pid, sig) }
 }
 
 /// Create a link to a file
@@ -289,26 +234,6 @@ pub fn rmdir<T: AsRef<str>>(path: T) -> Result<usize> {
     }
 }
 
-/// Set the process group ID
-pub fn setpgid(pid: usize, pgid: usize) -> Result<usize> {
-    unsafe { syscall2(SYS_SETPGID, pid, pgid) }
-}
-
-/// Set the current process group IDs
-pub fn setregid(rgid: usize, egid: usize) -> Result<usize> {
-    unsafe { syscall2(SYS_SETREGID, rgid, egid) }
-}
-
-/// Make a new scheme namespace
-pub fn setrens(rns: usize, ens: usize) -> Result<usize> {
-    unsafe { syscall2(SYS_SETRENS, rns, ens) }
-}
-
-/// Set the current process user IDs
-pub fn setreuid(ruid: usize, euid: usize) -> Result<usize> {
-    unsafe { syscall2(SYS_SETREUID, ruid, euid) }
-}
-
 /// Remove a file
 pub fn unlink<T: AsRef<str>>(path: T) -> Result<usize> {
     let path = path.as_ref();
@@ -328,18 +253,6 @@ pub fn unlink<T: AsRef<str>>(path: T) -> Result<usize> {
 /// * `EPERM` - `uid != 0`
 pub unsafe fn virttophys(virtual_address: usize) -> Result<usize> {
     syscall1(SYS_VIRTTOPHYS, virtual_address)
-}
-
-/// Check if a child process has exited or received a signal
-pub fn waitpid(pid: usize, status: &mut usize, options: WaitFlags) -> Result<usize> {
-    unsafe {
-        syscall3(
-            SYS_WAITPID,
-            pid,
-            status as *mut usize as usize,
-            options.bits(),
-        )
-    }
 }
 
 /// Write a buffer to a file descriptor
