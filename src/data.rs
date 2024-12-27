@@ -390,3 +390,30 @@ impl DerefMut for RtSigInfo {
         }
     }
 }
+
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
+#[repr(C)]
+pub struct ProcSchemeAttrs {
+    pub pid: u32,
+    pub euid: u32,
+    pub egid: u32,
+    pub ens: u32,
+}
+impl Deref for ProcSchemeAttrs {
+    type Target = [u8];
+    fn deref(&self) -> &[u8] {
+        unsafe {
+            slice::from_raw_parts(
+                self as *const Self as *const u8,
+                mem::size_of::<Self>(),
+            )
+        }
+    }
+}
+impl DerefMut for ProcSchemeAttrs {
+    fn deref_mut(&mut self) -> &mut [u8] {
+        unsafe {
+            slice::from_raw_parts_mut(self as *mut ProcSchemeAttrs as *mut u8, mem::size_of::<ProcSchemeAttrs>())
+        }
+    }
+}
