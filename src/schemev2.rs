@@ -127,6 +127,9 @@ pub enum Opcode {
     Cancel = 25, // @tag
 
     Getdents = 26,
+
+    Getattr = 27, // fd, op, out_buf, out_len
+    Setattr = 28, // fd, op, in_buf, in_len, out_buf, out_len
 }
 
 impl Opcode {
@@ -164,6 +167,9 @@ impl Opcode {
 
             25 => Cancel,
             26 => Getdents,
+
+            27 => Getattr,
+            28 => Setattr,
 
             _ => return None,
         })

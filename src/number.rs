@@ -31,6 +31,9 @@ pub const SYS_FEVENT: usize = SYS_CLASS_FILE | 927;
 pub const SYS_SENDFD: usize = SYS_CLASS_FILE | 34;
 pub const SYS_GETDENTS: usize = SYS_CLASS_FILE | 43;
 
+pub const SYS_GETATTR: usize = SYS_CLASS_FILE | 327;
+pub const SYS_SETATTR: usize = SYS_CLASS_FILE | 328;
+
 // TODO: Rename FMAP/FUNMAP to MMAP/MUNMAP
 pub const SYS_FMAP_OLD: usize = SYS_CLASS_FILE | SYS_ARG_SLICE | 90;
 pub const SYS_FMAP: usize = SYS_CLASS_FILE | SYS_ARG_SLICE | 900;
