@@ -127,6 +127,7 @@ pub enum Opcode {
     Cancel = 25, // @tag
 
     Getdents = 26,
+    CloseMsg = 27,
 }
 
 impl Opcode {
@@ -164,6 +165,7 @@ impl Opcode {
 
             25 => Cancel,
             26 => Getdents,
+            27 => CloseMsg,
 
             _ => return None,
         })
