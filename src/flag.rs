@@ -254,58 +254,11 @@ pub const SIGIO: usize = 29;
 pub const SIGPWR: usize = 30;
 pub const SIGSYS: usize = 31;
 
-bitflags! {
-    pub struct WaitFlags: usize {
-        const WNOHANG =    0x01;
-        const WUNTRACED =  0x02;
-        const WCONTINUED = 0x08;
-    }
-}
-
 pub const ADDRSPACE_OP_MMAP: usize = 0;
 pub const ADDRSPACE_OP_MUNMAP: usize = 1;
 pub const ADDRSPACE_OP_MPROTECT: usize = 2;
 pub const ADDRSPACE_OP_TRANSFER: usize = 3;
 
-/// True if status indicates the child is stopped.
-pub fn wifstopped(status: usize) -> bool {
-    (status & 0xff) == 0x7f
-}
-
-/// If wifstopped(status), the signal that stopped the child.
-pub fn wstopsig(status: usize) -> usize {
-    (status >> 8) & 0xff
-}
-
-/// True if status indicates the child continued after a stop.
-pub fn wifcontinued(status: usize) -> bool {
-    status == 0xffff
-}
-
-/// True if STATUS indicates termination by a signal.
-pub fn wifsignaled(status: usize) -> bool {
-    ((status & 0x7f) + 1) as i8 >= 2
-}
-
-/// If wifsignaled(status), the terminating signal.
-pub fn wtermsig(status: usize) -> usize {
-    status & 0x7f
-}
-
-/// True if status indicates normal termination.
-pub fn wifexited(status: usize) -> bool {
-    wtermsig(status) == 0
-}
-
-/// If wifexited(status), the exit status.
-pub fn wexitstatus(status: usize) -> usize {
-    (status >> 8) & 0xff
-}
-
-/// True if status indicates a core dump was created.
-pub fn wcoredump(status: usize) -> bool {
-    (status & 0x80) != 0
-}
 
 bitflags! {
     pub struct MremapFlags: usize {
