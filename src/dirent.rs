@@ -100,6 +100,7 @@ impl<'a> Iterator for DirentIter<'a> {
     }
 }
 
+#[derive(Debug)]
 pub struct DirentBuf<B> {
     buffer: B,
 
