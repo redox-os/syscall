@@ -28,6 +28,9 @@ pub const SYS_FCHOWN: usize = SYS_CLASS_FILE | 207;
 pub const SYS_FCNTL: usize = SYS_CLASS_FILE | 55;
 pub const SYS_FEVENT: usize = SYS_CLASS_FILE | 927;
 
+// SYS_CALL, fd, inout buf ptr, inout buf len, flags, metadata buf ptr, metadata buf len
+pub const SYS_CALL: usize = SYS_CLASS_FILE | SYS_ARG_SLICE | SYS_ARG_MSLICE | 0xCA11;
+
 pub const SYS_SENDFD: usize = SYS_CLASS_FILE | 34;
 pub const SYS_GETDENTS: usize = SYS_CLASS_FILE | 43;
 

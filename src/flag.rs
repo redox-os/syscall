@@ -333,3 +333,16 @@ bitflags! {
         const INHIBIT_DELIVERY = 1;
     }
 }
+bitflags! {
+    pub struct CallFlags: usize {
+        // unused
+        const BIT0 = 1 << 0;
+        const BIT1 = 1 << 1;
+        const BIT2 = 1 << 2;
+        const BIT3 = 1 << 3;
+        const BIT4 = 1 << 4;
+        const BIT5 = 1 << 5;
+        const BIT6 = 1 << 6;
+        const BIT7 = 1 << 7;
+    }
+}
