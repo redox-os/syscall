@@ -170,6 +170,17 @@ pub const O_ACCMODE: usize = O_RDONLY | O_WRONLY | O_RDWR;
 
 // The top 48 bits of PTRACE_* are reserved, for now
 
+// NOT ABI STABLE!
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[repr(usize)]
+pub enum ContextStatus {
+    Runnable,
+    Blocked,
+    NotYetStarted,
+    Dead,
+    Other, // reserved
+}
+
 bitflags! {
     pub struct PtraceFlags: u64 {
         /// Stop before a syscall is handled. Send PTRACE_FLAG_IGNORE to not
