@@ -180,6 +180,20 @@ pub enum ContextStatus {
     Dead,
     Other, // reserved
 }
+// NOT ABI STABLE!
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[repr(u8)]
+pub enum ProcSchemeVerb {
+    Iopl = 255,
+}
+impl ProcSchemeVerb {
+    pub fn try_from_raw(verb: u8) -> Option<Self> {
+        Some(match verb {
+            255 => Self::Iopl,
+            _ => return None,
+        })
+    }
+}
 
 bitflags! {
     pub struct PtraceFlags: u64 {
