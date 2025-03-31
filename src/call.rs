@@ -149,16 +149,6 @@ pub unsafe fn futex(
     )
 }
 
-/// Set the I/O privilege level
-///
-/// # Errors
-///
-/// * `EPERM` - `uid != 0`
-/// * `EINVAL` - `level > 3`
-pub unsafe fn iopl(level: usize) -> Result<usize> {
-    syscall1(SYS_IOPL, level)
-}
-
 /// Create a link to a file
 pub unsafe fn link(old: *const u8, new: *const u8) -> Result<usize> {
     syscall2(SYS_LINK, old as usize, new as usize)
@@ -244,15 +234,6 @@ pub fn unlink<T: AsRef<str>>(path: T) -> Result<usize> {
             path.len(),
         )
     }
-}
-
-/// Convert a virtual address to a physical one
-///
-/// # Errors
-///
-/// * `EPERM` - `uid != 0`
-pub unsafe fn virttophys(virtual_address: usize) -> Result<usize> {
-    syscall1(SYS_VIRTTOPHYS, virtual_address)
 }
 
 /// Write a buffer to a file descriptor
