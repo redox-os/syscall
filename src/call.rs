@@ -256,6 +256,19 @@ pub fn open<T: AsRef<str>>(path: T, flags: usize) -> Result<usize> {
     }
 }
 
+/// Open a file at a specific path
+pub fn openat<T: AsRef<str>>(fd: usize, path: T, flags: usize) -> Result<usize> {
+    unsafe {
+        syscall4(
+            SYS_OPENAT,
+            fd,
+            path.as_ref().as_ptr() as usize,
+            path.as_ref().len(),
+            flags,
+        )
+    }
+}
+
 /// Read from a file descriptor into a buffer
 pub fn read(fd: usize, buf: &mut [u8]) -> Result<usize> {
     unsafe { syscall3(SYS_READ, fd, buf.as_mut_ptr() as usize, buf.len()) }
