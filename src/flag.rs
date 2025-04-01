@@ -178,8 +178,27 @@ pub enum ContextStatus {
     Blocked,
     NotYetStarted,
     Dead,
+    Stopped,
     Other, // reserved
 }
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[repr(usize)]
+pub enum ContextVerb {
+    Stop = 1,
+    Unstop = 2,
+    ForceKill = usize::MAX,
+}
+impl ContextVerb {
+    pub fn try_from_raw(raw: usize) -> Option<Self> {
+        Some(match raw {
+            1 => Self::Stop,
+            usize::MAX => Self::ForceKill,
+            _ => return None,
+        })
+    }
+}
+
 // NOT ABI STABLE!
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 #[repr(u8)]
