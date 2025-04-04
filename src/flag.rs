@@ -187,12 +187,15 @@ pub enum ContextStatus {
 pub enum ContextVerb {
     Stop = 1,
     Unstop = 2,
+    Interrupt = 3,
     ForceKill = usize::MAX,
 }
 impl ContextVerb {
     pub fn try_from_raw(raw: usize) -> Option<Self> {
         Some(match raw {
             1 => Self::Stop,
+            2 => Self::Unstop,
+            3 => Self::Interrupt,
             usize::MAX => Self::ForceKill,
             _ => return None,
         })
