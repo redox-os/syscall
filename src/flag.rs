@@ -335,14 +335,17 @@ bitflags! {
 }
 bitflags! {
     pub struct CallFlags: usize {
-        // unused
-        const BIT0 = 1 << 0;
-        const BIT1 = 1 << 1;
-        const BIT2 = 1 << 2;
-        const BIT3 = 1 << 3;
-        const BIT4 = 1 << 4;
-        const BIT5 = 1 << 5;
-        const BIT6 = 1 << 6;
-        const BIT7 = 1 << 7;
+        // reserved
+        const RSVD0 = 1 << 0;
+        const RSVD1 = 1 << 1;
+        const RSVD2 = 1 << 2;
+        const RSVD3 = 1 << 3;
+        const RSVD4 = 1 << 4;
+        const RSVD5 = 1 << 5;
+        const RSVD6 = 1 << 6;
+        const RSVD7 = 1 << 7;
+
+        /// Remove the fd from the caller's file table before sending the message.
+        const CONSUME = 1 << 8;
     }
 }

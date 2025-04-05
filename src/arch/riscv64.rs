@@ -1,14 +1,12 @@
+use super::error::{Error, Result};
+use core::arch::asm;
 use core::{
     mem,
     ops::{Deref, DerefMut},
     slice,
 };
-use core::arch::asm;
-use super::error::{Error, Result};
-
 
 pub const PAGE_SIZE: usize = 4096;
-
 
 #[cfg(feature = "userspace")]
 macro_rules! syscall {
