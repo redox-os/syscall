@@ -383,7 +383,10 @@ impl Deref for RtSigInfo {
 impl DerefMut for RtSigInfo {
     fn deref_mut(&mut self) -> &mut [u8] {
         unsafe {
-            slice::from_raw_parts_mut(self as *mut RtSigInfo as *mut u8, mem::size_of::<RtSigInfo>())
+            slice::from_raw_parts_mut(
+                self as *mut RtSigInfo as *mut u8,
+                mem::size_of::<RtSigInfo>(),
+            )
         }
     }
 }
