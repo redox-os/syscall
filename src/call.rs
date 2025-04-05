@@ -79,12 +79,13 @@ pub fn fpath(fd: usize, buf: &mut [u8]) -> Result<usize> {
 
 /// Rename a file
 pub fn frename<T: AsRef<str>>(fd: usize, path: T) -> Result<usize> {
+    let path = path.as_ref();
     unsafe {
         syscall3(
             SYS_FRENAME,
             fd,
-            path.as_ref().as_ptr() as usize,
-            path.as_ref().len(),
+            path.as_ptr() as usize,
+            path.len(),
         )
     }
 }
@@ -246,11 +247,12 @@ pub fn nanosleep(req: &TimeSpec, rem: &mut TimeSpec) -> Result<usize> {
 
 /// Open a file
 pub fn open<T: AsRef<str>>(path: T, flags: usize) -> Result<usize> {
+    let path = path.as_ref();
     unsafe {
         syscall3(
             SYS_OPEN,
-            path.as_ref().as_ptr() as usize,
-            path.as_ref().len(),
+            path.as_ptr() as usize,
+            path.len(),
             flags,
         )
     }
@@ -258,12 +260,13 @@ pub fn open<T: AsRef<str>>(path: T, flags: usize) -> Result<usize> {
 
 /// Open a file at a specific path
 pub fn openat<T: AsRef<str>>(fd: usize, path: T, flags: usize) -> Result<usize> {
+    let path = path.as_ref();
     unsafe {
         syscall4(
             SYS_OPENAT,
             fd,
-            path.as_ref().as_ptr() as usize,
-            path.as_ref().len(),
+            path.as_ptr() as usize,
+            path.len(),
             flags,
         )
     }
@@ -276,11 +279,12 @@ pub fn read(fd: usize, buf: &mut [u8]) -> Result<usize> {
 
 /// Remove a directory
 pub fn rmdir<T: AsRef<str>>(path: T) -> Result<usize> {
+    let path = path.as_ref();
     unsafe {
         syscall2(
             SYS_RMDIR,
-            path.as_ref().as_ptr() as usize,
-            path.as_ref().len(),
+            path.as_ptr() as usize,
+            path.len(),
         )
     }
 }
@@ -307,11 +311,12 @@ pub fn setreuid(ruid: usize, euid: usize) -> Result<usize> {
 
 /// Remove a file
 pub fn unlink<T: AsRef<str>>(path: T) -> Result<usize> {
+    let path = path.as_ref();
     unsafe {
         syscall2(
             SYS_UNLINK,
-            path.as_ref().as_ptr() as usize,
-            path.as_ref().len(),
+            path.as_ptr() as usize,
+            path.len(),
         )
     }
 }
