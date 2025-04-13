@@ -69,7 +69,6 @@ pub const KSMSG_CANCEL: usize = SYS_CLASS_FILE | 76;
 
 pub const SYS_CLOCK_GETTIME: usize = 265;
 pub const SYS_FUTEX: usize = 240;
-pub const SYS_SIGDEQUEUE: usize = 102;
 pub const SYS_MPROTECT: usize = 125;
 pub const SYS_MKNS: usize = 984;
 pub const SYS_NANOSLEEP: usize = 162;
