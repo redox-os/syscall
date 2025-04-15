@@ -75,14 +75,7 @@ pub fn fpath(fd: usize, buf: &mut [u8]) -> Result<usize> {
 /// Rename a file
 pub fn frename<T: AsRef<str>>(fd: usize, path: T) -> Result<usize> {
     let path = path.as_ref();
-    unsafe {
-        syscall3(
-            SYS_FRENAME,
-            fd,
-            path.as_ptr() as usize,
-            path.len(),
-        )
-    }
+    unsafe { syscall3(SYS_FRENAME, fd, path.as_ptr() as usize, path.len()) }
 }
 
 /// Get metadata about a file
@@ -183,28 +176,13 @@ pub fn nanosleep(req: &TimeSpec, rem: &mut TimeSpec) -> Result<usize> {
 /// Open a file
 pub fn open<T: AsRef<str>>(path: T, flags: usize) -> Result<usize> {
     let path = path.as_ref();
-    unsafe {
-        syscall3(
-            SYS_OPEN,
-            path.as_ptr() as usize,
-            path.len(),
-            flags,
-        )
-    }
+    unsafe { syscall3(SYS_OPEN, path.as_ptr() as usize, path.len(), flags) }
 }
 
 /// Open a file at a specific path
 pub fn openat<T: AsRef<str>>(fd: usize, path: T, flags: usize) -> Result<usize> {
     let path = path.as_ref();
-    unsafe {
-        syscall4(
-            SYS_OPENAT,
-            fd,
-            path.as_ptr() as usize,
-            path.len(),
-            flags,
-        )
-    }
+    unsafe { syscall4(SYS_OPENAT, fd, path.as_ptr() as usize, path.len(), flags) }
 }
 
 /// Read from a file descriptor into a buffer
@@ -215,25 +193,13 @@ pub fn read(fd: usize, buf: &mut [u8]) -> Result<usize> {
 /// Remove a directory
 pub fn rmdir<T: AsRef<str>>(path: T) -> Result<usize> {
     let path = path.as_ref();
-    unsafe {
-        syscall2(
-            SYS_RMDIR,
-            path.as_ptr() as usize,
-            path.len(),
-        )
-    }
+    unsafe { syscall2(SYS_RMDIR, path.as_ptr() as usize, path.len()) }
 }
 
 /// Remove a file
 pub fn unlink<T: AsRef<str>>(path: T) -> Result<usize> {
     let path = path.as_ref();
-    unsafe {
-        syscall2(
-            SYS_UNLINK,
-            path.as_ptr() as usize,
-            path.len(),
-        )
-    }
+    unsafe { syscall2(SYS_UNLINK, path.as_ptr() as usize, path.len()) }
 }
 
 /// Write a buffer to a file descriptor

@@ -171,14 +171,17 @@ pub const O_ACCMODE: usize = O_RDONLY | O_WRONLY | O_RDWR;
 // The top 48 bits of PTRACE_* are reserved, for now
 
 // NOT ABI STABLE!
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 #[repr(usize)]
 pub enum ContextStatus {
     Runnable,
     Blocked,
     NotYetStarted,
     Dead,
+    ForceKilled,
     Stopped,
+    UnhandledExcp,
+    #[default]
     Other, // reserved
 }
 
@@ -305,7 +308,6 @@ pub const ADDRSPACE_OP_MMAP: usize = 0;
 pub const ADDRSPACE_OP_MUNMAP: usize = 1;
 pub const ADDRSPACE_OP_MPROTECT: usize = 2;
 pub const ADDRSPACE_OP_TRANSFER: usize = 3;
-
 
 bitflags! {
     pub struct MremapFlags: usize {

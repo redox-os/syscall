@@ -156,3 +156,33 @@ impl DerefMut for EnvRegisters {
         }
     }
 }
+
+#[derive(Clone, Copy, Debug, Default)]
+#[repr(C, packed)]
+pub struct Exception {
+    pub kind: usize,
+    pub code: usize,
+    pub address: usize,
+}
+impl Deref for Exception {
+    type Target = [u8];
+    fn deref(&self) -> &[u8] {
+        unsafe {
+            slice::from_raw_parts(
+                self as *const Exception as *const u8,
+                mem::size_of::<Exception>(),
+            )
+        }
+    }
+}
+
+impl DerefMut for Exception {
+    fn deref_mut(&mut self) -> &mut [u8] {
+        unsafe {
+            slice::from_raw_parts_mut(
+                self as *mut Exception as *mut u8,
+                mem::size_of::<Exception>(),
+            )
+        }
+    }
+}

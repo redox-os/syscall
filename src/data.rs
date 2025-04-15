@@ -409,18 +409,38 @@ pub struct ProcSchemeAttrs {
 impl Deref for ProcSchemeAttrs {
     type Target = [u8];
     fn deref(&self) -> &[u8] {
-        unsafe {
-            slice::from_raw_parts(
-                self as *const Self as *const u8,
-                mem::size_of::<Self>(),
-            )
-        }
+        unsafe { slice::from_raw_parts(self as *const Self as *const u8, mem::size_of::<Self>()) }
     }
 }
 impl DerefMut for ProcSchemeAttrs {
     fn deref_mut(&mut self) -> &mut [u8] {
         unsafe {
-            slice::from_raw_parts_mut(self as *mut ProcSchemeAttrs as *mut u8, mem::size_of::<ProcSchemeAttrs>())
+            slice::from_raw_parts_mut(
+                self as *mut ProcSchemeAttrs as *mut u8,
+                mem::size_of::<ProcSchemeAttrs>(),
+            )
+        }
+    }
+}
+#[derive(Copy, Clone, Debug, Default)]
+#[repr(C)]
+pub struct CtxtStsBuf {
+    pub status: usize,
+    pub excp: crate::Exception,
+}
+impl Deref for CtxtStsBuf {
+    type Target = [u8];
+    fn deref(&self) -> &[u8] {
+        unsafe { slice::from_raw_parts(self as *const Self as *const u8, mem::size_of::<Self>()) }
+    }
+}
+impl DerefMut for CtxtStsBuf {
+    fn deref_mut(&mut self) -> &mut [u8] {
+        unsafe {
+            slice::from_raw_parts_mut(
+                self as *mut CtxtStsBuf as *mut u8,
+                mem::size_of::<CtxtStsBuf>(),
+            )
         }
     }
 }
