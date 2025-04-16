@@ -20,7 +20,7 @@ pub struct RealtimeSig {
 pub struct RawAction {
     /// Only two MSBs are interesting for the kernel. If bit 63 is set, signal is ignored. If bit
     /// 62 is set and the signal is SIGTSTP/SIGTTIN/SIGTTOU, it's equivalent to the action of
-    /// SIGSTOP.
+    /// Stop.
     pub first: AtomicU64,
     /// Completely ignored by the kernel, but exists so userspace can (when 16-byte atomics exist)
     /// atomically set both the handler, sigaction flags, and sigaction mask.
@@ -134,6 +134,7 @@ pub fn sig_bit(sig: usize) -> u64 {
     1 << (sig - 1)
 }
 impl SigProcControl {
+    // TODO: Move to redox_rt?
     pub fn signal_will_ign(&self, sig: usize, is_parent_sigchld: bool) -> bool {
         let flags = self.actions[sig - 1].first.load(Ordering::Relaxed);
         let will_ign = flags & (1 << 63) != 0;
@@ -141,6 +142,7 @@ impl SigProcControl {
 
         will_ign || (sig == SIGCHLD && is_parent_sigchld && sig_specific)
     }
+    // TODO: Move to redox_rt?
     pub fn signal_will_stop(&self, sig: usize) -> bool {
         use crate::flag::*;
         matches!(sig, SIGTSTP | SIGTTIN | SIGTTOU)
