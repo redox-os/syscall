@@ -398,6 +398,7 @@ impl DerefMut for SetSighandlerData {
 }
 pub use crate::sigabi::*;
 
+/// UNSTABLE
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[repr(C)]
 pub struct ProcSchemeAttrs {
@@ -405,6 +406,7 @@ pub struct ProcSchemeAttrs {
     pub euid: u32,
     pub egid: u32,
     pub ens: u32,
+    pub debug_name: [u8; 32],
 }
 impl Deref for ProcSchemeAttrs {
     type Target = [u8];
