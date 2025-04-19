@@ -231,45 +231,6 @@ impl DerefMut for TimeSpec {
     }
 }
 
-/*
-// ABI-UNSTABLE!
-#[derive(Clone, Copy, Debug, Default)]
-#[repr(C)]
-pub struct ThreadEvent {
-    pub kind: u8,
-    pub _rsvd: [u8; size_of::<usize>() - 1],
-    pub payload: [usize; 3],
-}
-#[repr(u8)]
-#[derive(Clone, Copy, Debug)]
-pub enum ThreadEventKind {
-    Sigkill = 0,
-}
-
-impl Deref for ThreadEvent {
-    type Target = [u8];
-    fn deref(&self) -> &[u8] {
-        unsafe {
-            slice::from_raw_parts(
-                self as *const ThreadEvent as *const u8,
-                mem::size_of::<ThreadEvent>(),
-            )
-        }
-    }
-}
-
-impl DerefMut for ThreadEvent {
-    fn deref_mut(&mut self) -> &mut [u8] {
-        unsafe {
-            slice::from_raw_parts_mut(
-                self as *mut ThreadEvent as *mut u8,
-                mem::size_of::<ThreadEvent>(),
-            )
-        }
-    }
-}
-*/
-
 #[derive(Clone, Copy, Debug, Default)]
 #[repr(C)]
 pub struct PtraceEvent {
