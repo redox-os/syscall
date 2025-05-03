@@ -72,6 +72,12 @@ pub fn fpath(fd: usize, buf: &mut [u8]) -> Result<usize> {
     unsafe { syscall3(SYS_FPATH, fd, buf.as_mut_ptr() as usize, buf.len()) }
 }
 
+/// Create a link to a file
+pub fn flink<T: AsRef<str>>(fd: usize, path: T) -> Result<usize> {
+    let path = path.as_ref();
+    unsafe { syscall3(SYS_FLINK, fd, path.as_ptr() as usize, path.len()) }
+}
+
 /// Rename a file
 pub fn frename<T: AsRef<str>>(fd: usize, path: T) -> Result<usize> {
     let path = path.as_ref();
@@ -140,11 +146,6 @@ pub unsafe fn futex(
         val2,
         addr2 as usize,
     )
-}
-
-/// Create a link to a file
-pub unsafe fn link(old: *const u8, new: *const u8) -> Result<usize> {
-    syscall2(SYS_LINK, old as usize, new as usize)
 }
 
 /// Seek to `offset` bytes in a file descriptor

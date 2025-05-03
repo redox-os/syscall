@@ -53,6 +53,13 @@ pub trait SchemeBlock {
             SYS_FEVENT => self
                 .fevent(packet.b, EventFlags::from_bits_truncate(packet.c))
                 .map(|f| f.map(|f| f.bits())),
+            SYS_FLINK => {
+                if let Some(path) = unsafe { str_from_raw_parts(packet.c as *const u8, packet.d) } {
+                    self.flink(packet.b, path, packet.uid, packet.gid)
+                } else {
+                    Err(Error::new(EINVAL))
+                }
+            }
             SYS_FPATH => self.fpath(packet.b, unsafe {
                 slice::from_raw_parts_mut(packet.c as *mut u8, packet.d)
             }),
@@ -185,6 +192,11 @@ pub trait SchemeBlock {
     }
 
     #[allow(unused_variables)]
+    fn flink(&self, id: usize, path: &str, uid: u32, gid: u32) -> Result<Option<usize>> {
+        Err(Error::new(EBADF))
+    }
+
+    #[allow(unused_variables)]
     fn fpath(&self, id: usize, buf: &mut [u8]) -> Result<Option<usize>> {
         Err(Error::new(EBADF))
     }
@@ -225,24 +237,12 @@ pub trait SchemeBlock {
     }
 
     #[allow(unused_variables)]
-    fn mmap_prep(
-        &self,
-        id: usize,
-        offset: u64,
-        size: usize,
-        flags: MapFlags,
-    ) -> Result<Option<usize>> {
+    fn mmap_prep(&self, id: usize, offset: u64, size: usize, flags: MapFlags) -> Result<Option<usize>> {
         Err(Error::new(EOPNOTSUPP))
     }
 
     #[allow(unused_variables)]
-    fn munmap(
-        &self,
-        id: usize,
-        offset: u64,
-        size: usize,
-        flags: MunmapFlags,
-    ) -> Result<Option<usize>> {
+    fn munmap(&self, id: usize, offset: u64, size: usize, flags: MunmapFlags) -> Result<Option<usize>> {
         Err(Error::new(EOPNOTSUPP))
     }
 }

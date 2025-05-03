@@ -53,6 +53,13 @@ pub trait Scheme {
             SYS_FEVENT => self
                 .fevent(packet.b, EventFlags::from_bits_truncate(packet.c))
                 .map(|f| f.bits()),
+            SYS_FLINK => {
+                if let Some(path) = unsafe { str_from_raw_parts(packet.c as *const u8, packet.d) } {
+                    self.flink(packet.b, path, packet.uid, packet.gid)
+                } else {
+                    Err(Error::new(EINVAL))
+                }
+            }
             SYS_FPATH => self.fpath(packet.b, unsafe {
                 slice::from_raw_parts_mut(packet.c as *mut u8, packet.d)
             }),
@@ -181,6 +188,11 @@ pub trait Scheme {
 
     #[allow(unused_variables)]
     fn fevent(&self, id: usize, flags: EventFlags) -> Result<EventFlags> {
+        Err(Error::new(EBADF))
+    }
+
+    #[allow(unused_variables)]
+    fn flink(&self, id: usize, path: &str, uid: u32, gid: u32) -> Result<usize> {
         Err(Error::new(EBADF))
     }
 

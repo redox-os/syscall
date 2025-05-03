@@ -10,7 +10,6 @@ pub const SYS_ARG_PATH: usize = 0x0300_0000;
 pub const SYS_RET: usize = 0x00F0_0000;
 pub const SYS_RET_FILE: usize = 0x0010_0000;
 
-pub const SYS_LINK: usize = SYS_CLASS_PATH | SYS_ARG_PATH | 9;
 pub const SYS_OPEN: usize = SYS_CLASS_PATH | SYS_RET_FILE | 5;
 pub const SYS_OPENAT: usize = SYS_CLASS_PATH | SYS_RET_FILE | 7;
 pub const SYS_RMDIR: usize = SYS_CLASS_PATH | 84;
@@ -44,6 +43,7 @@ pub const SYS_FUNMAP_OLD: usize = SYS_CLASS_FILE | 91;
 pub const SYS_FUNMAP: usize = SYS_CLASS_FILE | 92;
 pub const SYS_MREMAP: usize = 155;
 
+pub const SYS_FLINK: usize = SYS_CLASS_FILE | SYS_ARG_PATH | 9;
 pub const SYS_FPATH: usize = SYS_CLASS_FILE | SYS_ARG_MSLICE | 928;
 pub const SYS_FRENAME: usize = SYS_CLASS_FILE | SYS_ARG_PATH | 38;
 pub const SYS_FSTAT: usize = SYS_CLASS_FILE | SYS_ARG_MSLICE | 28;
