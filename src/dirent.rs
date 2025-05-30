@@ -38,36 +38,40 @@ impl DerefMut for DirentHeader {
         unsafe { slice::from_raw_parts_mut(self as *mut Self as *mut u8, size_of::<Self>()) }
     }
 }
+
+// Note: Must match relibc/include/bits/dirent.h
 #[derive(Clone, Copy, Debug, Default)]
 #[repr(u8)]
 pub enum DirentKind {
     #[default]
     Unspecified = 0,
 
-    Regular = 1,
-    Directory = 2,
-    Symlink = 3,
-    BlockDev = 4,
-    CharDev = 5,
-    Socket = 6,
+    CharDev = 2,
+    Directory = 4,
+    BlockDev = 6,
+    Regular = 8,
+    Symlink = 10,
+    Socket = 12,
 }
+
 impl DirentKind {
     // TODO: derive(FromPrimitive)
     pub fn try_from_raw(raw: u8) -> Option<Self> {
         Some(match raw {
             0 => Self::Unspecified,
 
-            1 => Self::Regular,
-            2 => Self::Directory,
-            3 => Self::Symlink,
-            4 => Self::BlockDev,
-            5 => Self::CharDev,
-            6 => Self::Socket,
+            2 => Self::CharDev,
+            4 => Self::Directory,
+            6 => Self::BlockDev,
+            8 => Self::Regular,
+            10 => Self::Symlink,
+            12 => Self::Socket,
 
             _ => return None,
         })
     }
 }
+
 
 pub struct DirentIter<'a>(&'a [u8]);
 
