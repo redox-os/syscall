@@ -38,6 +38,8 @@ impl DerefMut for DirentHeader {
         unsafe { slice::from_raw_parts_mut(self as *mut Self as *mut u8, size_of::<Self>()) }
     }
 }
+
+// Note: Must match relibc/include/bits/dirent.h
 #[derive(Clone, Copy, Debug, Default)]
 #[repr(u8)]
 pub enum DirentKind {
