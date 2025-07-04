@@ -144,6 +144,7 @@ pub const MODE_FILE: u16 = 0x8000;
 pub const MODE_SYMLINK: u16 = 0xA000;
 pub const MODE_FIFO: u16 = 0x1000;
 pub const MODE_CHR: u16 = 0x2000;
+pub const MODE_SOCK: u16 = 0xC000;
 
 pub const MODE_PERM: u16 = 0x0FFF;
 pub const MODE_SETUID: u16 = 0o4000;
