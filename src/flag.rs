@@ -324,12 +324,12 @@ bitflags! {
         /// Remove the fd from the caller's file table before sending the message.
         const CONSUME = 1 << 8;
 
-        /// Indicates the request is a bulk fd passing request.
-        const BULK_SENDFD = 1 << 9;
-        const BULK_SENDFD_EXCLUSIVE = 1 << 10;
-        const BULK_SENDFD_MOVE = 1 << 11;
-        const BULK_RECVFD = 1 << 12;
-        const BULK_FOBTAINFD = 1 << 13;
+        const WRITE = 1 << 9;
+        const READ = 1 << 10;
 
+        /// Indicates the request is a bulk fd passing request.
+        const FD = 1 << 11;
+        const FD_EXCLUSIVE = 1 << 12;
+        const FD_MOVE = 1 << 13;
     }
 }
