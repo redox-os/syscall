@@ -80,6 +80,8 @@ bitflags::bitflags! {
         /// the file table (SYS_SENDFD always removes the FD from the file table, but without this
         /// flag, it can be retained by SYS_DUPing it first).
         const EXCLUSIVE = 1;
+
+        const CLONE = 2;
     }
 }
 bitflags::bitflags! {
