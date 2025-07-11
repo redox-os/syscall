@@ -330,6 +330,6 @@ bitflags! {
         /// Indicates the request is a bulk fd passing request.
         const FD = 1 << 11;
         const FD_EXCLUSIVE = 1 << 12;
-        const FD_MOVE = 1 << 13;
+        const FD_CLONE = 1 << 13;
     }
 }
