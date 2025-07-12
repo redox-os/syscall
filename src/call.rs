@@ -181,9 +181,9 @@ pub fn open<T: AsRef<str>>(path: T, flags: usize) -> Result<usize> {
 }
 
 /// Open a file at a specific path
-pub fn openat<T: AsRef<str>>(fd: usize, path: T, flags: usize) -> Result<usize> {
+pub fn openat<T: AsRef<str>>(fd: usize, path: T, flags: usize, fcntl_flags: usize) -> Result<usize> {
     let path = path.as_ref();
-    unsafe { syscall4(SYS_OPENAT, fd, path.as_ptr() as usize, path.len(), flags) }
+    unsafe { syscall5(SYS_OPENAT, fd, path.as_ptr() as usize, path.len(), flags, fcntl_flags) }
 }
 
 /// Read from a file descriptor into a buffer
