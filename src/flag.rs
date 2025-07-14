@@ -223,6 +223,20 @@ impl ProcSchemeVerb {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[repr(usize)]
+pub enum SchemeSocketCall {
+    ObtainFd = 1,
+}
+impl SchemeSocketCall {
+    pub fn try_from_raw(raw: usize) -> Option<Self> {
+        Some(match raw {
+            1 => Self::ObtainFd,
+            _ => return None,
+        })
+    }
+}
+
 bitflags! {
     pub struct PtraceFlags: u64 {
         /// Stop before a syscall is handled. Send PTRACE_FLAG_IGNORE to not
