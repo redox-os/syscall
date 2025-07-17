@@ -79,6 +79,7 @@ pub enum CqeOpcode {
     RespondWithFd,
     SendFevent, // no tag
     ObtainFd,
+    RespondWithMultipleFds,
     // TODO: ProvideMmap
 }
 impl CqeOpcode {
@@ -88,6 +89,7 @@ impl CqeOpcode {
             1 => Self::RespondWithFd,
             2 => Self::SendFevent,
             3 => Self::ObtainFd,
+            4 => Self::RespondWithMultipleFds,
             _ => return None,
         })
     }
@@ -132,6 +134,8 @@ pub enum Opcode {
 
     OpenAt = 29, // fd, buf_ptr, buf_len, flags
     Flink = 30,
+
+    BulkRecvFd = 31, // simlar to sendfd
 }
 
 impl Opcode {
@@ -174,6 +178,8 @@ impl Opcode {
 
             29 => OpenAt,
             30 => Flink,
+
+            31 => BulkRecvFd,
 
             _ => return None,
         })
