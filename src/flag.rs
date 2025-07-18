@@ -95,6 +95,8 @@ bitflags::bitflags! {
         // table the obtainer is running in).
         const EXCLUSIVE = 2;
 
+        const UPPER_TBL = 4;
+
         // No, cloexec won't be stored in the kernel in the future, when the stable ABI is moved to
         // relibc, so no flag for that!
     }
