@@ -135,7 +135,7 @@ pub enum Opcode {
     OpenAt = 29, // fd, buf_ptr, buf_len, flags
     Flink = 30,
 
-    RecvFd = 31,
+    Recvfd = 31,
 }
 
 impl Opcode {
@@ -179,7 +179,7 @@ impl Opcode {
             29 => OpenAt,
             30 => Flink,
 
-            31 => RecvFd,
+            31 => Recvfd,
 
             _ => return None,
         })
