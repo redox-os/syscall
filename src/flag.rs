@@ -107,6 +107,13 @@ bitflags::bitflags! {
         const UPPER_TBL = 1;
     }
 }
+bitflags::bitflags! {
+    #[derive(Clone, Copy, Debug)]
+    pub struct FmoveFdFlags: usize {
+        const EXCLUSIVE = 1;
+        const CLONE = 2;
+    }
+}
 
 bitflags! {
     pub struct MapFlags: usize {
