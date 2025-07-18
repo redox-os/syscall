@@ -99,6 +99,12 @@ bitflags::bitflags! {
         // relibc, so no flag for that!
     }
 }
+bitflags::bitflags! {
+    #[derive(Clone, Copy, Debug)]
+    pub struct RecvFdFlags: usize {
+        const UPPER_TBL = 1;
+    }
+}
 
 bitflags! {
     pub struct MapFlags: usize {
@@ -347,7 +353,9 @@ bitflags! {
 
         /// Indicates the request is a bulk fd passing request.
         const FD = 1 << 11;
+        /// bulk fd passing flags.
         const FD_EXCLUSIVE = 1 << 12;
         const FD_CLONE = 1 << 13;
+        const FD_UPPER = 1 << 14;
     }
 }
