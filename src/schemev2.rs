@@ -41,7 +41,7 @@ bitflags! {
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Cqe {
-    pub flags: u8, // bits 3:0 are CqeOpcode
+    pub flags: u8, // bits 2:0 are CqeOpcode
     pub extra_raw: [u8; 3],
     pub tag: u32,
     pub result: u64,
