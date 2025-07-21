@@ -221,6 +221,21 @@ impl ProcSchemeVerb {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[repr(usize)]
+#[non_exhaustive]
+pub enum FsCall {
+    Connect = 0,
+}
+impl FsCall {
+    pub fn try_from_raw(raw: usize) -> Option<Self> {
+        Some(match raw {
+            0 => Self::Connect,
+            _ => return None,
+        })
+    }
+}
+
 bitflags! {
     pub struct PtraceFlags: u64 {
         /// Stop before a syscall is handled. Send PTRACE_FLAG_IGNORE to not
