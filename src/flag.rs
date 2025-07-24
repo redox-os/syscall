@@ -241,14 +241,14 @@ impl ProcSchemeVerb {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum SchemeSocketCall {
-    ObtainFd = 1,
-    MoveFd = 2,
+    ObtainFd = 0,
+    MoveFd = 1,
 }
 impl SchemeSocketCall {
     pub fn try_from_raw(raw: usize) -> Option<Self> {
         Some(match raw {
-            1 => Self::ObtainFd,
-            2 => Self::MoveFd,
+            0 => Self::ObtainFd,
+            1 => Self::MoveFd,
             _ => return None,
         })
     }
