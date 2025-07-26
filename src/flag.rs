@@ -74,27 +74,62 @@ pub const SKMSG_FOBTAINFD: usize = 2;
 bitflags::bitflags! {
     #[derive(Clone, Copy, Debug)]
     pub struct SendFdFlags: usize {
-        /// If set, the kernel will enforce that the file descriptor is exclusively owned.
+        /// If set, the kernel will enforce that the file descriptors are exclusively owned.
         ///
-        /// That is, there will no longer exist any other reference to that FD when removed from
-        /// the file table (SYS_SENDFD always removes the FD from the file table, but without this
-        /// flag, it can be retained by SYS_DUPing it first).
+        /// That is, there will no longer exist any other reference to those FDs when removed from
+        /// the file table (sendfd always removes the FDs from the file table, but without this
+        /// flag, it can be retained by SYS_DUPing them first).
         const EXCLUSIVE = 1;
+
+        /// If set, the file descriptors will be cloned and *not* removed from the sender's file table.
+        /// By default, `SYS_SENDFD` moves the file descriptors, removing them from the sender.
+        const CLONE = 2;
     }
 }
 bitflags::bitflags! {
     #[derive(Clone, Copy, Debug)]
     pub struct FobtainFdFlags: usize {
-        /// If set, `packet.c` specifies the destination file descriptor slot, otherwise the lowest
-        /// available slot will be selected, and placed in the usize pointed to by `packet.c`.
+        /// If set, the SYS_CALL payload specifies the destination file descriptor slots, otherwise the lowest
+        /// available slots will be selected, and placed in the usize pointed to by SYS_CALL
+        /// payload.
         const MANUAL_FD = 1;
 
-        // If set, the file descriptor received is guaranteed to be exclusively owned (by the file
-        // table the obtainer is running in).
+        /// If set, the file descriptors received are guaranteed to be exclusively owned (by the file
+        /// table the obtainer is running in).
         const EXCLUSIVE = 2;
+
+        /// If set, the file descriptors received will be placed into the *upper* file table.
+        const UPPER_TBL = 4;
 
         // No, cloexec won't be stored in the kernel in the future, when the stable ABI is moved to
         // relibc, so no flag for that!
+    }
+}
+bitflags::bitflags! {
+    #[derive(Clone, Copy, Debug)]
+    pub struct RecvFdFlags: usize {
+        /// If set, the SYS_CALL payload specifies the destination file descriptor slots, otherwise the lowest
+        /// available slots will be selected, and placed in the usize pointed to by SYS_CALL
+        /// payload.
+        const MANUAL_FD = 1;
+
+        /// If set, the file descriptors received will be placed into the *upper* file table.
+        const UPPER_TBL = 2;
+    }
+}
+bitflags::bitflags! {
+    #[derive(Clone, Copy, Debug)]
+    pub struct FmoveFdFlags: usize {
+        /// If set, the kernel will enforce that the file descriptors are exclusively owned.
+        ///
+        /// That is, there will no longer exist any other reference to those FDs when removed from
+        /// the file table (SYS_CALL always removes the FDs from the file table, but without this
+        /// flag, it can be retained by SYS_DUPing them first).
+        const EXCLUSIVE = 1;
+
+        /// If set, the file descriptors will be cloned and *not* removed from the sender's file table.
+        /// By default, sendfd moves the file descriptors, removing them from the sender.
+        const CLONE = 2;
     }
 }
 
@@ -223,6 +258,22 @@ impl ProcSchemeVerb {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 #[repr(usize)]
+pub enum SchemeSocketCall {
+    ObtainFd = 0,
+    MoveFd = 1,
+}
+impl SchemeSocketCall {
+    pub fn try_from_raw(raw: usize) -> Option<Self> {
+        Some(match raw {
+            0 => Self::ObtainFd,
+            1 => Self::MoveFd,
+            _ => return None,
+        })
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[repr(usize)]
 #[non_exhaustive]
 pub enum FsCall {
     Connect = 0,
@@ -338,5 +389,15 @@ bitflags! {
 
         /// Remove the fd from the caller's file table before sending the message.
         const CONSUME = 1 << 8;
+
+        const WRITE = 1 << 9;
+        const READ = 1 << 10;
+
+        /// Indicates the request is a bulk fd passing request.
+        const FD = 1 << 11;
+        /// Flags for the fd passing request.
+        const FD_EXCLUSIVE = 1 << 12;
+        const FD_CLONE = 1 << 13;
+        const FD_UPPER = 1 << 14;
     }
 }
