@@ -401,3 +401,6 @@ bitflags! {
         const FD_UPPER = 1 << 14;
     }
 }
+
+pub const POSIX_TABLE_FLAG: usize = 0 << (usize::BITS - 2);
+pub const UPPER_TABLE_FLAG: usize = 1 << (usize::BITS - 2);
