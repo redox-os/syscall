@@ -401,3 +401,6 @@ bitflags! {
         const FD_UPPER = 1 << 14;
     }
 }
+
+/// The tag for the fd number in the upper file descriptor table.
+pub const UPPER_FDTBL_TAG: usize = 1 << (usize::BITS - 2);
