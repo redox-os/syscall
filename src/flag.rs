@@ -402,5 +402,5 @@ bitflags! {
     }
 }
 
-pub const POSIX_TABLE_FLAG: usize = 0 << (usize::BITS - 2);
-pub const UPPER_TABLE_FLAG: usize = 1 << (usize::BITS - 2);
+pub const POSIX_FDTBL_TAG: usize = 0 << (usize::BITS - 2);
+pub const UPPER_FDTBL_TAG: usize = 1 << (usize::BITS - 2);
