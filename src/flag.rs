@@ -402,5 +402,5 @@ bitflags! {
     }
 }
 
-pub const POSIX_FDTBL_TAG: usize = 0 << (usize::BITS - 2);
+/// The tag for the fd number in the upper file descriptor table.
 pub const UPPER_FDTBL_TAG: usize = 1 << (usize::BITS - 2);
