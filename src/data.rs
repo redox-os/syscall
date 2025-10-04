@@ -407,3 +407,59 @@ impl DerefMut for CtxtStsBuf {
         }
     }
 }
+
+#[repr(u8)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub enum GlobalSchemes {
+    Debug = 1,
+    Event = 2,
+    Memory = 3,
+    Pipe = 4,
+    Serio = 5,
+    Irq = 6,
+    Time = 7,
+    Sys = 8,
+    Proc = 9,
+    Acpi = 10,
+    Dtb = 11,
+}
+impl GlobalSchemes {
+    pub fn try_from_raw(raw: u8) -> Option<Self> {
+        match raw {
+            1 => Some(Self::Debug),
+            2 => Some(Self::Event),
+            3 => Some(Self::Memory),
+            4 => Some(Self::Pipe),
+            5 => Some(Self::Serio),
+            6 => Some(Self::Irq),
+            7 => Some(Self::Time),
+            8 => Some(Self::Sys),
+            9 => Some(Self::Proc),
+            10 => Some(Self::Acpi),
+            11 => Some(Self::Dtb),
+            _ => None,
+        }
+    }
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Debug => "debug",
+            Self::Event => "event",
+            Self::Memory => "memory",
+            Self::Pipe => "pipe",
+            Self::Serio => "serio",
+            Self::Irq => "irq",
+            Self::Time => "time",
+            Self::Sys => "sys",
+            Self::Proc => "kernel.proc",
+            Self::Acpi => "kernel.acpi",
+            Self::Dtb => "kernel.dtb",
+        }
+    }
+}
+
+#[repr(C)]
+#[derive(Debug, Clone, Copy, Default)]
+pub struct KernelSchemeInfo {
+    pub scheme_id: u8,
+    pub fd: usize,
+}

@@ -8,6 +8,8 @@ use core::{
 use super::error::{Error, Result};
 
 pub const PAGE_SIZE: usize = 4096;
+/// Size of the metadata region used to transfer information from the kernel to the bootstrapper.
+pub const KERNEL_METADATA_SIZE: usize = 4 * PAGE_SIZE;
 
 #[cfg(feature = "userspace")]
 macro_rules! syscall {

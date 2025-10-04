@@ -181,9 +181,23 @@ pub fn open<T: AsRef<str>>(path: T, flags: usize) -> Result<usize> {
 }
 
 /// Open a file at a specific path
-pub fn openat<T: AsRef<str>>(fd: usize, path: T, flags: usize, fcntl_flags: usize) -> Result<usize> {
+pub fn openat<T: AsRef<str>>(
+    fd: usize,
+    path: T,
+    flags: usize,
+    fcntl_flags: usize,
+) -> Result<usize> {
     let path = path.as_ref();
-    unsafe { syscall5(SYS_OPENAT, fd, path.as_ptr() as usize, path.len(), flags, fcntl_flags) }
+    unsafe {
+        syscall5(
+            SYS_OPENAT,
+            fd,
+            path.as_ptr() as usize,
+            path.len(),
+            flags,
+            fcntl_flags,
+        )
+    }
 }
 
 /// Read from a file descriptor into a buffer
@@ -248,5 +262,48 @@ pub fn sendfd(receiver_socket: usize, fd: usize, flags: usize, arg: u64) -> Resu
     #[cfg(target_pointer_width = "64")]
     unsafe {
         syscall4(SYS_SENDFD, receiver_socket, fd, flags, arg as usize)
+    }
+}
+
+/// SYS_CALL interface, read-only variant
+pub fn call_ro(fd: usize, payload: &mut [u8], flags: CallFlags, metadata: &[u64]) -> Result<usize> {
+    let combined_flags = flags | CallFlags::READ;
+    unsafe {
+        syscall5(
+            SYS_CALL,
+            fd,
+            payload.as_mut_ptr() as usize,
+            payload.len(),
+            metadata.len() | combined_flags.bits(),
+            metadata.as_ptr() as usize,
+        )
+    }
+}
+/// SYS_CALL interface, write-only variant
+pub fn call_wo(fd: usize, payload: &[u8], flags: CallFlags, metadata: &[u64]) -> Result<usize> {
+    let combined_flags = flags | CallFlags::WRITE;
+    unsafe {
+        syscall5(
+            SYS_CALL,
+            fd,
+            payload.as_ptr() as *mut u8 as usize,
+            payload.len(),
+            metadata.len() | combined_flags.bits(),
+            metadata.as_ptr() as usize,
+        )
+    }
+}
+/// SYS_CALL interface, read-write variant
+pub fn call_rw(fd: usize, payload: &mut [u8], flags: CallFlags, metadata: &[u64]) -> Result<usize> {
+    let combined_flags = flags | CallFlags::READ | CallFlags::WRITE;
+    unsafe {
+        syscall5(
+            SYS_CALL,
+            fd,
+            payload.as_mut_ptr() as usize,
+            payload.len(),
+            metadata.len() | combined_flags.bits(),
+            metadata.as_ptr() as usize,
+        )
     }
 }
