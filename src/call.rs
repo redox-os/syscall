@@ -186,20 +186,25 @@ pub fn openat<T: AsRef<str>>(
     path: T,
     flags: usize,
     fcntl_flags: usize,
+    euid: u32,
+    egid: u32,
 ) -> Result<usize> {
     let path = path.as_ref();
     unsafe {
-        syscall5(
+        syscall6(
             SYS_OPENAT,
             fd,
             path.as_ptr() as usize,
             path.len(),
-            flags,
-            fcntl_flags,
+            flags | fcntl_flags,
+            // NOTE: Short-term solution to allow namespace management.
+            // In the long term, we need to figure out how we should best handle
+            // Unix permissions using capabilities.
+            euid as usize,
+            egid as usize,
         )
     }
 }
-
 /// Read from a file descriptor into a buffer
 pub fn read(fd: usize, buf: &mut [u8]) -> Result<usize> {
     unsafe { syscall3(SYS_READ, fd, buf.as_mut_ptr() as usize, buf.len()) }
@@ -218,9 +223,28 @@ pub fn unlink<T: AsRef<str>>(path: T) -> Result<usize> {
 }
 
 /// Remove a file at at specific path
-pub fn unlinkat<T: AsRef<str>>(fd: usize, path: T, flags: usize) -> Result<usize> {
+pub fn unlinkat<T: AsRef<str>>(
+    fd: usize,
+    path: T,
+    flags: usize,
+    euid: u32,
+    egid: u32,
+) -> Result<usize> {
     let path = path.as_ref();
-    unsafe { syscall4(SYS_UNLINKAT, fd, path.as_ptr() as usize, path.len(), flags) }
+    unsafe {
+        syscall6(
+            SYS_UNLINKAT,
+            fd,
+            path.as_ptr() as usize,
+            path.len(),
+            flags,
+            // NOTE: Short-term solution to allow namespace management.
+            // In the long term, we need to figure out how we should best handle
+            // Unix permissions using capabilities.
+            euid as usize,
+            egid as usize,
+        )
+    }
 }
 
 /// Write a buffer to a file descriptor
