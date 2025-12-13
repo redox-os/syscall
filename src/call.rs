@@ -217,6 +217,12 @@ pub fn unlink<T: AsRef<str>>(path: T) -> Result<usize> {
     unsafe { syscall2(SYS_UNLINK, path.as_ptr() as usize, path.len()) }
 }
 
+/// Remove a file at at specific path
+pub fn unlinkat<T: AsRef<str>>(fd: usize, path: T, flags: usize) -> Result<usize> {
+    let path = path.as_ref();
+    unsafe { syscall4(SYS_UNLINKAT, fd, path.as_ptr() as usize, path.len(), flags) }
+}
+
 /// Write a buffer to a file descriptor
 ///
 /// The kernel will attempt to write the bytes in `buf` to the file descriptor `fd`, returning

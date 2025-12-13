@@ -127,15 +127,14 @@ pub enum Opcode {
     Msync = 24, // TODO
 
     Cancel = 25, // @tag
-
     Getdents = 26,
     CloseMsg = 27,
     Call = 28,
-
     OpenAt = 29, // fd, buf_ptr, buf_len, flags
     Flink = 30,
-
     Recvfd = 31,
+
+    UnlinkAt = 32, // fd, path_ptr, path_len (utf8), flags
 }
 
 impl Opcode {
@@ -175,11 +174,11 @@ impl Opcode {
             26 => Getdents,
             27 => CloseMsg,
             28 => Call,
-
             29 => OpenAt,
             30 => Flink,
-
             31 => Recvfd,
+
+            32 => UnlinkAt,
 
             _ => return None,
         })
