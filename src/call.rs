@@ -210,18 +210,6 @@ pub fn read(fd: usize, buf: &mut [u8]) -> Result<usize> {
     unsafe { syscall3(SYS_READ, fd, buf.as_mut_ptr() as usize, buf.len()) }
 }
 
-/// Remove a directory
-pub fn rmdir<T: AsRef<str>>(path: T) -> Result<usize> {
-    let path = path.as_ref();
-    unsafe { syscall2(SYS_RMDIR, path.as_ptr() as usize, path.len()) }
-}
-
-/// Remove a file
-pub fn unlink<T: AsRef<str>>(path: T) -> Result<usize> {
-    let path = path.as_ref();
-    unsafe { syscall2(SYS_UNLINK, path.as_ptr() as usize, path.len()) }
-}
-
 /// Remove a file at at specific path
 pub fn unlinkat<T: AsRef<str>>(
     fd: usize,
