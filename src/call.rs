@@ -186,13 +186,32 @@ pub fn openat<T: AsRef<str>>(
     path: T,
     flags: usize,
     fcntl_flags: usize,
+) -> Result<usize> {
+    let path = path.as_ref();
+    unsafe {
+        syscall5(
+            SYS_OPENAT,
+            fd,
+            path.as_ptr() as usize,
+            path.len(),
+            flags,
+            fcntl_flags,
+        )
+    }
+}
+/// Open a file at a specific path with filter
+pub fn openat_with_filter<T: AsRef<str>>(
+    fd: usize,
+    path: T,
+    flags: usize,
+    fcntl_flags: usize,
     euid: u32,
     egid: u32,
 ) -> Result<usize> {
     let path = path.as_ref();
     unsafe {
         syscall6(
-            SYS_OPENAT,
+            SYS_OPENAT_WITH_FILTER,
             fd,
             path.as_ptr() as usize,
             path.len(),
@@ -205,13 +224,14 @@ pub fn openat<T: AsRef<str>>(
         )
     }
 }
-/// Read from a file descriptor into a buffer
-pub fn read(fd: usize, buf: &mut [u8]) -> Result<usize> {
-    unsafe { syscall3(SYS_READ, fd, buf.as_mut_ptr() as usize, buf.len()) }
-}
 
+/// Remove a file at at specific path with filter
+pub fn unlinkat<T: AsRef<str>>(fd: usize, path: T, flags: usize) -> Result<usize> {
+    let path = path.as_ref();
+    unsafe { syscall4(SYS_UNLINKAT, fd, path.as_ptr() as usize, path.len(), flags) }
+}
 /// Remove a file at at specific path
-pub fn unlinkat<T: AsRef<str>>(
+pub fn unlinkat_with_filter<T: AsRef<str>>(
     fd: usize,
     path: T,
     flags: usize,
@@ -221,7 +241,7 @@ pub fn unlinkat<T: AsRef<str>>(
     let path = path.as_ref();
     unsafe {
         syscall6(
-            SYS_UNLINKAT,
+            SYS_UNLINKAT_WITH_FILTER,
             fd,
             path.as_ptr() as usize,
             path.len(),
@@ -233,6 +253,11 @@ pub fn unlinkat<T: AsRef<str>>(
             egid as usize,
         )
     }
+}
+
+/// Read from a file descriptor into a buffer
+pub fn read(fd: usize, buf: &mut [u8]) -> Result<usize> {
+    unsafe { syscall3(SYS_READ, fd, buf.as_mut_ptr() as usize, buf.len()) }
 }
 
 /// Write a buffer to a file descriptor
