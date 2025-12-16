@@ -204,6 +204,10 @@ pub const O_STAT: usize = 0x2000_0000;
 pub const O_SYMLINK: usize = 0x4000_0000;
 pub const O_NOFOLLOW: usize = 0x8000_0000;
 pub const O_ACCMODE: usize = O_RDONLY | O_WRONLY | O_RDWR;
+pub const O_FCNTL_MASK: usize = O_NONBLOCK | O_APPEND | O_ASYNC | O_FSYNC;
+
+/// Remove directory instead of unlinking file.
+pub const AT_REMOVEDIR: usize = 0x200;
 
 // The top 48 bits of PTRACE_* are reserved, for now
 

@@ -12,8 +12,9 @@ pub const SYS_RET_FILE: usize = 0x0010_0000;
 
 pub const SYS_OPEN: usize = SYS_CLASS_PATH | SYS_RET_FILE | 5;
 pub const SYS_OPENAT: usize = SYS_CLASS_PATH | SYS_RET_FILE | 7;
-pub const SYS_RMDIR: usize = SYS_CLASS_PATH | 84;
-pub const SYS_UNLINK: usize = SYS_CLASS_PATH | 10;
+pub const SYS_OPENAT_WITH_FILTER: usize = SYS_CLASS_PATH | SYS_RET_FILE | 985;
+pub const SYS_UNLINKAT: usize = SYS_CLASS_PATH | 263;
+pub const SYS_UNLINKAT_WITH_FILTER: usize = SYS_CLASS_PATH | 986;
 
 pub const SYS_CLOSE: usize = SYS_CLASS_FILE | 6;
 pub const SYS_DUP: usize = SYS_CLASS_FILE | SYS_RET_FILE | 41;
