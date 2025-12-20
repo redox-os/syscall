@@ -18,6 +18,11 @@ pub fn clock_gettime(clock: usize, tp: &mut TimeSpec) -> Result<usize> {
     unsafe { syscall2(SYS_CLOCK_GETTIME, clock, tp as *mut TimeSpec as usize) }
 }
 
+/// Get the current system time resolution
+pub fn clock_getres(clock: usize, tp: &mut TimeSpec) -> Result<usize> {
+    unsafe { syscall2(SYS_CLOCK_GETRES, clock, tp as *mut TimeSpec as usize) }
+}
+
 /// Copy and transform a file descriptor
 pub fn dup(fd: usize, buf: &[u8]) -> Result<usize> {
     unsafe { syscall3(SYS_DUP, fd, buf.as_ptr() as usize, buf.len()) }
