@@ -6,6 +6,17 @@ use core::{
 
 use bitflags::bitflags;
 
+pub struct CallerCtx {
+    pub pid: usize,
+    pub uid: u32,
+    pub gid: u32,
+}
+
+pub enum OpenResult {
+    ThisScheme { number: usize },
+    OtherScheme { fd: usize },
+}
+
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default)]
 pub struct Sqe {

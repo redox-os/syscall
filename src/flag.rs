@@ -62,15 +62,6 @@ pub const FUTEX_WAKE: usize = 1;
 pub const FUTEX_REQUEUE: usize = 2;
 pub const FUTEX_WAIT64: usize = 3;
 
-// packet.c = fd
-pub const SKMSG_FRETURNFD: usize = 0;
-
-// packet.uid:packet.gid = offset, packet.c = base address, packet.d = page count
-pub const SKMSG_PROVIDE_MMAP: usize = 1;
-
-// packet.id provides state, packet.c = dest fd or pointer to dest fd, packet.d = flags
-pub const SKMSG_FOBTAINFD: usize = 2;
-
 // TODO: Split SendFdFlags into caller flags and flags that the scheme receives?
 bitflags::bitflags! {
     #[derive(Clone, Copy, Debug)]
