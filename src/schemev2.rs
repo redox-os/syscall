@@ -99,9 +99,6 @@ impl CqeOpcode {
 #[non_exhaustive]
 #[derive(Clone, Copy, Debug)]
 pub enum Opcode {
-    Open = 0,    // path_ptr, path_len (utf8), flags
-    Rmdir = 1,   // path_ptr, path_len (utf8)
-    Unlink = 2,  // path_ptr, path_len (utf8)
     Close = 3,   // fd
     Dup = 4,     // old fd, buf_ptr, buf_len
     Read = 5,    // fd, buf_ptr, buf_len, TODO offset, TODO flags, _
@@ -145,9 +142,6 @@ impl Opcode {
 
         // TODO: Use a library where this match can be automated.
         Some(match raw {
-            0 => Open,
-            1 => Rmdir,
-            2 => Unlink,
             3 => Close,
             4 => Dup,
             5 => Read,

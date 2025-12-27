@@ -408,6 +408,15 @@ impl DerefMut for CtxtStsBuf {
     }
 }
 
+#[derive(Copy, Clone, Debug, Default)]
+#[repr(C)]
+pub struct NewFdParams {
+    pub offset: u64,
+    pub number: usize,
+    pub flags: usize,
+    pub internal_flags: u8,
+}
+
 #[repr(u8)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum GlobalSchemes {
