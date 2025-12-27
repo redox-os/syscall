@@ -174,12 +174,6 @@ pub fn nanosleep(req: &TimeSpec, rem: &mut TimeSpec) -> Result<usize> {
     }
 }
 
-/// Open a file
-pub fn open<T: AsRef<str>>(path: T, flags: usize) -> Result<usize> {
-    let path = path.as_ref();
-    unsafe { syscall3(SYS_OPEN, path.as_ptr() as usize, path.len(), flags) }
-}
-
 /// Open a file at a specific path
 pub fn openat<T: AsRef<str>>(
     fd: usize,
