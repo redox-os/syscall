@@ -102,6 +102,9 @@ bitflags::bitflags! {
         /// If set, the file descriptors received will be placed into the *upper* file table.
         const UPPER_TBL = 4;
 
+        /// If set, the received file descriptors are marked as close-on-exec.
+        const CLOEXEC = 8;
+
         // No, cloexec won't be stored in the kernel in the future, when the stable ABI is moved to
         // relibc, so no flag for that!
     }
@@ -116,6 +119,9 @@ bitflags::bitflags! {
 
         /// If set, the file descriptors received will be placed into the *upper* file table.
         const UPPER_TBL = 2;
+
+        /// If set, the received file descriptors are marked as close-on-exec.
+        const CLOEXEC = 4;
     }
 }
 bitflags::bitflags! {
@@ -404,6 +410,7 @@ bitflags! {
         const FD_EXCLUSIVE = 1 << 12;
         const FD_CLONE = 1 << 13;
         const FD_UPPER = 1 << 14;
+        const FD_CLOEXEC = 1 << 15;
     }
 }
 
