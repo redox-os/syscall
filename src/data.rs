@@ -175,6 +175,15 @@ impl DerefMut for StatVfs {
 }
 
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
+#[repr(C, packed)]
+pub struct StdFsCallMeta {
+    pub kind: u8, // enum StdFsCallKind
+    _rsvd: [u8; 7],
+    pub arg1: u64,
+    pub arg2: u64,
+}
+
+#[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[repr(C)]
 pub struct TimeSpec {
     pub tv_sec: i64,

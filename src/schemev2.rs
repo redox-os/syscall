@@ -145,6 +145,8 @@ pub enum Opcode {
     Recvfd = 31,
 
     UnlinkAt = 32, // fd, path_ptr, path_len (utf8), flags
+
+    StdFsCall = 33,
 }
 
 impl Opcode {
@@ -187,6 +189,8 @@ impl Opcode {
             31 => Recvfd,
 
             32 => UnlinkAt,
+
+            33 => StdFsCall,
 
             _ => return None,
         })
