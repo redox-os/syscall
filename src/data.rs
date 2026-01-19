@@ -183,6 +183,29 @@ pub struct StdFsCallMeta {
     pub arg2: u64,
 }
 
+impl Deref for StdFsCallMeta {
+    type Target = [u8];
+    fn deref(&self) -> &[u8] {
+        unsafe {
+            slice::from_raw_parts(
+                self as *const StdFsCallMeta as *const u8,
+                mem::size_of::<StdFsCallMeta>(),
+            )
+        }
+    }
+}
+
+impl DerefMut for StdFsCallMeta {
+    fn deref_mut(&mut self) -> &mut [u8] {
+        unsafe {
+            slice::from_raw_parts_mut(
+                self as *mut StdFsCallMeta as *mut u8,
+                mem::size_of::<StdFsCallMeta>(),
+            )
+        }
+    }
+}
+
 #[derive(Copy, Clone, Debug, Default, PartialEq)]
 #[repr(C)]
 pub struct TimeSpec {
