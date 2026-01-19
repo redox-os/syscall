@@ -1,6 +1,6 @@
 use super::{
     arch::*,
-    data::{Map, Stat, StatVfs, StdFsCallMeta, TimeSpec},
+    data::{Map, StdFsCallMeta, TimeSpec},
     error::Result,
     flag::*,
     number::*,
@@ -26,16 +26,6 @@ pub fn dup(fd: usize, buf: &[u8]) -> Result<usize> {
 /// Copy and transform a file descriptor
 pub fn dup2(fd: usize, newfd: usize, buf: &[u8]) -> Result<usize> {
     unsafe { syscall4(SYS_DUP2, fd, newfd, buf.as_ptr() as usize, buf.len()) }
-}
-
-/// Change file permissions
-pub fn fchmod(fd: usize, mode: u16) -> Result<usize> {
-    unsafe { syscall2(SYS_FCHMOD, fd, mode as usize) }
-}
-
-/// Change file ownership
-pub fn fchown(fd: usize, uid: u32, gid: u32) -> Result<usize> {
-    unsafe { syscall3(SYS_FCHOWN, fd, uid as usize, gid as usize) }
 }
 
 /// Change file descriptor flags
@@ -82,52 +72,6 @@ pub fn flink<T: AsRef<str>>(fd: usize, path: T) -> Result<usize> {
 pub fn frename<T: AsRef<str>>(fd: usize, path: T) -> Result<usize> {
     let path = path.as_ref();
     unsafe { syscall3(SYS_FRENAME, fd, path.as_ptr() as usize, path.len()) }
-}
-
-/// Get metadata about a file
-pub fn fstat(fd: usize, stat: &mut Stat) -> Result<usize> {
-    unsafe {
-        syscall3(
-            SYS_FSTAT,
-            fd,
-            stat as *mut Stat as usize,
-            mem::size_of::<Stat>(),
-        )
-    }
-}
-
-/// Get metadata about a filesystem
-pub fn fstatvfs(fd: usize, stat: &mut StatVfs) -> Result<usize> {
-    unsafe {
-        syscall3(
-            SYS_FSTATVFS,
-            fd,
-            stat as *mut StatVfs as usize,
-            mem::size_of::<StatVfs>(),
-        )
-    }
-}
-
-/// Sync a file descriptor to its underlying medium
-pub fn fsync(fd: usize) -> Result<usize> {
-    unsafe { syscall1(SYS_FSYNC, fd) }
-}
-
-/// Truncate or extend a file to a specified length
-pub fn ftruncate(fd: usize, len: usize) -> Result<usize> {
-    unsafe { syscall2(SYS_FTRUNCATE, fd, len) }
-}
-
-// Change modify and/or access times
-pub fn futimens(fd: usize, times: &[TimeSpec]) -> Result<usize> {
-    unsafe {
-        syscall3(
-            SYS_FUTIMENS,
-            fd,
-            times.as_ptr() as usize,
-            times.len() * mem::size_of::<TimeSpec>(),
-        )
-    }
 }
 
 /// Fast userspace mutex
@@ -219,11 +163,6 @@ pub fn openat_with_filter<T: AsRef<str>>(
     }
 }
 
-/// Remove a file at at specific path
-pub fn unlinkat<T: AsRef<str>>(fd: usize, path: T, flags: usize) -> Result<usize> {
-    let path = path.as_ref();
-    unsafe { syscall4(SYS_UNLINKAT, fd, path.as_ptr() as usize, path.len(), flags) }
-}
 /// Remove a file at at specific path with filter
 pub fn unlinkat_with_filter<T: AsRef<str>>(
     fd: usize,
