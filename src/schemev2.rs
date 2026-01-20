@@ -115,18 +115,11 @@ pub enum Opcode {
     Read = 5,    // fd, buf_ptr, buf_len, TODO offset, TODO flags, _
     Write = 6,   // fd, buf_ptr, buf_len, TODO offset, TODO flags)
     Fsize = 7,   // fd
-    Fchmod = 8,  // fd, new mode
-    Fchown = 9,  // fd, new uid, new gid
     Fcntl = 10,  // fd, cmd, arg
     Fevent = 11, // fd, requested mask
     Sendfd = 12,
     Fpath = 13, // fd, buf_ptr, buf_len
     Frename = 14,
-    Fstat = 15,     // fd, buf_ptr, buf_len
-    Fstatvfs = 16,  // fd, buf_ptr, buf_len
-    Fsync = 17,     // fd
-    Ftruncate = 18, // fd, new len
-    Futimens = 19,  // fd, times_buf, times_len
 
     MmapPrep = 20,
     RequestMmap = 21,
@@ -136,15 +129,12 @@ pub enum Opcode {
 
     Cancel = 25, // @tag
 
-    Getdents = 26,
     CloseMsg = 27,
     Call = 28,
 
     OpenAt = 29, // fd, buf_ptr, buf_len, flags
     Flink = 30,
     Recvfd = 31,
-
-    UnlinkAt = 32, // fd, path_ptr, path_len (utf8), flags
 
     StdFsCall = 33,
 }
@@ -160,18 +150,11 @@ impl Opcode {
             5 => Read,
             6 => Write,
             7 => Fsize,
-            8 => Fchmod,
-            9 => Fchown,
             10 => Fcntl,
             11 => Fevent,
             12 => Sendfd,
             13 => Fpath,
             14 => Frename,
-            15 => Fstat,
-            16 => Fstatvfs,
-            17 => Fsync,
-            18 => Ftruncate,
-            19 => Futimens,
 
             20 => MmapPrep,
             21 => RequestMmap,
@@ -180,15 +163,12 @@ impl Opcode {
             24 => Msync,
 
             25 => Cancel,
-            26 => Getdents,
             27 => CloseMsg,
             28 => Call,
 
             29 => OpenAt,
             30 => Flink,
             31 => Recvfd,
-
-            32 => UnlinkAt,
 
             33 => StdFsCall,
 
