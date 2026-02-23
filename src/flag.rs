@@ -424,6 +424,9 @@ pub enum StdFsCallKind {
     Unlinkat = 10,
     */
     Realpathat = 11,
+    Lock = 12,
+    Unlock = 13,
+    GetLock = 14,
 }
 
 impl StdFsCallKind {
@@ -445,6 +448,9 @@ impl StdFsCallKind {
             10 => Unlinkat,
             */
             11 => Realpathat,
+            12 => Lock,
+            13 => Unlock,
+            14 => GetLock,
             _ => return None,
         })
     }

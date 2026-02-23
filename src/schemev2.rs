@@ -91,21 +91,31 @@ pub enum CqeOpcode {
     SendFevent, // no tag
     ObtainFd,
     RespondWithMultipleFds,
+    /// [`SchemeAsync::on_close`] and [`SchemeSync::on_close`] are only called when the last file
+    /// descriptor referring to the file description is closed. To implement traditional POSIX
+    /// advisory file locking, [`CqeOpcode::RespondAndNotifyOnDetach`] is used to notify the scheme
+    /// by sending a [`RequestKind::OnDetach`] request the next time the file description is
+    /// "detached" from a file descriptor. Not done by default to avoid unnecessary IPC.
+    RespondAndNotifyOnDetach,
     // TODO: ProvideMmap
 }
+
 impl CqeOpcode {
     pub fn try_from_raw(raw: u8) -> Option<Self> {
+        // TODO: Use a library where this match can be automated.
         Some(match raw {
             0 => Self::RespondRegular,
             1 => Self::RespondWithFd,
             2 => Self::SendFevent,
             3 => Self::ObtainFd,
             4 => Self::RespondWithMultipleFds,
+            5 => Self::RespondAndNotifyOnDetach,
             _ => return None,
         })
     }
 }
 
+/// SqeOpcode
 #[repr(u8)]
 #[non_exhaustive]
 #[derive(Clone, Copy, Debug)]
@@ -146,6 +156,8 @@ pub enum Opcode {
 
     UnlinkAt = 32, // fd, path_ptr, path_len (utf8), flags
     StdFsCall = 33,
+
+    Detach = 34,
 }
 
 impl Opcode {
@@ -189,6 +201,7 @@ impl Opcode {
 
             32 => UnlinkAt,
             33 => StdFsCall,
+            34 => Detach,
 
             _ => return None,
         })
