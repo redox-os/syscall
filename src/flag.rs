@@ -411,7 +411,7 @@ bitflags! {
 #[repr(u8)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum StdFsCallKind {
-    /*TODO: remove old syscalls
+    // TODO: remove old syscalls
     Fchmod = 1,
     Fchown = 2,
     Getdents = 3,
@@ -421,8 +421,7 @@ pub enum StdFsCallKind {
     Ftruncate = 7,
     Futimens = 8,
     // 9 reserved in fscall RFC
-    Unlinkat = 10,
-    */
+    // Unlinkat = 10,
     Realpathat = 11,
     Lock = 12,
     Unlock = 13,
@@ -435,7 +434,6 @@ impl StdFsCallKind {
 
         // TODO: Use a library where this match can be automated.
         Some(match raw {
-            /*
             1 => Fchmod,
             2 => Fchown,
             3 => Getdents,
@@ -445,8 +443,7 @@ impl StdFsCallKind {
             7 => Ftruncate,
             8 => Futimens,
             // 9 reserved in fscall RFC
-            10 => Unlinkat,
-            */
+            // 10 => Unlinkat,
             11 => Realpathat,
             12 => Lock,
             13 => Unlock,
