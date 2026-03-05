@@ -56,3 +56,5 @@ pub const SYS_MPROTECT: usize = 125;
 pub const SYS_MKNS: usize = 984;
 pub const SYS_NANOSLEEP: usize = 162;
 pub const SYS_YIELD: usize = 158;
+pub const SYS_SETPRIORITY: usize = 260;
+pub const SYS_GETPRIORITY: usize = 261;
