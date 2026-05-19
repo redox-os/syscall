@@ -46,6 +46,13 @@ bitflags! {
         // If zero, the message is bidirectional, and the scheme is expected to pass the Ksmsg's
         // tag field to the Skmsg. Some opcodes require this flag to be set.
         const ONEWAY = 1;
+
+        // If this flag is set, index 0 of Sqe's args stores the IDs buffer address,
+        // and index 1 stores the IDs buffer length.
+        const MULTIPLE_IDS = 1 << 1;
+
+        /// If set, the syscall request is accompanied by multiple file descriptors.
+        const MULTIPLE_FDS = 1 << 2;
     }
 }
 

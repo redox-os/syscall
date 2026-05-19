@@ -125,7 +125,7 @@ pub fn futimens(fd: usize, times: &[TimeSpec]) -> Result<usize> {
             SYS_FUTIMENS,
             fd,
             times.as_ptr() as usize,
-            times.len() * mem::size_of::<TimeSpec>(),
+            mem::size_of_val(times),
         )
     }
 }
@@ -345,6 +345,78 @@ pub fn call_rw(fd: usize, payload: &mut [u8], flags: CallFlags, metadata: &[u64]
     }
 }
 
+/// SYS_CALL interface for multiple fds, read-only variant
+pub fn call_ro_multiple_fds(
+    fds: &[usize],
+    payload: &mut [u8],
+    flags: CallFlags,
+    metadata: &[u64],
+) -> Result<usize> {
+    let combined_flags = flags | CallFlags::MULTIPLE_FDS | CallFlags::READ;
+    unsafe {
+        syscall6(
+            SYS_CALL,
+            fds.as_ptr() as usize,
+            payload.as_mut_ptr() as usize,
+            payload.len(),
+            metadata.len() | combined_flags.bits(),
+            metadata.as_ptr() as usize,
+            core::mem::size_of_val(fds),
+        )
+    }
+}
+
+/// SYS_CALL interface for multiple fds, write-only variant
+pub fn call_wo_multiple_fds(
+    fds: &[usize],
+    payload: &[u8],
+    flags: CallFlags,
+    metadata: &[u64],
+) -> Result<usize> {
+    let combined_flags = flags | CallFlags::MULTIPLE_FDS | CallFlags::WRITE;
+    unsafe {
+        syscall6(
+            SYS_CALL,
+            fds.as_ptr() as usize,
+            payload.as_ptr() as usize,
+            payload.len(),
+            metadata.len() | combined_flags.bits(),
+            metadata.as_ptr() as usize,
+            core::mem::size_of_val(fds),
+        )
+    }
+}
+
+/// SYS_CALL interface for multiple fds, read-write variant
+pub fn call_rw_multiple_fds(
+    fds: &[usize],
+    payload: &mut [u8],
+    flags: CallFlags,
+    metadata: &[u64],
+) -> Result<usize> {
+    let combined_flags = flags | CallFlags::MULTIPLE_FDS | CallFlags::READ | CallFlags::WRITE;
+    unsafe {
+        syscall6(
+            SYS_CALL,
+            fds.as_ptr() as usize,
+            payload.as_mut_ptr() as usize,
+            payload.len(),
+            metadata.len() | combined_flags.bits(),
+            metadata.as_ptr() as usize,
+            core::mem::size_of_val(fds),
+        )
+    }
+}
+
 pub fn std_fs_call(fd: usize, payload: &mut [u8], metadata: &StdFsCallMeta) -> Result<usize> {
     call_rw(fd, payload, CallFlags::STD_FS, metadata)
+}
+
+pub fn std_fs_call_multiple_fds(
+    fds: &[usize],
+    payload: &mut [u8],
+    flags: CallFlags,
+    metadata: &StdFsCallMeta,
+) -> Result<usize> {
+    call_rw_multiple_fds(fds, payload, flags | CallFlags::STD_FS, metadata)
 }
