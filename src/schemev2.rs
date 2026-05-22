@@ -50,9 +50,6 @@ bitflags! {
         // If this flag is set, index 0 of Sqe's args stores the IDs buffer address,
         // and index 1 stores the IDs buffer length.
         const MULTIPLE_IDS = 1 << 1;
-
-        /// If set, the syscall request is accompanied by multiple file descriptors.
-        const MULTIPLE_FDS = 1 << 2;
     }
 }
 
