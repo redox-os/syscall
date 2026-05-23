@@ -455,3 +455,6 @@ impl StdFsCallKind {
 
 /// The tag for the fd number in the upper file descriptor table.
 pub const UPPER_FDTBL_TAG: usize = 1 << (usize::BITS - 2);
+
+/// The identifier for registering event timeout
+pub const EVENT_TIMEOUT_ID: usize = usize::MAX - 2;
