@@ -408,7 +408,6 @@ bitflags! {
 
         /// Call is taking multiple fds as an argument
         const MULTIPLE_FDS = 1 << 17;
-        const SCHEME_IDS = 1 << 18;
     }
 }
 
