@@ -224,6 +224,20 @@ pub struct TimeSpec {
     pub tv_nsec: i32,
 }
 
+const NANOS_PER_SEC: u128 = 1_000_000_000;
+
+impl TimeSpec {
+    pub fn from_nanos(nanos: u128) -> Self {
+        Self {
+            tv_sec: i64::try_from(nanos / NANOS_PER_SEC).unwrap_or(i64::MAX),
+            tv_nsec: (nanos % NANOS_PER_SEC) as i32, // guaranteed to never overflow
+        }
+    }
+    pub fn to_nanos(&self) -> u128 {
+        self.tv_sec as u128 * NANOS_PER_SEC + self.tv_nsec as u128
+    }
+}
+
 impl Deref for TimeSpec {
     type Target = [u8];
     fn deref(&self) -> &[u8] {
