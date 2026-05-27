@@ -125,7 +125,7 @@ pub fn futimens(fd: usize, times: &[TimeSpec]) -> Result<usize> {
             SYS_FUTIMENS,
             fd,
             times.as_ptr() as usize,
-            times.len() * mem::size_of::<TimeSpec>(),
+            mem::size_of_val(times),
         )
     }
 }
@@ -302,49 +302,109 @@ pub fn sendfd(receiver_socket: usize, fd: usize, flags: usize, arg: u64) -> Resu
     }
 }
 
+pub trait Call {
+    unsafe fn raw_call(
+        &self,
+        payload_ptr: *const u8,
+        len: usize,
+        flags: CallFlags,
+        metadata: &[u64],
+    ) -> Result<usize>;
+}
+
+impl Call for usize {
+    unsafe fn raw_call(
+        &self,
+        payload_ptr: *const u8,
+        len: usize,
+        flags: CallFlags,
+        metadata: &[u64],
+    ) -> Result<usize> {
+        unsafe {
+            syscall5(
+                SYS_CALL,
+                *self,
+                payload_ptr as usize,
+                len,
+                metadata.len() | flags.bits(),
+                metadata.as_ptr() as usize,
+            )
+        }
+    }
+}
+
+impl Call for &[usize] {
+    unsafe fn raw_call(
+        &self,
+        payload_ptr: *const u8,
+        len: usize,
+        flags: CallFlags,
+        metadata: &[u64],
+    ) -> Result<usize> {
+        let combined_flags = flags | CallFlags::MULTIPLE_FDS;
+        unsafe {
+            syscall6(
+                SYS_CALL,
+                self.as_ptr() as usize,
+                payload_ptr as usize,
+                len,
+                metadata.len() | combined_flags.bits(),
+                metadata.as_ptr() as usize,
+                self.len() * mem::size_of::<usize>(),
+            )
+        }
+    }
+}
+
 /// SYS_CALL interface, read-only variant
-pub fn call_ro(fd: usize, payload: &mut [u8], flags: CallFlags, metadata: &[u64]) -> Result<usize> {
-    let combined_flags = flags | CallFlags::READ;
+pub fn call_ro<T: Call>(
+    fd: T,
+    payload: &mut [u8],
+    flags: CallFlags,
+    metadata: &[u64],
+) -> Result<usize> {
     unsafe {
-        syscall5(
-            SYS_CALL,
-            fd,
-            payload.as_mut_ptr() as usize,
+        fd.raw_call(
+            payload.as_mut_ptr(),
             payload.len(),
-            metadata.len() | combined_flags.bits(),
-            metadata.as_ptr() as usize,
+            flags | CallFlags::READ,
+            metadata,
         )
     }
 }
 /// SYS_CALL interface, write-only variant
-pub fn call_wo(fd: usize, payload: &[u8], flags: CallFlags, metadata: &[u64]) -> Result<usize> {
-    let combined_flags = flags | CallFlags::WRITE;
+pub fn call_wo<T: Call>(
+    fd: T,
+    payload: &[u8],
+    flags: CallFlags,
+    metadata: &[u64],
+) -> Result<usize> {
     unsafe {
-        syscall5(
-            SYS_CALL,
-            fd,
-            payload.as_ptr() as *mut u8 as usize,
+        fd.raw_call(
+            payload.as_ptr(),
             payload.len(),
-            metadata.len() | combined_flags.bits(),
-            metadata.as_ptr() as usize,
+            flags | CallFlags::WRITE,
+            metadata,
         )
     }
 }
 /// SYS_CALL interface, read-write variant
-pub fn call_rw(fd: usize, payload: &mut [u8], flags: CallFlags, metadata: &[u64]) -> Result<usize> {
-    let combined_flags = flags | CallFlags::READ | CallFlags::WRITE;
+pub fn call_rw<T: Call>(
+    fd: T,
+    payload: &mut [u8],
+    flags: CallFlags,
+    metadata: &[u64],
+) -> Result<usize> {
     unsafe {
-        syscall5(
-            SYS_CALL,
-            fd,
-            payload.as_mut_ptr() as usize,
+        fd.raw_call(
+            payload.as_mut_ptr(),
             payload.len(),
-            metadata.len() | combined_flags.bits(),
-            metadata.as_ptr() as usize,
+            flags | CallFlags::READ | CallFlags::WRITE,
+            metadata,
         )
     }
 }
 
-pub fn std_fs_call(fd: usize, payload: &mut [u8], metadata: &StdFsCallMeta) -> Result<usize> {
+pub fn std_fs_call<T: Call>(fd: T, payload: &mut [u8], metadata: &StdFsCallMeta) -> Result<usize> {
     call_rw(fd, payload, CallFlags::STD_FS, metadata)
 }
