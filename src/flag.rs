@@ -405,6 +405,9 @@ bitflags! {
 
         /// Call is a standard fs call, with metadata defined in `StdFsCallMeta`
         const STD_FS = 1 << 16;
+
+        /// Call is taking multiple fds as an argument
+        const MULTIPLE_FDS = 1 << 17;
     }
 }
 
@@ -422,7 +425,7 @@ pub enum StdFsCallKind {
     Futimens = 8,
     // 9 reserved in fscall RFC
     // Unlinkat = 10,
-    Realpathat = 11,
+    Relpathat = 11,
     Lock = 12,
     Unlock = 13,
     GetLock = 14,
@@ -444,7 +447,7 @@ impl StdFsCallKind {
             8 => Futimens,
             // 9 reserved in fscall RFC
             // 10 => Unlinkat,
-            11 => Realpathat,
+            11 => Relpathat,
             12 => Lock,
             13 => Unlock,
             14 => GetLock,
