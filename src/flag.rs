@@ -259,6 +259,23 @@ impl ProcSchemeVerb {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum FileTableVerb {
+    Close = 1,
+    Dup2 = 2,
+    CloseCloExec = 3,
+}
+impl FileTableVerb {
+    pub fn try_from_raw(value: u8) -> Option<Self> {
+        Some(match value {
+            1 => Self::Close,
+            2 => Self::Dup2,
+            3 => Self::CloseCloExec,
+            _ => return None,
+        })
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 #[repr(usize)]
 pub enum SchemeSocketCall {
     ObtainFd = 0,
