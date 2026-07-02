@@ -14,8 +14,7 @@ pub const SYS_OPENAT_INTO: usize = SYS_CLASS_PATH | SYS_RET_FILE | 987;
 pub const SYS_UNLINKAT: usize = SYS_CLASS_PATH | 263;
 
 pub const SYS_CLOSE: usize = SYS_CLASS_FILE | 6;
-pub const SYS_DUP_INTO: usize = SYS_CLASS_FILE | SYS_RET_FILE | 988;
-pub const SYS_DUP2: usize = SYS_CLASS_FILE | SYS_RET_FILE | 63;
+pub const SYS_FDCNTL: usize = SYS_CLASS_FILE | SYS_RET_FILE | 989;
 pub const SYS_READ: usize = SYS_CLASS_FILE | SYS_ARG_MSLICE | 3;
 pub const SYS_READ2: usize = SYS_CLASS_FILE | SYS_ARG_MSLICE | 35;
 pub const SYS_WRITE: usize = SYS_CLASS_FILE | SYS_ARG_SLICE | 4;

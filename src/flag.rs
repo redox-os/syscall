@@ -50,9 +50,6 @@ bitflags! {
     }
 }
 
-pub const F_DUPFD: usize = 0;
-pub const F_GETFD: usize = 1;
-pub const F_SETFD: usize = 2;
 pub const F_GETFL: usize = 3;
 pub const F_SETFL: usize = 4;
 
@@ -347,6 +344,27 @@ impl FsCall {
     pub fn try_from_raw(raw: usize) -> Option<Self> {
         Some(match raw {
             0 => Self::Connect,
+            _ => return None,
+        })
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Default)]
+#[repr(usize)]
+pub enum FdCmd {
+    #[default]
+    Dup = 0,
+    DupOver = 1,
+    Move = 2,
+    Swap = 3,
+}
+impl FdCmd {
+    pub fn try_from_raw(raw: usize) -> Option<Self> {
+        Some(match raw {
+            0 => Self::Dup,
+            1 => Self::DupOver,
+            2 => Self::Move,
+            3 => Self::Swap,
             _ => return None,
         })
     }
