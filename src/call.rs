@@ -14,13 +14,17 @@ pub fn clock_gettime(clock: usize, tp: &mut TimeSpec) -> Result<usize> {
 }
 
 /// Copy and transform a file descriptor into specified fd number
-pub fn dup_into(fd: usize, out: usize, buf: &[u8]) -> Result<usize> {
-    unsafe { syscall4(SYS_DUP_INTO, fd, buf.as_ptr() as usize, buf.len(), out) }
-}
-
-/// Copy and transform a file descriptor
-pub fn dup2(fd: usize, newfd: usize, buf: &[u8]) -> Result<usize> {
-    unsafe { syscall4(SYS_DUP2, fd, newfd, buf.as_ptr() as usize, buf.len()) }
+pub fn fdcntl(fd: usize, out: usize, buf: &[u8], cmd: FdCmd) -> Result<usize> {
+    unsafe {
+        syscall5(
+            SYS_FDCNTL,
+            fd,
+            buf.as_ptr() as usize,
+            buf.len(),
+            cmd as usize,
+            out,
+        )
+    }
 }
 
 /// Change file permissions

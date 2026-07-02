@@ -349,6 +349,27 @@ impl FsCall {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Default)]
+#[repr(usize)]
+pub enum FdCmd {
+    #[default]
+    Dup = 0,
+    DupOver = 1,
+    Move = 2,
+    Swap = 3,
+}
+impl FdCmd {
+    pub fn try_from_raw(raw: usize) -> Option<Self> {
+        Some(match raw {
+            0 => Self::Dup,
+            1 => Self::DupOver,
+            2 => Self::Move,
+            3 => Self::Swap,
+            _ => return None,
+        })
+    }
+}
+
 bitflags! {
     pub struct PtraceFlags: u64 {
         /// Stop before a syscall is handled. Send PTRACE_FLAG_IGNORE to not
